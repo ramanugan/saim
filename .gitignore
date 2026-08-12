@@ -1,0 +1,26 @@
+# Documentation
+docs/
+
+# Environment files (secrets)
+.env
+.env.*
+
+# Python
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

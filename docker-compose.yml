@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  saim-backend:
+    build:
+      context: ./saim-backend
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - SUPABASE_URL=http://kong:8000
+      - SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoic3VwYWJhc2UiLCJpYXQiOjE3ODQ4NTE2NTgsImV4cCI6MTk0MjUzMTY1OH0.aDAvyexZJbamTUS29-K8w6gAsLZbpOOnUPaH2U5jl60
+    networks:
+      - saim_network
+
+  saim-frontend:
+    build:
+      context: ./saim-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    networks:
+      - saim_network
+
+networks:
+  saim_network:
+    name: supabase_default
+    external: true
