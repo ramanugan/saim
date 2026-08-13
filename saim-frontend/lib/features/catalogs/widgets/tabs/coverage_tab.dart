@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/status_pill.dart';
 import '../table_helpers.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/providers/auth_provider.dart';
+import '../modals/crud_clientes_modal.dart';
+import '../modals/crud_contratos_modal.dart';
 
-class CoverageTab extends StatelessWidget {
+class CoverageTab extends ConsumerWidget {
   CoverageTab({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isAdmin = ref.watch(currentUserProfileProvider).value?.role?.name == 'Administrador';
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -17,6 +22,25 @@ class CoverageTab extends StatelessWidget {
           child: CatalogPanel(
             title: 'Cliente y contratos',
             subtitle: 'Escenario contractual',
+            trailing: isAdmin ? Row(
+              children: [
+                TextButton(
+                  onPressed: () {
+                    showDialog(context: context, builder: (ctx) => CrudClientesModal());
+                  },
+                  style: TextButton.styleFrom(foregroundColor: AppColors.red),
+                  child: Text('Clientes +'),
+                ),
+                SizedBox(width: 8),
+                TextButton(
+                  onPressed: () {
+                    showDialog(context: context, builder: (ctx) => CrudContratosModal());
+                  },
+                  style: TextButton.styleFrom(foregroundColor: AppColors.red),
+                  child: Text('Contratos +'),
+                ),
+              ],
+            ) : null,
             child: CatalogDataTable(
               columns: ['CONTRATO', 'VIGENCIA', 'ZONAS', 'TIENDAS', 'ESTADO'],
               rows: [

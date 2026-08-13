@@ -6,8 +6,15 @@
 CREATE OR REPLACE FUNCTION public.handle_new_user() 
 RETURNS TRIGGER AS $$
 BEGIN
+  -- 1. Insert into user_profiles
   INSERT INTO public.user_profiles (id, first_name, last_name, email)
   VALUES (new.id, '', '', new.email);
+  
+  -- 2. Insert into usuario
+  INSERT INTO public.usuario (nombre_usuario, correo, hash_contrasena, estado_cuenta, requiere_mfa, creado_por, actualizado_por, activo)
+  VALUES (new.email, new.email, 'supabase-auth', 'Activa', false, 1, 1, true)
+  ON CONFLICT DO NOTHING;
+
   RETURN new;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
