@@ -62,14 +62,10 @@ class EstadosNotifier extends StateNotifier<AsyncValue<List<Estado>>> {
       final currentEstados = state.value ?? [];
       final idUsuario = await _getCurrentUserId();
       
-      final Map<String, dynamic> data = {
-        'id_pais': estado.idPais,
-        'clave_inegi': estado.claveInegi,
-        'nombre': estado.nombre,
-        'activo': estado.activo,
-        'actualizado_por': idUsuario,
-      };
-
+      final data = estado.toJson();
+      data.remove('id_estado');
+      data['actualizado_por'] = idUsuario;
+      
       final response = await _supabase
           .from('estado')
           .update(data)

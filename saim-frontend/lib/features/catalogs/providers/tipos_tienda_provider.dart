@@ -60,6 +60,7 @@ class TiposTiendaNotifier extends StateNotifier<AsyncValue<List<TipoTienda>>> {
       final idUsuario = await _getCurrentUserId();
       
       final data = tipoTienda.toJson();
+      data.remove('id_tipo_tienda'); // Cannot update GENERATED ALWAYS column
       data['actualizado_por'] = idUsuario;
       
       final response = await _supabase

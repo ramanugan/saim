@@ -60,6 +60,7 @@ class TiposServicioNotifier extends StateNotifier<AsyncValue<List<TipoServicio>>
       final idUsuario = await _getCurrentUserId();
       
       final data = tipoServicio.toJson();
+      data.remove('id_tipo_servicio');
       data['actualizado_por'] = idUsuario;
       
       final response = await _supabase

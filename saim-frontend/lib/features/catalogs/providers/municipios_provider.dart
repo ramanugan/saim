@@ -60,6 +60,7 @@ class MunicipiosNotifier extends StateNotifier<AsyncValue<List<Municipio>>> {
       final idUsuario = await _getCurrentUserId();
       
       final data = municipio.toJson();
+      data.remove('id_municipio');
       data['actualizado_por'] = idUsuario;
       
       final response = await _supabase

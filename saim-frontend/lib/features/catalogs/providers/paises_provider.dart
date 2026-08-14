@@ -60,6 +60,7 @@ class PaisesNotifier extends StateNotifier<AsyncValue<List<Pais>>> {
       final idUsuario = await _getCurrentUserId();
       
       final data = pais.toJson();
+      data.remove('id_pais');
       data['actualizado_por'] = idUsuario;
       
       final response = await _supabase
