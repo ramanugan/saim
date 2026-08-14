@@ -7,6 +7,8 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../modals/crud_clientes_modal.dart';
 import '../modals/crud_contratos_modal.dart';
+import '../modals/crud_zonas_estado_modal.dart';
+import '../modals/crud_estados_modal.dart';
 
 class CoverageTab extends ConsumerWidget {
   CoverageTab({super.key});
@@ -68,6 +70,25 @@ class CoverageTab extends ConsumerWidget {
           child: CatalogPanel(
             title: 'Zonas y estados',
             subtitle: 'Alcance territorial del contrato',
+            trailing: isAdmin ? Row(
+              children: [
+                TextButton(
+                  onPressed: () {
+                    showDialog(context: context, builder: (ctx) => CrudZonasEstadoModal());
+                  },
+                  style: TextButton.styleFrom(foregroundColor: AppColors.red),
+                  child: Text('Zonas +'),
+                ),
+                SizedBox(width: 8),
+                TextButton(
+                  onPressed: () {
+                    showDialog(context: context, builder: (ctx) => CrudEstadosModal());
+                  },
+                  style: TextButton.styleFrom(foregroundColor: AppColors.red),
+                  child: Text('Estados +'),
+                ),
+              ],
+            ) : null,
             child: CatalogDataTable(
               columns: ['ZONA', 'COORDINACIÓN', 'ESTADOS', 'TIENDAS', ''],
               rows: [

@@ -6,6 +6,11 @@ import '../../core/providers/auth_provider.dart';
 import '../../core/theme/theme_provider.dart';
 import '../widgets/require_permission.dart';
 import '../../core/theme/app_theme.dart';
+import '../../features/catalogs/widgets/modals/crud_paises_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_estados_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_municipios_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_tipos_tienda_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_tipos_servicio_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
   AppDrawer({Key? key}) : super(key: key);
@@ -94,12 +99,91 @@ class AppDrawer extends ConsumerWidget {
                   RequirePermission(
                     module: 'catalogos',
                     action: 'ver',
-                    child: _buildNavItem(
+                    child: _buildExpandableNavItem(
                       context: context,
                       icon: Icons.list_alt_outlined,
                       label: 'Catálogos',
-                      route: '/catalogos',
                       isActive: GoRouterState.of(context).uri.toString().contains('/catalogos'),
+                      children: [
+                        _buildSubNavItem(
+                          context: context,
+                          label: 'Principal',
+                          isActive: GoRouterState.of(context).uri.toString() == '/catalogos',
+                          paddingLeft: 40,
+                          onTap: () {
+                            context.go('/catalogos');
+                            Navigator.pop(context);
+                          },
+                        ),
+                        if (ref.watch(currentUserProfileProvider).value?.role?.name == 'Administrador')
+                          _buildNestedExpandableNavItem(
+                            context: context,
+                            label: 'Básicos',
+                            isActive: false, // You might want to update this logic later
+                            children: [
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'País',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudPaisesModal(),
+                                  );
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Estado',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudEstadosModal(),
+                                  );
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Municipio',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudMunicipiosModal(),
+                                  );
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Tipo tienda',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudTiposTiendaModal(),
+                                  );
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Tipo servicio',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudTiposServicioModal(),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                      ],
                     ),
                   ),
                   RequirePermission(
@@ -381,6 +465,96 @@ class AppDrawer extends ConsumerWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExpandableNavItem({
+    required BuildContext context,
+    required IconData icon,
+    required String label,
+    required bool isActive,
+    required List<Widget> children,
+  }) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        dividerColor: Colors.transparent,
+      ),
+      child: ExpansionTile(
+        tilePadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+        collapsedIconColor: isActive ? Colors.white : Color(0xFFD9E6F3),
+        iconColor: isActive ? Colors.white : Color(0xFFD9E6F3),
+        title: Row(
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: isActive ? Colors.white : Color(0xFFD9E6F3),
+            ),
+            SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: isActive ? Colors.white : Color(0xFFD9E6F3),
+                fontWeight: isActive ? FontWeight.w700 : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+        children: children,
+      ),
+    );
+  }
+
+  Widget _buildNestedExpandableNavItem({
+    required BuildContext context,
+    required String label,
+    required bool isActive,
+    required List<Widget> children,
+  }) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        dividerColor: Colors.transparent,
+      ),
+      child: ExpansionTile(
+        tilePadding: EdgeInsets.only(left: 40, right: 12),
+        title: Text(
+          label,
+          style: TextStyle(
+            color: isActive ? Colors.white : Color(0xFFD9E6F3),
+            fontSize: 13,
+            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+          ),
+        ),
+        collapsedIconColor: isActive ? Colors.white : Color(0xFFD9E6F3),
+        iconColor: isActive ? Colors.white : Color(0xFFD9E6F3),
+        children: children,
+      ),
+    );
+  }
+
+  Widget _buildSubNavItem({
+    required BuildContext context,
+    required String label,
+    required bool isActive,
+    required VoidCallback onTap,
+    double paddingLeft = 40,
+  }) {
+    return InkWell(
+      onTap: () {
+        onTap();
+      },
+      child: Container(
+        padding: EdgeInsets.only(left: paddingLeft, right: 12, top: 8, bottom: 8),
+        alignment: Alignment.centerLeft,
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isActive ? Colors.white : Color(0xFFD9E6F3),
+            fontSize: 13,
+            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+          ),
         ),
       ),
     );
