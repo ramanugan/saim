@@ -11,6 +11,7 @@ import '../../features/catalogs/widgets/modals/crud_estados_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_municipios_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_tipos_tienda_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_tipos_servicio_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_iguala_condiciones_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
   AppDrawer({Key? key}) : super(key: key);
@@ -178,6 +179,43 @@ class AppDrawer extends ConsumerWidget {
                                   showDialog(
                                     context: context,
                                     builder: (ctx) => const CrudTiposServicioModal(),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          _buildNestedExpandableNavItem(
+                            context: context,
+                            label: 'Igualas',
+                            isActive: false, 
+                            children: [
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Iguala',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  // TODO: Modal Iguala
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Iguala servicio',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  // TODO: Modal Iguala servicio
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Iguala condición',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudIgualaCondicionesModal(),
                                   );
                                 },
                               ),
