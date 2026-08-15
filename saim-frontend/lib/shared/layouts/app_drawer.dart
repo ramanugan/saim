@@ -17,6 +17,8 @@ import '../../features/catalogs/widgets/modals/crud_iguala_servicios_modal.dart'
 import '../../features/catalogs/widgets/modals/crud_almacenes_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_movimientos_inventario_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_inventario_refacciones_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_categorias_refaccion_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_refacciones_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
   AppDrawer({Key? key}) : super(key: key);
@@ -271,6 +273,127 @@ class AppDrawer extends ConsumerWidget {
                                     context: context,
                                     builder: (ctx) => const CrudInventarioRefaccionesModal(),
                                   );
+                                },
+                              ),
+                            ],
+                          ),
+                          _buildNestedExpandableNavItem(
+                            context: context,
+                            label: 'Refacciones',
+                            isActive: false, 
+                            children: [
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Categoría refacción',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudCategoriasRefaccionModal(),
+                                  );
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Refacción',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudRefaccionesModal(),
+                                  );
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Refacción compatibilidad',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  // TODO: Modal Refacción compatibilidad
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Refacción alias',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  // TODO: Modal Refacción alias
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Suministro refacción',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  // TODO: Modal Suministro refacción
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Suministro refacción detalle',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  // TODO: Modal Suministro refacción detalle
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Proveedor refacción',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  // TODO: Modal Proveedor refacción
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Precio refacción',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  // TODO: Modal Precio refacción
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Oportunidad suministro',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  // TODO: Modal Oportunidad suministro
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Solicitud refacción detalle',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  // TODO: Modal Solicitud refacción detalle
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Instalación refacción',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  // TODO: Modal Instalación refacción
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Solicitud refacción',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  // TODO: Modal Solicitud refacción
                                 },
                               ),
                             ],
