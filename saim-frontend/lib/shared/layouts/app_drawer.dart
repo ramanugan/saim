@@ -15,6 +15,7 @@ import '../../features/catalogs/widgets/modals/crud_iguala_condiciones_modal.dar
 import '../../features/catalogs/widgets/modals/crud_igualas_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_iguala_servicios_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_almacenes_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_movimientos_inventario_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
   AppDrawer({Key? key}) : super(key: key);
@@ -253,7 +254,10 @@ class AppDrawer extends ConsumerWidget {
                                 isActive: false,
                                 paddingLeft: 60,
                                 onTap: () {
-                                  // TODO: Modal Movimiento inventario
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudMovimientosInventarioModal(),
+                                  );
                                 },
                               ),
                               _buildSubNavItem(
