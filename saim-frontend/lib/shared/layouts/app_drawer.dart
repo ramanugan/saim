@@ -16,6 +16,7 @@ import '../../features/catalogs/widgets/modals/crud_igualas_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_iguala_servicios_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_almacenes_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_movimientos_inventario_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_inventario_refacciones_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
   AppDrawer({Key? key}) : super(key: key);
@@ -266,7 +267,10 @@ class AppDrawer extends ConsumerWidget {
                                 isActive: false,
                                 paddingLeft: 60,
                                 onTap: () {
-                                  // TODO: Modal Inventario refacción
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudInventarioRefaccionesModal(),
+                                  );
                                 },
                               ),
                             ],
