@@ -14,6 +14,7 @@ import '../../features/catalogs/widgets/modals/crud_tipos_servicio_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_iguala_condiciones_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_igualas_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_iguala_servicios_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_almacenes_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
   AppDrawer({Key? key}) : super(key: key);
@@ -225,6 +226,43 @@ class AppDrawer extends ConsumerWidget {
                                     context: context,
                                     builder: (ctx) => const CrudIgualaCondicionesModal(),
                                   );
+                                },
+                              ),
+                            ],
+                          ),
+                          _buildNestedExpandableNavItem(
+                            context: context,
+                            label: 'Inventario',
+                            isActive: false, 
+                            children: [
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Almacén',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudAlmacenesModal(),
+                                  );
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Movimiento inventario',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  // TODO: Modal Movimiento inventario
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Inventario refacción',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  // TODO: Modal Inventario refacción
                                 },
                               ),
                             ],
