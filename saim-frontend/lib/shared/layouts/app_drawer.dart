@@ -12,6 +12,7 @@ import '../../features/catalogs/widgets/modals/crud_municipios_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_tipos_tienda_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_tipos_servicio_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_iguala_condiciones_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_igualas_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
   AppDrawer({Key? key}) : super(key: key);
@@ -195,7 +196,10 @@ class AppDrawer extends ConsumerWidget {
                                 isActive: false,
                                 paddingLeft: 60,
                                 onTap: () {
-                                  // TODO: Modal Iguala
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudIgualasModal(),
+                                  );
                                 },
                               ),
                               _buildSubNavItem(
