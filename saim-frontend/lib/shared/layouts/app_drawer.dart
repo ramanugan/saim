@@ -24,6 +24,7 @@ import '../../features/catalogs/widgets/modals/crud_refacciones_alias_modal.dart
 import '../../features/catalogs/widgets/modals/crud_suministros_refaccion_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_suministros_refaccion_detalle_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_proveedor_refaccion_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_precio_refaccion_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
   AppDrawer({Key? key}) : super(key: key);
@@ -377,7 +378,10 @@ class AppDrawer extends ConsumerWidget {
                                 isActive: false,
                                 paddingLeft: 60,
                                 onTap: () {
-                                  // TODO: Modal Precio refacción
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudPrecioRefaccionModal(),
+                                  );
                                 },
                               ),
                               _buildSubNavItem(
