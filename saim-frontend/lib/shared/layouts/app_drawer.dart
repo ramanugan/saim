@@ -25,6 +25,7 @@ import '../../features/catalogs/widgets/modals/crud_suministros_refaccion_modal.
 import '../../features/catalogs/widgets/modals/crud_suministros_refaccion_detalle_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_proveedor_refaccion_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_precio_refaccion_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_oportunidad_suministro_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
   AppDrawer({Key? key}) : super(key: key);
@@ -390,7 +391,10 @@ class AppDrawer extends ConsumerWidget {
                                 isActive: false,
                                 paddingLeft: 60,
                                 onTap: () {
-                                  // TODO: Modal Oportunidad suministro
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudOportunidadSuministroModal(),
+                                  );
                                 },
                               ),
                               _buildSubNavItem(
