@@ -20,6 +20,8 @@ import '../../features/catalogs/widgets/modals/crud_inventario_refacciones_modal
 import '../../features/catalogs/widgets/modals/crud_categorias_refaccion_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_refacciones_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_refacciones_compatibilidad_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_refacciones_alias_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_suministros_refaccion_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
   AppDrawer({Key? key}) : super(key: key);
@@ -325,7 +327,10 @@ class AppDrawer extends ConsumerWidget {
                                 isActive: false,
                                 paddingLeft: 60,
                                 onTap: () {
-                                  // TODO: Modal Refacción alias
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudRefaccionesAliasModal(),
+                                  );
                                 },
                               ),
                               _buildSubNavItem(
@@ -334,7 +339,10 @@ class AppDrawer extends ConsumerWidget {
                                 isActive: false,
                                 paddingLeft: 60,
                                 onTap: () {
-                                  // TODO: Modal Suministro refacción
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudSuministrosRefaccionModal(),
+                                  );
                                 },
                               ),
                               _buildSubNavItem(
