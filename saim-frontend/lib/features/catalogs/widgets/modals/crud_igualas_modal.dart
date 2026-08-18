@@ -18,7 +18,8 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
 
   final _formKey = GlobalKey<FormState>();
   
-  int? _selectedZonaTiendaId;
+  int? _selectedTiendaId;
+  int? _selectedTipoServicioId;
   late TextEditingController _codigoIgualaCtrl;
   late TextEditingController _fechaInicioCtrl;
   late TextEditingController _fechaFinCtrl;
@@ -33,7 +34,8 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
   }
 
   void _initControllers() {
-    _selectedZonaTiendaId = _selectedIguala?.idZonaTienda;
+    _selectedTiendaId = _selectedIguala?.idTienda;
+    _selectedTipoServicioId = _selectedIguala?.idTipoServicio;
     _codigoIgualaCtrl = TextEditingController(text: _selectedIguala?.codigoIguala ?? '');
     
     _fechaInicioCtrl = TextEditingController(
@@ -79,16 +81,23 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
 
   Future<void> _saveForm() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_selectedZonaTiendaId == null) {
+    if (_selectedTiendaId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor selecciona una Zona de Tienda'))
+        const SnackBar(content: Text('Por favor selecciona una Tienda'))
+      );
+      return;
+    }
+    if (_selectedTipoServicioId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor selecciona un Tipo de Servicio'))
       );
       return;
     }
 
     final iguala = Iguala(
-      idIguala: _selectedIguala?.idIguala,
-      idZonaTienda: _selectedZonaTiendaId!,
+      idIguala: _selectedIguala?.idIguala ?? 0,
+      idTienda: _selectedTiendaId!,
+      idTipoServicio: _selectedTipoServicioId!,
       codigoIguala: _codigoIgualaCtrl.text.trim(),
       fechaInicio: DateTime.parse(_fechaInicioCtrl.text),
       fechaFin: DateTime.parse(_fechaFinCtrl.text),
@@ -198,7 +207,8 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
 
   Widget _buildTable() {
     final listAsync = ref.watch(igualasProvider);
-    final zonaTiendasAsync = ref.watch(helperZonaTiendasProvider);
+    final tiendasAsync = ref.watch(helperTiendasForIgualaProvider);
+    final tiposServicioAsync = ref.watch(helperTiposServicioForIgualaProvider);
 
     return listAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -210,9 +220,14 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
           );
         }
 
-        final zonaTiendasMap = {
-          for (var item in zonaTiendasAsync.value ?? [])
-            item['id_zona_tienda'] as int: 'Anexo: ${item['numero_anexo'] ?? 'S/N'} (ID Tienda: ${item['id_tienda']})'
+        final tiendasMap = {
+          for (var item in tiendasAsync.value ?? [])
+            item['id_tienda'] as int: item['nombre'] as String
+        };
+
+        final tiposServicioMap = {
+          for (var item in tiposServicioAsync.value ?? [])
+            item['id_tipo_servicio'] as int: item['nombre'] as String
         };
 
         return SingleChildScrollView(
@@ -223,7 +238,8 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('CÓDIGO', style: TextStyle(color: context.mutedTextColor))),
-                DataColumn(label: Text('ZONA TIENDA', style: TextStyle(color: context.mutedTextColor))),
+                DataColumn(label: Text('TIPO SERVICIO', style: TextStyle(color: context.mutedTextColor))),
+                DataColumn(label: Text('TIENDA', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('INICIO', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('FIN', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('ESTATUS', style: TextStyle(color: context.mutedTextColor))),
@@ -234,7 +250,8 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
                 cells: [
                   DataCell(Text(item.idIguala.toString(), style: TextStyle(color: context.textColor))),
                   DataCell(Text(item.codigoIguala, style: TextStyle(color: context.textColor))),
-                  DataCell(Text(zonaTiendasMap[item.idZonaTienda] ?? 'ID: ${item.idZonaTienda}', style: TextStyle(color: context.textColor))),
+                  DataCell(Text(tiposServicioMap[item.idTipoServicio] ?? 'ID: ${item.idTipoServicio}', style: TextStyle(color: context.textColor))),
+                  DataCell(Text(tiendasMap[item.idTienda] ?? 'ID: ${item.idTienda}', style: TextStyle(color: context.textColor))),
                   DataCell(Text(item.fechaInicio.toIso8601String().split('T').first, style: TextStyle(color: context.textColor))),
                   DataCell(Text(item.fechaFin.toIso8601String().split('T').first, style: TextStyle(color: context.textColor))),
                   DataCell(Text(item.estatus, style: TextStyle(color: context.textColor))),
@@ -278,7 +295,8 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
   }
 
   Widget _buildForm() {
-    final zonaTiendasAsync = ref.watch(helperZonaTiendasProvider);
+    final tiendasAsync = ref.watch(helperTiendasForIgualaProvider);
+    final tiposServicioAsync = ref.watch(helperTiposServicioForIgualaProvider);
 
     return Padding(
       padding: const EdgeInsets.all(24.0),
@@ -295,10 +313,10 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Zona Tienda *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
+                        Text('Tienda *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
                         DropdownButtonFormField<int>(
-                          value: _selectedZonaTiendaId,
+                          value: _selectedTiendaId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
                           decoration: InputDecoration(
@@ -308,16 +326,15 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: context.borderColor)),
                             enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: context.borderColor)),
                           ),
-                          items: (zonaTiendasAsync.value ?? []).map<DropdownMenuItem<int>>((item) {
-                            final id = item['id_zona_tienda'] as int;
-                            final anexo = item['numero_anexo'] ?? 'S/N';
-                            final tiendaId = item['id_tienda'];
+                          items: (tiendasAsync.value ?? []).map<DropdownMenuItem<int>>((item) {
+                            final id = item['id_tienda'] as int;
+                            final nombre = item['nombre'] as String;
                             return DropdownMenuItem<int>(
                               value: id,
-                              child: Text('Anexo: $anexo (Tienda: $tiendaId)'),
+                              child: Text(nombre),
                             );
                           }).toList(),
-                          onChanged: (val) => setState(() => _selectedZonaTiendaId = val),
+                          onChanged: (val) => setState(() => _selectedTiendaId = val),
                           validator: (val) => val == null ? 'Requerido' : null,
                         ),
                       ],
@@ -325,12 +342,36 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: _buildTextField('Código Iguala *', _codigoIgualaCtrl, required: true),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Tipo de Servicio *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
+                        const SizedBox(height: 8),
+                        DropdownButtonFormField<int>(
+                          value: _selectedTipoServicioId,
+                          style: TextStyle(color: context.textColor),
+                          dropdownColor: context.surfaceColor,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            filled: true,
+                            fillColor: context.backgroundColor,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: context.borderColor)),
+                            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: context.borderColor)),
+                          ),
+                          items: (tiposServicioAsync.value ?? []).map<DropdownMenuItem<int>>((item) {
+                            return DropdownMenuItem<int>(
+                              value: item['id_tipo_servicio'] as int,
+                              child: Text(item['nombre'] as String),
+                            );
+                          }).toList(),
+                          onChanged: (val) => setState(() => _selectedTipoServicioId = val),
+                          validator: (val) => val == null ? 'Requerido' : null,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-
               // Row 2: Fechas
               Row(
                 children: [
@@ -345,7 +386,7 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
               ),
               const SizedBox(height: 16),
 
-              // Row 3: Estatus
+              // Row 3: Estatus & Código Iguala
               Row(
                 children: [
                   Expanded(
@@ -382,7 +423,9 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Spacer(),
+                  Expanded(
+                    child: _buildTextField('Código Iguala *', _codigoIgualaCtrl, required: true),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),

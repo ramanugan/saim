@@ -2,11 +2,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../models/iguala.dart';
 
-final helperZonaTiendasProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final helperTiendasForIgualaProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   final supabase = ref.read(supabaseClientProvider);
   final response = await supabase
-      .from('zona_tienda')
-      .select('id_zona_tienda, numero_anexo, id_tienda')
+      .from('tienda')
+      .select('id_tienda, nombre')
+      .eq('activo', true);
+  return List<Map<String, dynamic>>.from(response as List);
+});
+
+final helperTiposServicioForIgualaProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  final supabase = ref.read(supabaseClientProvider);
+  final response = await supabase
+      .from('tipo_servicio')
+      .select('id_tipo_servicio, nombre')
       .eq('activo', true);
   return List<Map<String, dynamic>>.from(response as List);
 });

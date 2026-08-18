@@ -19,7 +19,6 @@ class _CrudIgualaServiciosModalState extends ConsumerState<CrudIgualaServiciosMo
   final _formKey = GlobalKey<FormState>();
 
   int? _selectedIgualaId;
-  int? _selectedTipoServicioId;
   late TextEditingController _fechaInicioCtrl;
   late TextEditingController _fechaFinCtrl;
   bool _esPrincipal = false;
@@ -35,7 +34,6 @@ class _CrudIgualaServiciosModalState extends ConsumerState<CrudIgualaServiciosMo
 
   void _initControllers() {
     _selectedIgualaId = _selectedItem?.idIguala;
-    _selectedTipoServicioId = _selectedItem?.idTipoServicio;
     
     _fechaInicioCtrl = TextEditingController(
       text: _selectedItem != null
@@ -82,15 +80,10 @@ class _CrudIgualaServiciosModalState extends ConsumerState<CrudIgualaServiciosMo
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Por favor selecciona una Iguala')));
       return;
     }
-    if (_selectedTipoServicioId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Por favor selecciona un Tipo de Servicio')));
-      return;
-    }
 
     final item = IgualaServicio(
       idIgualaServicio: _selectedItem?.idIgualaServicio,
       idIguala: _selectedIgualaId!,
-      idTipoServicio: _selectedTipoServicioId!,
       fechaInicio: DateTime.parse(_fechaInicioCtrl.text),
       fechaFin: _fechaFinCtrl.text.isNotEmpty ? DateTime.parse(_fechaFinCtrl.text) : null,
       esPrincipal: _esPrincipal,
@@ -199,7 +192,6 @@ class _CrudIgualaServiciosModalState extends ConsumerState<CrudIgualaServiciosMo
   Widget _buildTable() {
     final listAsync = ref.watch(igualaServiciosProvider);
     final igualasAsync = ref.watch(helperIgualasForServicioProvider);
-    final tiposServicioAsync = ref.watch(helperTiposServicioProvider);
 
     return listAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -216,11 +208,6 @@ class _CrudIgualaServiciosModalState extends ConsumerState<CrudIgualaServiciosMo
             item['id_iguala'] as int: item['codigo_iguala'] as String
         };
 
-        final tiposServicioMap = {
-          for (var item in tiposServicioAsync.value ?? [])
-            item['id_tipo_servicio'] as int: item['nombre'] as String
-        };
-
         return SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: SingleChildScrollView(
@@ -229,7 +216,6 @@ class _CrudIgualaServiciosModalState extends ConsumerState<CrudIgualaServiciosMo
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('IGUALA', style: TextStyle(color: context.mutedTextColor))),
-                DataColumn(label: Text('TIPO SERVICIO', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('PRINCIPAL', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('INICIO', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('FIN', style: TextStyle(color: context.mutedTextColor))),
@@ -241,7 +227,6 @@ class _CrudIgualaServiciosModalState extends ConsumerState<CrudIgualaServiciosMo
                 cells: [
                   DataCell(Text(item.idIgualaServicio.toString(), style: TextStyle(color: context.textColor))),
                   DataCell(Text(igualasMap[item.idIguala] ?? 'ID: ${item.idIguala}', style: TextStyle(color: context.textColor))),
-                  DataCell(Text(tiposServicioMap[item.idTipoServicio] ?? 'ID: ${item.idTipoServicio}', style: TextStyle(color: context.textColor))),
                   DataCell(Text(item.esPrincipal ? 'Sí' : 'No', style: TextStyle(color: context.textColor))),
                   DataCell(Text(item.fechaInicio.toIso8601String().split('T').first, style: TextStyle(color: context.textColor))),
                   DataCell(Text(item.fechaFin?.toIso8601String().split('T').first ?? '-', style: TextStyle(color: context.textColor))),
@@ -287,7 +272,6 @@ class _CrudIgualaServiciosModalState extends ConsumerState<CrudIgualaServiciosMo
 
   Widget _buildForm() {
     final igualasAsync = ref.watch(helperIgualasForServicioProvider);
-    final tiposServicioAsync = ref.watch(helperTiposServicioProvider);
 
     return Padding(
       padding: const EdgeInsets.all(24.0),
@@ -330,35 +314,7 @@ class _CrudIgualaServiciosModalState extends ConsumerState<CrudIgualaServiciosMo
                     ),
                   ),
                   const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Tipo de Servicio *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
-                        const SizedBox(height: 8),
-                        DropdownButtonFormField<int>(
-                          value: _selectedTipoServicioId,
-                          style: TextStyle(color: context.textColor),
-                          dropdownColor: context.surfaceColor,
-                          decoration: InputDecoration(
-                            isDense: true,
-                            filled: true,
-                            fillColor: context.backgroundColor,
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: context.borderColor)),
-                            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: context.borderColor)),
-                          ),
-                          items: (tiposServicioAsync.value ?? []).map<DropdownMenuItem<int>>((item) {
-                            return DropdownMenuItem<int>(
-                              value: item['id_tipo_servicio'] as int,
-                              child: Text(item['nombre'] as String),
-                            );
-                          }).toList(),
-                          onChanged: (val) => setState(() => _selectedTipoServicioId = val),
-                          validator: (val) => val == null ? 'Requerido' : null,
-                        ),
-                      ],
-                    ),
-                  ),
+                  const Spacer(),
                 ],
               ),
               const SizedBox(height: 16),

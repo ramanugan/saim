@@ -1,7 +1,6 @@
 class IgualaServicio {
   final int? idIgualaServicio;
   final int idIguala;
-  final int idTipoServicio;
   final DateTime fechaInicio;
   final DateTime? fechaFin;
   final bool esPrincipal;
@@ -12,7 +11,6 @@ class IgualaServicio {
   IgualaServicio({
     this.idIgualaServicio,
     required this.idIguala,
-    required this.idTipoServicio,
     required this.fechaInicio,
     this.fechaFin,
     required this.esPrincipal,
@@ -25,7 +23,6 @@ class IgualaServicio {
     return IgualaServicio(
       idIgualaServicio: json['id_iguala_servicio'] as int?,
       idIguala: json['id_iguala'] as int,
-      idTipoServicio: json['id_tipo_servicio'] as int,
       fechaInicio: DateTime.parse(json['fecha_inicio'] as String),
       fechaFin: json['fecha_fin'] != null ? DateTime.parse(json['fecha_fin'] as String) : null,
       esPrincipal: json['es_principal'] as bool,
@@ -39,7 +36,6 @@ class IgualaServicio {
     return {
       if (idIgualaServicio != null) 'id_iguala_servicio': idIgualaServicio,
       'id_iguala': idIguala,
-      'id_tipo_servicio': idTipoServicio,
       'fecha_inicio': fechaInicio.toIso8601String().split('T').first,
       'fecha_fin': fechaFin?.toIso8601String().split('T').first,
       'es_principal': esPrincipal,
