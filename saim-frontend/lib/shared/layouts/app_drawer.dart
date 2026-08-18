@@ -6,6 +6,7 @@ import '../../core/providers/auth_provider.dart';
 import '../../core/theme/theme_provider.dart';
 import '../widgets/require_permission.dart';
 import '../../core/theme/app_theme.dart';
+import '../../features/catalogs/widgets/modals/crud_unidades_medida_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_paises_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_estados_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_municipios_modal.dart';
@@ -139,6 +140,18 @@ class AppDrawer extends ConsumerWidget {
                             label: 'Básicos',
                             isActive: false, // You might want to update this logic later
                             children: [
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Unidad de Medida',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudUnidadesMedidaModal(),
+                                  );
+                                },
+                              ),
                               _buildSubNavItem(
                                 context: context,
                                 label: 'País',

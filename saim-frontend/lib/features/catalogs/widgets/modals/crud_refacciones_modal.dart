@@ -372,27 +372,9 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
               ),
               const SizedBox(height: 16),
 
-              // Row 2: Código Interno & Marca
+              // Row 2: Criticidad Default & Marca
               Row(
                 children: [
-                  Expanded(
-                    child: _buildTextField('Código Interno *', _codigoCtrl, required: true),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildTextField('Marca', _marcaCtrl),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Row 3: Número Parte & Criticidad
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildTextField('Número Parte', _numeroParteCtrl),
-                  ),
-                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -420,6 +402,24 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
                         ),
                       ],
                     ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildTextField('Marca', _marcaCtrl),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Row 3: Número Parte & Código Interno
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildTextField('Número Parte', _numeroParteCtrl),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildTextField('Código Interno *', _codigoCtrl, required: true),
                   ),
                 ],
               ),

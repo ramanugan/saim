@@ -37,6 +37,7 @@ This is the only way to support light/dark mode.
 
 ## Key Conventions
 - **State management:** Riverpod (`flutter_riverpod`). All providers go under `lib/core/providers/` or feature folders.
+- **Reactive Dropdown/Helper Providers:** Helper providers for dropdowns (`helperXxxxProvider`) must watch the primary `StateNotifierProvider` (`ref.watch`) as `Provider<AsyncValue<...>>` instead of doing standalone `FutureProvider` queries, ensuring real-time UI synchronization across all catalogs.
 - **Routing:** GoRouter in `lib/core/router/app_router.dart`. Role-based redirect: `Tecnico` auto-routes to `/orden-campo`.
 - **Auth:** Supabase Auth via `supabase_flutter`. Roles: `Administrador`, `Tecnico`.
 - **Backend pattern:** Router (`app/api/router.py`) aggregates per-domain endpoint modules. Endpoints → `app/api/endpoints/`, Schemas → `app/schemas/`, Services → `app/services/`.

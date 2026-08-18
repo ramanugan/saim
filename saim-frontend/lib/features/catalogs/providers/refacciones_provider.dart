@@ -1,23 +1,34 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../models/refaccion.dart';
+import 'categorias_refaccion_provider.dart';
+import 'unidades_medida_provider.dart';
 
-final helperCategoriasForRefaccionProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('categoria_refaccion')
-      .select('id_categoria_refaccion, nombre')
-      .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+final helperCategoriasForRefaccionProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final categoriasAsync = ref.watch(categoriasRefaccionProvider);
+  return categoriasAsync.whenData((categorias) {
+    return categorias
+        .where((c) => c.activo)
+        .map((c) => {
+              'id_categoria_refaccion': c.idCategoriaRefaccion,
+              'nombre': c.nombre,
+            })
+        .toList();
+  });
 });
 
-final helperUnidadesForRefaccionProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('unidad_medida')
-      .select('id_unidad_medida, nombre, simbolo')
-      .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+final helperUnidadesForRefaccionProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final unidadesAsync = ref.watch(unidadesMedidaProvider);
+  return unidadesAsync.whenData((unidades) {
+    return unidades
+        .where((u) => u.activo)
+        .map((u) => {
+              'id_unidad_medida': u.idUnidadMedida,
+              'nombre': u.nombre,
+              'simbolo': u.simbolo,
+            })
+        .toList();
+  });
 });
 
 final refaccionesProvider = StateNotifierProvider<RefaccionesNotifier, AsyncValue<List<Refaccion>>>((ref) {

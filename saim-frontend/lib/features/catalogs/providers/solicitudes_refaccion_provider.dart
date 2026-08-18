@@ -1,14 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../models/solicitud_refaccion.dart';
+import 'igualas_provider.dart';
 
-final helperIgualasForSolicitudProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('iguala')
-      .select('id_iguala, codigo_iguala')
-      .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+final helperIgualasForSolicitudProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final igualasAsync = ref.watch(igualasProvider);
+  return igualasAsync.whenData((igualas) => igualas
+      .where((i) => i.activo)
+      .map((i) => {
+            'id_iguala': i.idIguala,
+            'codigo_iguala': i.codigoIguala,
+          })
+      .toList());
 });
 
 final helperOrdenesForSolicitudProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
