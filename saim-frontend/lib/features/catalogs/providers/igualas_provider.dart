@@ -6,7 +6,7 @@ final helperTiendasForIgualaProvider = FutureProvider<List<Map<String, dynamic>>
   final supabase = ref.read(supabaseClientProvider);
   final response = await supabase
       .from('tienda')
-      .select('id_tienda, nombre')
+      .select('id_tienda, nombre, determinante')
       .eq('activo', true);
   return List<Map<String, dynamic>>.from(response as List);
 });
@@ -15,7 +15,7 @@ final helperTiposServicioForIgualaProvider = FutureProvider<List<Map<String, dyn
   final supabase = ref.read(supabaseClientProvider);
   final response = await supabase
       .from('tipo_servicio')
-      .select('id_tipo_servicio, nombre')
+      .select('id_tipo_servicio, nombre, codigo')
       .eq('activo', true);
   return List<Map<String, dynamic>>.from(response as List);
 });

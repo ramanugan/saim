@@ -55,6 +55,36 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
     _activo = _selectedIguala?.activo ?? true;
   }
 
+  void _actualizarCodigoIguala() {
+    if (_selectedTiendaId == null || _selectedTipoServicioId == null || _fechaInicioCtrl.text.isEmpty) {
+      _codigoIgualaCtrl.text = '';
+      return;
+    }
+
+    final tiendasAsync = ref.read(helperTiendasForIgualaProvider);
+    final tiposServicioAsync = ref.read(helperTiposServicioForIgualaProvider);
+
+    final tiendas = tiendasAsync.value ?? [];
+    final tipos = tiposServicioAsync.value ?? [];
+
+    if (tiendas.isEmpty || tipos.isEmpty) return;
+
+    final tienda = tiendas.firstWhere((t) => t['id_tienda'] == _selectedTiendaId, orElse: () => <String, dynamic>{});
+    final tipoServicio = tipos.firstWhere((ts) => ts['id_tipo_servicio'] == _selectedTipoServicioId, orElse: () => <String, dynamic>{});
+
+    if (tienda.isEmpty || tipoServicio.isEmpty) return;
+
+    final nombreTienda = (tienda['nombre'] as String).toUpperCase().replaceAll(' ', '_');
+    final determinante = tienda['determinante'] as String? ?? '000';
+    final codigoRef = tipoServicio['codigo'] as String? ?? 'XXX';
+    final anio = _fechaInicioCtrl.text.split('-').first;
+    final idStr = (_selectedIguala != null && _selectedIguala!.idIguala != 0) 
+        ? _selectedIguala!.idIguala.toString().padLeft(4, '0') 
+        : '[AUTO]';
+
+    _codigoIgualaCtrl.text = 'IG-$nombreTienda-$idStr-$determinante-$codigoRef-$anio';
+  }
+
   @override
   void dispose() {
     _codigoIgualaCtrl.dispose();
@@ -334,7 +364,12 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
                               child: Text(nombre),
                             );
                           }).toList(),
-                          onChanged: (val) => setState(() => _selectedTiendaId = val),
+                          onChanged: (val) {
+                            setState(() {
+                              _selectedTiendaId = val;
+                              _actualizarCodigoIguala();
+                            });
+                          },
                           validator: (val) => val == null ? 'Requerido' : null,
                         ),
                       ],
@@ -364,7 +399,12 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
                               child: Text(item['nombre'] as String),
                             );
                           }).toList(),
-                          onChanged: (val) => setState(() => _selectedTipoServicioId = val),
+                          onChanged: (val) {
+                            setState(() {
+                              _selectedTipoServicioId = val;
+                              _actualizarCodigoIguala();
+                            });
+                          },
                           validator: (val) => val == null ? 'Requerido' : null,
                         ),
                       ],
@@ -424,7 +464,7 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: _buildTextField('Código Iguala *', _codigoIgualaCtrl, required: true),
+                    child: _buildTextField('Código Iguala *', _codigoIgualaCtrl, required: true, readOnly: true),
                   ),
                 ],
               ),
@@ -485,9 +525,9 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
                   ),
                   const SizedBox(width: 16),
                   ElevatedButton(
-                    onPressed: _saveForm,
+                    onPressed: _codigoIgualaCtrl.text.isEmpty ? null : _saveForm,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.blue,
+                      backgroundColor: _codigoIgualaCtrl.text.isEmpty ? context.mutedTextColor : AppColors.blue,
                       foregroundColor: Colors.white,
                     ),
                     child: const Text('Guardar'),
@@ -501,7 +541,7 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {bool required = false}) {
+  Widget _buildTextField(String label, TextEditingController controller, {bool required = false, bool readOnly = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -509,6 +549,7 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
+          readOnly: readOnly,
           style: TextStyle(color: context.textColor),
           decoration: InputDecoration(
             isDense: true,
@@ -549,7 +590,12 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
               lastDate: DateTime(2100),
             );
             if (picked != null) {
-              controller.text = picked.toIso8601String().split('T').first;
+              setState(() {
+                controller.text = picked.toIso8601String().split('T').first;
+                if (label.contains('Inicio')) {
+                  _actualizarCodigoIguala();
+                }
+              });
             }
           },
           validator: required ? (v) => v == null || v.trim().isEmpty ? 'Requerido' : null : null,
