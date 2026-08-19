@@ -20,46 +20,67 @@ class AppLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: AppDrawer(),
-      appBar: AppBar(
-        title: Text(
-          title,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        actions: actions ??
-            [
-              IconButton(
-                icon: Icon(Icons.notifications_outlined),
-                onPressed: () {},
-              ),
-              Consumer(
-                builder: (context, ref, child) {
-                  final profile = ref.watch(currentUserProfileProvider).value;
-                  final initials = profile?.initials ?? 'U';
-                  
-                  return Padding(
-                    padding: EdgeInsets.only(right: 16.0, left: 8.0),
-                    child: Center(
-                      child: CircleAvatar(
-                        radius: 18,
-                        backgroundColor: AppColors.navy,
-                        child: Text(
-                          initials,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
+    final appBar = AppBar(
+      title: Text(
+        title,
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+      ),
+      actions: actions ??
+          [
+            IconButton(
+              icon: Icon(Icons.notifications_outlined),
+              onPressed: () {},
+            ),
+            Consumer(
+              builder: (context, ref, child) {
+                final profile = ref.watch(currentUserProfileProvider).value;
+                final initials = profile?.initials ?? 'U';
+                
+                return Padding(
+                  padding: EdgeInsets.only(right: 16.0, left: 8.0),
+                  child: Center(
+                    child: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: AppColors.navy,
+                      child: Text(
+                        initials,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  );
-                },
-              ),
-            ],
-      ),
-      body: child,
+                  ),
+                );
+              },
+            ),
+          ],
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth >= 800) {
+          return Scaffold(
+            appBar: appBar,
+            body: Row(
+              children: [
+                SizedBox(
+                  width: 280,
+                  child: AppDrawer(isModal: false),
+                ),
+                Expanded(child: child),
+              ],
+            ),
+          );
+        }
+
+        return Scaffold(
+          drawer: AppDrawer(isModal: true),
+          appBar: appBar,
+          body: child,
+        );
+      },
     );
   }
 }

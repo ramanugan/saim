@@ -32,7 +32,9 @@ import '../../features/catalogs/widgets/modals/crud_instalacion_refaccion_modal.
 import '../../features/catalogs/widgets/modals/crud_solicitud_refaccion_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
-  AppDrawer({Key? key}) : super(key: key);
+  final bool isModal;
+
+  AppDrawer({Key? key, this.isModal = true}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -131,7 +133,7 @@ class AppDrawer extends ConsumerWidget {
                           paddingLeft: 40,
                           onTap: () {
                             context.go('/catalogos');
-                            Navigator.pop(context);
+                            if (isModal) Navigator.pop(context);
                           },
                         ),
                         if (ref.watch(currentUserProfileProvider).value?.role?.name == 'Administrador')
@@ -679,7 +681,7 @@ class AppDrawer extends ConsumerWidget {
                         icon: Icon(Icons.logout, color: Color(0xFFD9E6F3), size: 20),
                         onPressed: () async {
                           await ref.read(authServiceProvider).signOut();
-                          if (context.mounted) Navigator.pop(context); // close drawer
+                          if (isModal && context.mounted) Navigator.pop(context); // close drawer
                         },
                       ),
                     ],
@@ -704,7 +706,7 @@ class AppDrawer extends ConsumerWidget {
       onTap: () {
         context.go(route);
         // Ensure to close drawer
-        Navigator.pop(context);
+        if (isModal) Navigator.pop(context);
       },
       borderRadius: BorderRadius.circular(9),
       child: Container(
