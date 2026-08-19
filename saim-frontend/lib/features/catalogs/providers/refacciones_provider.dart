@@ -11,6 +11,7 @@ final helperCategoriasForRefaccionProvider = Provider<AsyncValue<List<Map<String
         .where((c) => c.activo)
         .map((c) => {
               'id_categoria_refaccion': c.idCategoriaRefaccion,
+              'codigo': c.codigo,
               'nombre': c.nombre,
             })
         .toList();

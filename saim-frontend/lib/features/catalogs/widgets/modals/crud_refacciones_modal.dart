@@ -52,6 +52,30 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
     _activo = _selectedItem?.activo ?? true;
   }
 
+  void _actualizarCodigoInterno() {
+    if (_selectedCategoriaId == null) {
+      _codigoCtrl.text = '';
+      return;
+    }
+
+    final categoriasAsync = ref.read(helperCategoriasForRefaccionProvider);
+    final categorias = categoriasAsync.value ?? [];
+    
+    if (categorias.isEmpty) return;
+
+    final categoria = categorias.firstWhere((c) => c['id_categoria_refaccion'] == _selectedCategoriaId, orElse: () => <String, dynamic>{});
+    
+    if (categoria.isEmpty) return;
+
+    final codigoCat = categoria['codigo'] as String? ?? 'XXX';
+    
+    final idStr = (_selectedItem != null && _selectedItem!.idRefaccion != null)
+        ? _selectedItem!.idRefaccion.toString().padLeft(4, '0')
+        : '[AUTO]';
+
+    _codigoCtrl.text = 'REF-$idStr-$codigoCat';
+  }
+
   @override
   void dispose() {
     _codigoCtrl.dispose();
@@ -69,6 +93,9 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
       _selectedItem = item;
       _initControllers();
       _isEditing = true;
+      if (item == null) {
+        _actualizarCodigoInterno();
+      }
     });
   }
 
@@ -332,7 +359,12 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
                               child: Text(item['nombre'] as String),
                             );
                           }).toList(),
-                          onChanged: (val) => setState(() => _selectedCategoriaId = val),
+                          onChanged: (val) {
+                            setState(() {
+                              _selectedCategoriaId = val;
+                              _actualizarCodigoInterno();
+                            });
+                          },
                           validator: (val) => val == null ? 'Requerido' : null,
                         ),
                       ],
@@ -370,6 +402,10 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
                   ),
                 ],
               ),
+              const SizedBox(height: 16),
+
+              // Nueva fila: Descripción Homologada
+              _buildTextField('Descripción Homologada *', _descripcionCtrl, required: true),
               const SizedBox(height: 16),
 
               // Row 2: Criticidad Default & Marca
@@ -419,7 +455,7 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: _buildTextField('Código Interno *', _codigoCtrl, required: true),
+                    child: _buildTextField('Código Interno *', _codigoCtrl, required: true, readOnly: true),
                   ),
                 ],
               ),
@@ -492,9 +528,9 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
                   ),
                   const SizedBox(width: 16),
                   ElevatedButton(
-                    onPressed: _saveForm,
+                    onPressed: _codigoCtrl.text.isEmpty ? null : _saveForm,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.blue,
+                      backgroundColor: _codigoCtrl.text.isEmpty ? context.mutedTextColor : AppColors.blue,
                       foregroundColor: Colors.white,
                     ),
                     child: const Text('Guardar'),
@@ -508,7 +544,7 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {bool required = false, TextInputType? keyboardType}) {
+  Widget _buildTextField(String label, TextEditingController controller, {bool required = false, TextInputType? keyboardType, bool readOnly = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -516,6 +552,7 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
+          readOnly: readOnly,
           style: TextStyle(color: context.textColor),
           keyboardType: keyboardType,
           decoration: InputDecoration(

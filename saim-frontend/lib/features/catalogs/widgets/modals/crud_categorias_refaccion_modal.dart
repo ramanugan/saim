@@ -23,6 +23,8 @@ class _CrudCategoriasRefaccionModalState extends ConsumerState<CrudCategoriasRef
   late TextEditingController _descripcionCtrl;
   bool _activo = true;
 
+  final ScrollController _horizontalScrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +43,7 @@ class _CrudCategoriasRefaccionModalState extends ConsumerState<CrudCategoriasRef
     _codigoCtrl.dispose();
     _nombreCtrl.dispose();
     _descripcionCtrl.dispose();
+    _horizontalScrollController.dispose();
     super.dispose();
   }
 
@@ -182,9 +185,13 @@ class _CrudCategoriasRefaccionModalState extends ConsumerState<CrudCategoriasRef
 
         return SingleChildScrollView(
           scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
+          child: Scrollbar(
+            controller: _horizontalScrollController,
+            thumbVisibility: true,
+            child: SingleChildScrollView(
+              controller: _horizontalScrollController,
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('CÓDIGO', style: TextStyle(color: context.mutedTextColor))),
@@ -232,6 +239,7 @@ class _CrudCategoriasRefaccionModalState extends ConsumerState<CrudCategoriasRef
                 ],
               )).toList(),
             ),
+          ),
           ),
         );
       },
