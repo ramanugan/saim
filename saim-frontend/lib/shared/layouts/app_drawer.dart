@@ -30,6 +30,11 @@ import '../../features/catalogs/widgets/modals/crud_oportunidad_suministro_modal
 import '../../features/catalogs/widgets/modals/crud_solicitud_refaccion_detalle_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_instalacion_refaccion_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_solicitud_refaccion_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_tiendas_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_zonas_estado_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_zonas_tienda_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_clientes_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_contratos_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
   final bool isModal;
@@ -449,6 +454,78 @@ class AppDrawer extends ConsumerWidget {
                                     context: context,
                                     builder: (ctx) => const CrudSolicitudRefaccionModal(),
                                   );
+                                },
+                              ),
+                            ],
+                          ),
+                          _buildNestedExpandableNavItem(
+                            context: context,
+                            label: 'Contratos',
+                            isActive: false,
+                            children: [
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Cliente',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudClientesModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Tienda',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudTiendasModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Zona Estado',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudZonasEstadoModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Zona Tienda',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudZonasTiendaModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Contrato',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudContratosModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
                                 },
                               ),
                             ],
