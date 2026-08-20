@@ -509,7 +509,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
     );
   }
 
-  void _tryAdvance(StepperControlsDetails? details) {
+  void _tryAdvance(ControlsDetails? details) {
     bool valid = true;
     if (_currentStep == 0) valid = _step1Key.currentState?.validate() ?? false;
     if (_currentStep == 1) valid = _step2Key.currentState?.validate() ?? false;
