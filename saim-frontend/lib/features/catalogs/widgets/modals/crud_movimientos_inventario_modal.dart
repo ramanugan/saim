@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/movimiento_inventario.dart';
 import '../../providers/movimientos_inventario_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudMovimientosInventarioModal extends ConsumerStatefulWidget {
   const CrudMovimientosInventarioModal({super.key});
@@ -163,11 +164,7 @@ class _CrudMovimientosInventarioModalState extends ConsumerState<CrudMovimientos
             item['id_refaccion'] as int: '[${item['codigo_interno']}] ${item['descripcion_homologada']}'
         };
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('ALMACÉN', style: TextStyle(color: context.mutedTextColor))),
@@ -226,9 +223,7 @@ class _CrudMovimientosInventarioModalState extends ConsumerState<CrudMovimientos
                   ],
                 );
               }).toList(),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

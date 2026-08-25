@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/iguala.dart';
 import '../../providers/igualas_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudIgualasModal extends ConsumerStatefulWidget {
   const CrudIgualasModal({super.key});
@@ -260,11 +261,7 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
             item['id_tipo_servicio'] as int: item['nombre'] as String
         };
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('CÓDIGO', style: TextStyle(color: context.mutedTextColor))),
@@ -317,9 +314,7 @@ class _CrudIgualasModalState extends ConsumerState<CrudIgualasModal> {
                   )),
                 ],
               )).toList(),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

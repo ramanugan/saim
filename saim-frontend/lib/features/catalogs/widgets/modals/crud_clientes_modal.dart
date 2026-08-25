@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/cliente.dart';
 import '../../providers/clientes_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudClientesModal extends ConsumerStatefulWidget {
   const CrudClientesModal({super.key});
@@ -184,10 +185,7 @@ class _CrudClientesModalState extends ConsumerState<CrudClientesModal> {
               if (activeClientes.isEmpty) {
                 return Center(child: Text('No hay clientes registrados', style: TextStyle(color: context.mutedTextColor)));
               }
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: SingleChildScrollView(
-                  child: DataTable(
+              return ModalDataTable(dataTable: DataTable(
                     columns: const [
                       DataColumn(label: Text('CÓDIGO')),
                       DataColumn(label: Text('NOMBRE COMERCIAL')),
@@ -215,9 +213,7 @@ class _CrudClientesModalState extends ConsumerState<CrudClientesModal> {
                         )),
                       ]
                     )).toList(),
-                  ),
-                ),
-              );
+                  ));
             },
             loading: () => Center(child: CircularProgressIndicator()),
             error: (e, st) => Center(child: Text('Error: $e')),

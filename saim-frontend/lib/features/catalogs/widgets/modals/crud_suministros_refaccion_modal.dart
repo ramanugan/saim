@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/suministro_refaccion.dart';
 import '../../providers/suministros_refaccion_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudSuministrosRefaccionModal extends ConsumerStatefulWidget {
   const CrudSuministrosRefaccionModal({super.key});
@@ -259,11 +260,7 @@ class _CrudSuministrosRefaccionModalState extends ConsumerState<CrudSuministrosR
             item['id_almacen'] as int: item['nombre'] as String
         };
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('FOLIO SOLICITUD', style: TextStyle(color: context.mutedTextColor))),
@@ -325,9 +322,7 @@ class _CrudSuministrosRefaccionModalState extends ConsumerState<CrudSuministrosR
                   ],
                 );
               }).toList(),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

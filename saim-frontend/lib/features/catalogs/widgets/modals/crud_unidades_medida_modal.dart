@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/unidad_medida.dart';
 import '../../providers/unidades_medida_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudUnidadesMedidaModal extends ConsumerStatefulWidget {
   const CrudUnidadesMedidaModal({super.key});
@@ -191,10 +192,7 @@ class _CrudUnidadesMedidaModalState extends ConsumerState<CrudUnidadesMedidaModa
         if (items.isEmpty) {
           return Center(child: Text('No hay unidades de medida.', style: TextStyle(color: context.mutedTextColor)));
         }
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: SingleChildScrollView(
-            child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               headingTextStyle: TextStyle(fontWeight: FontWeight.bold, color: context.mutedTextColor),
               columns: const [
                 DataColumn(label: Text('ID')),
@@ -251,9 +249,7 @@ class _CrudUnidadesMedidaModalState extends ConsumerState<CrudUnidadesMedidaModa
                   ],
                 );
               }).toList(),
-            ),
-          ),
-        );
+            ));
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, stack) => Center(child: Text('Error: $err', style: TextStyle(color: AppColors.red))),

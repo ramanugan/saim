@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/oportunidad_suministro.dart';
 import '../../providers/oportunidades_suministro_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudOportunidadSuministroModal extends ConsumerStatefulWidget {
   const CrudOportunidadSuministroModal({super.key});
@@ -252,11 +253,7 @@ class _CrudOportunidadSuministroModalState extends ConsumerState<CrudOportunidad
             item['id_cotizacion'] as int: item['numero_cotizacion'] as String
         };
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('REFACCIÓN SOLICITADA', style: TextStyle(color: context.mutedTextColor))),
@@ -309,9 +306,7 @@ class _CrudOportunidadSuministroModalState extends ConsumerState<CrudOportunidad
                   )),
                 ],
               )).toList(),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/pais.dart';
 import '../../providers/paises_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudPaisesModal extends ConsumerStatefulWidget {
   const CrudPaisesModal({super.key});
@@ -170,11 +171,7 @@ class _CrudPaisesModalState extends ConsumerState<CrudPaisesModal> {
           );
         }
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('CÓDIGO ISO', style: TextStyle(color: context.mutedTextColor))),
@@ -219,9 +216,7 @@ class _CrudPaisesModalState extends ConsumerState<CrudPaisesModal> {
                   )),
                 ],
               )).toList(),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

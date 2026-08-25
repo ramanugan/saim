@@ -5,6 +5,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../providers/clientes_provider.dart';
 import '../../providers/contratos_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // State model — holds all wizard data in memory until final submit
@@ -367,11 +368,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
                 style: TextStyle(color: context.mutedTextColor)),
           );
         }
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               columns: [
                 DataColumn(label: Text('CLIENTE', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('NO. CONTRATO', style: TextStyle(color: context.mutedTextColor))),
@@ -406,9 +403,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
                   )),
                 ]);
               }).toList(),
-            ),
-          ),
-        );
+            ));
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, st) =>

@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/solicitud_refaccion_detalle.dart';
 import '../../providers/solicitudes_refaccion_detalle_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudSolicitudRefaccionDetalleModal extends ConsumerStatefulWidget {
   const CrudSolicitudRefaccionDetalleModal({super.key});
@@ -289,11 +290,7 @@ class _CrudSolicitudRefaccionDetalleModalState extends ConsumerState<CrudSolicit
             item['id_equipo'] as int: '${item['codigo_activo_cliente'] ?? 'S/C'} (${item['marca'] ?? ''} ${item['modelo'] ?? ''})'
         };
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('FOLIO SOLICITUD', style: TextStyle(color: context.mutedTextColor))),
@@ -350,9 +347,7 @@ class _CrudSolicitudRefaccionDetalleModalState extends ConsumerState<CrudSolicit
                   )),
                 ],
               )).toList(),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

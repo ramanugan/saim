@@ -6,6 +6,7 @@ import '../../models/almacen.dart';
 import '../../providers/almacenes_provider.dart';
 import '../../providers/estados_provider.dart';
 import '../../providers/municipios_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudAlmacenesModal extends ConsumerStatefulWidget {
   const CrudAlmacenesModal({super.key});
@@ -200,11 +201,7 @@ class _CrudAlmacenesModalState extends ConsumerState<CrudAlmacenesModal> {
             item.idMunicipio as int: item.nombre
         };
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('CÓDIGO', style: TextStyle(color: context.mutedTextColor))),
@@ -253,9 +250,7 @@ class _CrudAlmacenesModalState extends ConsumerState<CrudAlmacenesModal> {
                   )),
                 ],
               )).toList(),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

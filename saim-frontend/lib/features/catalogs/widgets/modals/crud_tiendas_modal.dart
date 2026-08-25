@@ -5,6 +5,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../models/tienda.dart';
 import '../../providers/tiendas_provider.dart';
 import '../../providers/clientes_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudTiendasModal extends ConsumerStatefulWidget {
   const CrudTiendasModal({super.key});
@@ -210,11 +211,7 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
                       style: TextStyle(color: context.mutedTextColor)),
                 );
               }
-              return SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: DataTable(
+              return ModalDataTable(dataTable: DataTable(
                     columns: [
                       DataColumn(label: Text('CÓDIGO', style: TextStyle(color: context.mutedTextColor))),
                       DataColumn(label: Text('NOMBRE', style: TextStyle(color: context.mutedTextColor))),
@@ -257,9 +254,7 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
                         )),
                       ],
                     )).toList(),
-                  ),
-                ),
-              );
+                  ));
             },
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, st) => Center(

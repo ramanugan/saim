@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/tipo_tienda.dart';
 import '../../providers/tipos_tienda_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudTiposTiendaModal extends ConsumerStatefulWidget {
   const CrudTiposTiendaModal({super.key});
@@ -174,11 +175,7 @@ class _CrudTiposTiendaModalState extends ConsumerState<CrudTiposTiendaModal> {
           );
         }
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               columns: [
                 DataColumn(label: Text('CÓDIGO', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('NOMBRE', style: TextStyle(color: context.mutedTextColor))),
@@ -221,9 +218,7 @@ class _CrudTiposTiendaModalState extends ConsumerState<CrudTiposTiendaModal> {
                   )),
                 ],
               )).toList(),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

@@ -5,6 +5,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../models/municipio.dart';
 import '../../providers/municipios_provider.dart';
 import '../../providers/estados_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudMunicipiosModal extends ConsumerStatefulWidget {
   const CrudMunicipiosModal({super.key});
@@ -178,11 +179,7 @@ class _CrudMunicipiosModalState extends ConsumerState<CrudMunicipiosModal> {
           );
         }
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               columns: [
                 DataColumn(label: Text('NOMBRE', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('CLAVE INEGI', style: TextStyle(color: context.mutedTextColor))),
@@ -225,9 +222,7 @@ class _CrudMunicipiosModalState extends ConsumerState<CrudMunicipiosModal> {
                   )),
                 ],
               )).toList(),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

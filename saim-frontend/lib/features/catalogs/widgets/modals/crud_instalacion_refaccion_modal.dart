@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/instalacion_refaccion.dart';
 import '../../providers/instalaciones_refaccion_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudInstalacionRefaccionModal extends ConsumerStatefulWidget {
   const CrudInstalacionRefaccionModal({super.key});
@@ -264,11 +265,7 @@ class _CrudInstalacionRefaccionModalState extends ConsumerState<CrudInstalacionR
             item['id_equipo'] as int: '${item['codigo_activo_cliente'] ?? 'S/C'} (${item['marca'] ?? ''} ${item['modelo'] ?? ''})'
         };
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('ORDEN DE SERVICIO', style: TextStyle(color: context.mutedTextColor))),
@@ -323,9 +320,7 @@ class _CrudInstalacionRefaccionModalState extends ConsumerState<CrudInstalacionR
                   )),
                 ],
               )).toList(),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

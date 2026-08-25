@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/precio_refaccion.dart';
 import '../../providers/precios_refaccion_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudPrecioRefaccionModal extends ConsumerStatefulWidget {
   const CrudPrecioRefaccionModal({super.key});
@@ -248,11 +249,7 @@ class _CrudPrecioRefaccionModalState extends ConsumerState<CrudPrecioRefaccionMo
             item['id_proveedor'] as int: item['razon_social'] as String
         };
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('REFACCIÓN', style: TextStyle(color: context.mutedTextColor))),
@@ -307,9 +304,7 @@ class _CrudPrecioRefaccionModalState extends ConsumerState<CrudPrecioRefaccionMo
                   )),
                 ],
               )).toList(),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

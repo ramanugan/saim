@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/refaccion.dart';
 import '../../providers/refacciones_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudRefaccionesModal extends ConsumerStatefulWidget {
   const CrudRefaccionesModal({super.key});
@@ -255,11 +256,7 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
             item['id_unidad_medida'] as int: '${item['nombre']} (${item['simbolo']})'
         };
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('CÓDIGO INTERNO', style: TextStyle(color: context.mutedTextColor))),
@@ -314,9 +311,7 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
                   )),
                 ],
               )).toList(),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

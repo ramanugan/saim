@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/refaccion_compatibilidad.dart';
 import '../../providers/refacciones_compatibilidad_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudRefaccionesCompatibilidadModal extends ConsumerStatefulWidget {
   const CrudRefaccionesCompatibilidadModal({super.key});
@@ -205,11 +206,7 @@ class _CrudRefaccionesCompatibilidadModalState extends ConsumerState<CrudRefacci
             item['id_tipo_equipo'] as int: item['nombre'] as String
         };
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('REFACCIÓN', style: TextStyle(color: context.mutedTextColor))),
@@ -260,9 +257,7 @@ class _CrudRefaccionesCompatibilidadModalState extends ConsumerState<CrudRefacci
                   )),
                 ],
               )).toList(),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

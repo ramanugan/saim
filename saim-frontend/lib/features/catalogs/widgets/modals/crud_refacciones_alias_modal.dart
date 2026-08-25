@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/refaccion_alias.dart';
 import '../../providers/refacciones_alias_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudRefaccionesAliasModal extends ConsumerStatefulWidget {
   const CrudRefaccionesAliasModal({super.key});
@@ -202,11 +203,7 @@ class _CrudRefaccionesAliasModalState extends ConsumerState<CrudRefaccionesAlias
             item['id_usuario'] as int: item['nombre_usuario'] as String
         };
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('REFACCIÓN', style: TextStyle(color: context.mutedTextColor))),
@@ -257,9 +254,7 @@ class _CrudRefaccionesAliasModalState extends ConsumerState<CrudRefaccionesAlias
                   )),
                 ],
               )).toList(),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

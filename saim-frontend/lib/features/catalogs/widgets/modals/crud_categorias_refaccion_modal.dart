@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/categoria_refaccion.dart';
 import '../../providers/categorias_refaccion_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudCategoriasRefaccionModal extends ConsumerStatefulWidget {
   const CrudCategoriasRefaccionModal({super.key});
@@ -183,15 +184,7 @@ class _CrudCategoriasRefaccionModalState extends ConsumerState<CrudCategoriasRef
           );
         }
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Scrollbar(
-            controller: _horizontalScrollController,
-            thumbVisibility: true,
-            child: SingleChildScrollView(
-              controller: _horizontalScrollController,
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
+        return ModalDataTable(dataTable: DataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('CÓDIGO', style: TextStyle(color: context.mutedTextColor))),
@@ -238,10 +231,7 @@ class _CrudCategoriasRefaccionModalState extends ConsumerState<CrudCategoriasRef
                   )),
                 ],
               )).toList(),
-            ),
-          ),
-          ),
-        );
+            ));
       },
     );
   }

@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/zona_tienda.dart';
 import '../../providers/zonas_tienda_provider.dart';
+import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudZonasTiendaModal extends ConsumerStatefulWidget {
   const CrudZonasTiendaModal({super.key});
@@ -230,11 +231,7 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
                       style: TextStyle(color: context.mutedTextColor)),
                 );
               }
-              return SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: DataTable(
+              return ModalDataTable(dataTable: DataTable(
                     columns: [
                       DataColumn(label: Text('ID ZONA CONTRATO', style: TextStyle(color: context.mutedTextColor))),
                       DataColumn(label: Text('ID TIENDA', style: TextStyle(color: context.mutedTextColor))),
@@ -281,9 +278,7 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
                         )),
                       ],
                     )).toList(),
-                  ),
-                ),
-              );
+                  ));
             },
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, st) =>
