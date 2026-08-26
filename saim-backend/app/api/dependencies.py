@@ -9,6 +9,8 @@ from app.services.iguala_service import IgualaService
 from app.services.cuadrilla_service import CuadrillaService
 from app.services.inventario_service import InventarioService
 from app.services.finanzas_service import FinanzasService
+from app.services.tipo_equipo_service import TipoEquipoService
+from app.services.equipo_service import EquipoService
 
 def get_supabase() -> Client:
     return supabase_client
@@ -36,3 +38,9 @@ def get_inventario_service(supabase: Client = Depends(get_supabase)) -> Inventar
 
 def get_finanzas_service(supabase: Client = Depends(get_supabase)) -> FinanzasService:
     return FinanzasService(supabase)
+
+def get_tipo_equipo_service(supabase: Client = Depends(get_supabase)) -> TipoEquipoService:
+    return TipoEquipoService(supabase)
+
+def get_equipo_service(supabase: Client = Depends(get_supabase)) -> EquipoService:
+    return EquipoService(supabase)

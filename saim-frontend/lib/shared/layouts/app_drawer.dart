@@ -35,6 +35,8 @@ import '../../features/catalogs/widgets/modals/crud_zonas_estado_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_zonas_tienda_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_clientes_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_contratos_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_tipos_equipo_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_equipos_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
   final bool isModal;
@@ -524,6 +526,39 @@ class AppDrawer extends ConsumerWidget {
                                   showDialog(
                                     context: context,
                                     builder: (ctx) => const CrudContratosModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          ),
+                          _buildNestedExpandableNavItem(
+                            context: context,
+                            label: 'Equipamiento',
+                            isActive: false,
+                            children: [
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Tipo equipo',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudTiposEquipoModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Equipo',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudEquiposModal(),
                                   );
                                   if (isModal) Navigator.pop(context);
                                 },
