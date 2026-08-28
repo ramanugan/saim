@@ -43,9 +43,13 @@ class IgualaCondicion {
 
   factory IgualaCondicion.fromJson(Map<String, dynamic> json) {
     return IgualaCondicion(
-      idIgualaCondicion: json['id_iguala_condicion'] as int?,
-      idIguala: json['id_iguala'] as int,
-      idIgualaServicio: json['id_iguala_servicio'] as int?,
+      idIgualaCondicion: json['id_iguala_condicion'] != null
+          ? (json['id_iguala_condicion'] as num).toInt()
+          : null,
+      idIguala: (json['id_iguala'] as num).toInt(),
+      idIgualaServicio: json['id_iguala_servicio'] != null
+          ? (json['id_iguala_servicio'] as num).toInt()
+          : null,
       fechaInicioVigencia: DateTime.parse(json['fecha_inicio_vigencia'] as String),
       fechaFinVigencia: json['fecha_fin_vigencia'] != null
           ? DateTime.parse(json['fecha_fin_vigencia'] as String)
@@ -54,11 +58,11 @@ class IgualaCondicion {
       periodicidadFacturacion: json['periodicidad_facturacion'] as String,
       montoPeriodico: (json['monto_periodico'] as num).toDouble(),
       moneda: json['moneda'] as String,
-      duracionEstandarMinutos: json['duracion_estandar_minutos'] as int,
-      numeroJornadas: json['numero_jornadas'] as int,
+      duracionEstandarMinutos: (json['duracion_estandar_minutos'] as num).toInt(),
+      numeroJornadas: (json['numero_jornadas'] as num).toInt(),
       horasPorJornada: (json['horas_por_jornada'] as num).toDouble(),
-      tecnicosMinimos: json['tecnicos_minimos'] as int,
-      tecnicosObjetivo: json['tecnicos_objetivo'] as int,
+      tecnicosMinimos: (json['tecnicos_minimos'] as num).toInt(),
+      tecnicosObjetivo: (json['tecnicos_objetivo'] as num).toInt(),
       toleranciaDesviacionPct: (json['tolerancia_desviacion_pct'] as num).toDouble(),
       incluyeDiagnosticoCorrectivo: json['incluye_diagnostico_correctivo'] as bool,
       limiteCorrectivoIncluido: json['limite_correctivo_incluido'] != null

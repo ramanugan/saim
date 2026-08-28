@@ -243,7 +243,7 @@ class _CrudIgualaCondicionesModalState extends ConsumerState<CrudIgualaCondicion
 
         final igualasMap = {
           for (var item in igualasAsync.value ?? [])
-            item['id_iguala'] as int: item['codigo_iguala'] as String
+            (item['id_iguala'] as num).toInt(): item['codigo_iguala'] as String
         };
 
         return ModalDataTable(dataTable: DataTable(
@@ -304,6 +304,22 @@ class _CrudIgualaCondicionesModalState extends ConsumerState<CrudIgualaCondicion
     final igualasAsync = ref.watch(helperIgualasProvider);
     final serviciosAsync = ref.watch(helperIgualaServiciosProvider);
 
+    // Esperar a que todos los helpers carguen antes de renderizar el form.
+    // Si el form se renderiza antes de que los items del dropdown carguen,
+    // Flutter lanza assertion error cuando el value actual no está en la lista.
+    if (igualasAsync.isLoading || serviciosAsync.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (igualasAsync.hasError || serviciosAsync.hasError) {
+      return Center(
+        child: Text(
+          'Error al cargar datos: ${igualasAsync.error ?? serviciosAsync.error}',
+          style: const TextStyle(color: Colors.red),
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Form(
@@ -334,7 +350,7 @@ class _CrudIgualaCondicionesModalState extends ConsumerState<CrudIgualaCondicion
                           ),
                           items: (igualasAsync.value ?? []).map<DropdownMenuItem<int>>((item) {
                             return DropdownMenuItem<int>(
-                              value: item['id_iguala'] as int,
+                              value: (item['id_iguala'] as num).toInt(),
                               child: Text(item['codigo_iguala'] as String),
                             );
                           }).toList(),
@@ -369,8 +385,8 @@ class _CrudIgualaCondicionesModalState extends ConsumerState<CrudIgualaCondicion
                             ),
                             ...(serviciosAsync.value ?? []).map<DropdownMenuItem<int?>>((item) {
                               return DropdownMenuItem<int?>(
-                                value: item['id_iguala_servicio'] as int,
-                                child: Text('ID: ${item['id_iguala_servicio']} - ${item['alcance_particular'] ?? 'Sin alcance'}'),
+                                value: (item['id_iguala_servicio'] as num).toInt(),
+                                child: Text(item['alcance_particular'] ?? 'Sin alcance especificado'),
                               );
                             })
                           ],

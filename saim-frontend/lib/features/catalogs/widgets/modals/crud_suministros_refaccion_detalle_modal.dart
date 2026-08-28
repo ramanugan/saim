@@ -308,7 +308,7 @@ class _CrudSuministrosRefaccionDetalleModalState extends ConsumerState<CrudSumin
                             final src = item['fuente_suministro'] ?? 'Sin Fuente';
                             return DropdownMenuItem<int>(
                               value: item['id_suministro'] as int,
-                              child: Text('ID: ${item['id_suministro']} [$doc] ($src)', overflow: TextOverflow.ellipsis),
+                              child: Text('[$doc] ($src)', overflow: TextOverflow.ellipsis),
                             );
                           }).toList(),
                           onChanged: (val) => setState(() => _selectedSuministroId = val),

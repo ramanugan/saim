@@ -305,7 +305,7 @@ class _CrudEquiposModalState extends ConsumerState<CrudEquiposModal> {
                   SizedBox(width: 16),
                   Expanded(child: _buildTextField('Ubicación Interna', _ubicacionCtrl)),
                   SizedBox(width: 16),
-                  Expanded(child: _buildTextField('Fecha Instalación (YYYY-MM-DD)', _fechaInstalacionCtrl)),
+                  Expanded(child: _buildDatePicker('Fecha Instalación', _fechaInstalacionCtrl)),
                 ],
               ),
               SizedBox(height: 32),
@@ -387,6 +387,60 @@ class _CrudEquiposModalState extends ConsumerState<CrudEquiposModal> {
     );
   }
 
+  Widget _buildDatePicker(String label, TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
+        SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          readOnly: true,
+          onTap: () async {
+            final date = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(2000),
+              lastDate: DateTime(2100),
+              builder: (context, child) {
+                return Theme(
+                  data: Theme.of(context).copyWith(
+                    colorScheme: ColorScheme.light(
+                      primary: AppColors.blue,
+                      onPrimary: Colors.white,
+                      surface: context.surfaceColor,
+                      onSurface: context.textColor,
+                    ),
+                    dialogBackgroundColor: context.surfaceColor,
+                  ),
+                  child: child!,
+                );
+              },
+            );
+            if (date != null) {
+              controller.text = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+            }
+          },
+          style: TextStyle(color: context.textColor),
+          decoration: InputDecoration(
+            isDense: true,
+            filled: true,
+            fillColor: context.backgroundColor,
+            suffixIcon: Icon(Icons.calendar_today, color: context.mutedTextColor, size: 20),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: context.borderColor),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: context.borderColor),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildDropdownAsync(String label, int? value, AsyncValue<List<Map<String, dynamic>>> asyncValue, Function(Object?) onChanged) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -397,8 +451,15 @@ class _CrudEquiposModalState extends ConsumerState<CrudEquiposModal> {
           loading: () => LinearProgressIndicator(),
           error: (e, st) => Text('Error al cargar', style: TextStyle(color: AppColors.red)),
           data: (items) {
+            // Filtrar activos, pero siempre incluir el que ya esté seleccionado (para edición)
+            final activeItems = items.where((e) => (e['activo'] == true) || (e['id'] == value)).toList();
+
+            // Asegurar que el valor exista en la lista para evitar crash
+            final valueExists = activeItems.any((e) => e['id'] == value);
+            final safeValue = valueExists ? value : null;
+
             return DropdownButtonFormField<int>(
-              value: value,
+              value: safeValue,
               isExpanded: true,
               dropdownColor: context.surfaceColor,
               style: TextStyle(color: context.textColor),
@@ -415,7 +476,7 @@ class _CrudEquiposModalState extends ConsumerState<CrudEquiposModal> {
                   borderSide: BorderSide(color: context.borderColor),
                 ),
               ),
-              items: items.map((e) => DropdownMenuItem<int>(
+              items: activeItems.map((e) => DropdownMenuItem<int>(
                 value: e['id'] as int,
                 child: Text(e['nombre'].toString()),
               )).toList(),

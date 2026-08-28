@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/providers/base_crud_notifier.dart';
 import '../models/iguala_condicion.dart';
 
 // Helper providers for foreign key dropdowns
@@ -9,7 +11,11 @@ final helperIgualasProvider = FutureProvider<List<Map<String, dynamic>>>((ref) a
       .from('iguala')
       .select('id_iguala, codigo_iguala')
       .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+  // Deduplicate por id_iguala para evitar assertion de DropdownButton
+  final seen = <int>{};
+  return List<Map<String, dynamic>>.from(response as List)
+      .where((item) => seen.add((item['id_iguala'] as num).toInt()))
+      .toList();
 });
 
 final helperIgualaServiciosProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
@@ -18,16 +24,22 @@ final helperIgualaServiciosProvider = FutureProvider<List<Map<String, dynamic>>>
       .from('iguala_servicio')
       .select('id_iguala_servicio, id_iguala, alcance_particular')
       .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+  // Deduplicate por id_iguala_servicio
+  final seen = <int>{};
+  return List<Map<String, dynamic>>.from(response as List)
+      .where((item) => seen.add((item['id_iguala_servicio'] as num).toInt()))
+      .toList();
 });
 
-final helperPeriodicidadesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('periodicidad')
-      .select('id_periodicidad, nombre')
-      .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+
+final helperPeriodicidadesProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  return const AsyncValue.data([
+    {'id_periodicidad': 1, 'nombre': 'MENSUAL'},
+    {'id_periodicidad': 2, 'nombre': 'BIMESTRAL'},
+    {'id_periodicidad': 3, 'nombre': 'TRIMESTRAL'},
+    {'id_periodicidad': 4, 'nombre': 'SEMESTRAL'},
+    {'id_periodicidad': 5, 'nombre': 'ANUAL'},
+  ]);
 });
 
 final igualaCondicionesProvider = StateNotifierProvider<IgualaCondicionesNotifier, AsyncValue<List<IgualaCondicion>>>((ref) {
@@ -35,112 +47,19 @@ final igualaCondicionesProvider = StateNotifierProvider<IgualaCondicionesNotifie
   return IgualaCondicionesNotifier(supabase);
 });
 
-class IgualaCondicionesNotifier extends StateNotifier<AsyncValue<List<IgualaCondicion>>> {
-  final dynamic _supabase;
+class IgualaCondicionesNotifier extends SupabaseCrudNotifier<IgualaCondicion> {
+  IgualaCondicionesNotifier(SupabaseClient supabase)
+      : super(
+          supabase: supabase,
+          tableName: 'iguala_condicion',
+          primaryKey: 'id_iguala_condicion',
+          ascending: false,
+          fromJson: (json) => IgualaCondicion.fromJson(json),
+          toJson: (item) => item.toJson(),
+          getId: (item) => item.idIgualaCondicion,
+        );
 
-  IgualaCondicionesNotifier(this._supabase) : super(const AsyncValue.loading()) {
-    fetchIgualaCondiciones();
-  }
-
-  Future<void> fetchIgualaCondiciones() async {
-    try {
-      state = const AsyncValue.loading();
-      final response = await _supabase
-          .from('iguala_condicion')
-          .select()
-          .order('id_iguala_condicion', ascending: false);
-      
-      final List<IgualaCondicion> list = (response as List)
-          .map((json) => IgualaCondicion.fromJson(json))
-          .toList();
-      
-      state = AsyncValue.data(list);
-    } catch (e, stack) {
-      state = AsyncValue.error(e, stack);
-    }
-  }
-
-  Future<void> addIgualaCondicion(IgualaCondicion item) async {
-    try {
-      final currentList = state.value ?? [];
-      final idUsuario = await _getCurrentUserId();
-      
-      final data = item.toJson();
-      data['creado_por'] = idUsuario;
-      data['actualizado_por'] = idUsuario;
-
-      final response = await _supabase
-          .from('iguala_condicion')
-          .insert(data)
-          .select()
-          .single();
-
-      final newItem = IgualaCondicion.fromJson(response);
-      state = AsyncValue.data([newItem, ...currentList]);
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<void> updateIgualaCondicion(IgualaCondicion item) async {
-    try {
-      final currentList = state.value ?? [];
-      final idUsuario = await _getCurrentUserId();
-      
-      final data = item.toJson();
-      data.remove('id_iguala_condicion');
-      data['actualizado_por'] = idUsuario;
-      
-      final response = await _supabase
-          .from('iguala_condicion')
-          .update(data)
-          .eq('id_iguala_condicion', item.idIgualaCondicion as Object)
-          .select()
-          .single();
-
-      final updatedItem = IgualaCondicion.fromJson(response);
-      state = AsyncValue.data(
-        currentList.map((x) => x.idIgualaCondicion == updatedItem.idIgualaCondicion ? updatedItem : x).toList(),
-      );
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<void> toggleStatus(int idIgualaCondicion, bool currentStatus) async {
-    try {
-      final currentList = state.value ?? [];
-      final idUsuario = await _getCurrentUserId();
-      
-      final response = await _supabase
-          .from('iguala_condicion')
-          .update({
-            'activo': !currentStatus,
-            'actualizado_por': idUsuario,
-          })
-          .eq('id_iguala_condicion', idIgualaCondicion)
-          .select()
-          .single();
-
-      final updatedItem = IgualaCondicion.fromJson(response);
-      state = AsyncValue.data(
-        currentList.map((x) => x.idIgualaCondicion == updatedItem.idIgualaCondicion ? updatedItem : x).toList(),
-      );
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<int> _getCurrentUserId() async {
-    try {
-      final authUser = _supabase.auth.currentUser;
-      if (authUser != null) {
-        final res = await _supabase.from('usuario').select('id_usuario').eq('correo', authUser.email as Object).maybeSingle();
-        if (res != null) {
-          return res['id_usuario'] as int;
-        }
-      }
-    } catch (_) {}
-    return 1;
-  }
+  Future<void> fetchIgualaCondiciones() => fetch();
+  Future<void> addIgualaCondicion(IgualaCondicion item) => add(item);
+  Future<void> updateIgualaCondicion(IgualaCondicion item) => updateItem(item);
 }

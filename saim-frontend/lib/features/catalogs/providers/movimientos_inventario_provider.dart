@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/providers/base_crud_notifier.dart';
 import '../models/movimiento_inventario.dart';
 
 final helperAlmacenesForMovimientoProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
@@ -25,41 +27,31 @@ final movimientosInventarioProvider = StateNotifierProvider<MovimientosInventari
   return MovimientosInventarioNotifier(supabase);
 });
 
-class MovimientosInventarioNotifier extends StateNotifier<AsyncValue<List<MovimientoInventario>>> {
-  final dynamic _supabase;
+class MovimientosInventarioNotifier extends SupabaseCrudNotifier<MovimientoInventario> {
+  MovimientosInventarioNotifier(SupabaseClient supabase)
+      : super(
+          supabase: supabase,
+          tableName: 'movimiento_inventario',
+          primaryKey: 'id_movimiento',
+          ascending: false,
+          fromJson: (json) => MovimientoInventario.fromJson(json),
+          toJson: (item) => item.toJson(),
+          getId: (item) => item.idMovimiento,
+        );
 
-  MovimientosInventarioNotifier(this._supabase) : super(const AsyncValue.loading()) {
-    fetchMovimientos();
-  }
+  Future<void> fetchMovimientos() => fetch();
 
-  Future<void> fetchMovimientos() async {
-    try {
-      state = const AsyncValue.loading();
-      final response = await _supabase
-          .from('movimiento_inventario')
-          .select()
-          .order('id_movimiento', ascending: false);
-      
-      final List<MovimientoInventario> list = (response as List)
-          .map((json) => MovimientoInventario.fromJson(json))
-          .toList();
-      
-      state = AsyncValue.data(list);
-    } catch (e, stack) {
-      state = AsyncValue.error(e, stack);
-    }
-  }
-
-  Future<void> addMovimiento(MovimientoInventario movimiento) async {
+  @override
+  Future<void> add(MovimientoInventario item) async {
     try {
       final currentList = state.value ?? [];
-      final idUsuario = await _getCurrentUserId();
+      final idUsuario = await getCurrentUserId();
       
-      final data = movimiento.toJson();
+      final data = item.toJson();
       data['registrado_por'] = idUsuario;
 
-      final response = await _supabase
-          .from('movimiento_inventario')
+      final response = await supabase
+          .from(tableName)
           .insert(data)
           .select()
           .single();
@@ -71,16 +63,15 @@ class MovimientosInventarioNotifier extends StateNotifier<AsyncValue<List<Movimi
     }
   }
 
-  Future<int> _getCurrentUserId() async {
-    try {
-      final authUser = _supabase.auth.currentUser;
-      if (authUser != null) {
-        final res = await _supabase.from('usuario').select('id_usuario').eq('correo', authUser.email as Object).maybeSingle();
-        if (res != null) {
-          return res['id_usuario'] as int;
-        }
-      }
-    } catch (_) {}
-    return 1;
+  Future<void> addMovimiento(MovimientoInventario item) => add(item);
+
+  @override
+  Future<void> updateItem(MovimientoInventario item) async {
+    throw UnimplementedError('Update is not supported for movimiento_inventario');
+  }
+
+  @override
+  Future<void> toggleStatus(Object id, bool currentStatus) async {
+    throw UnimplementedError('ToggleStatus is not supported for movimiento_inventario');
   }
 }

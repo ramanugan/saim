@@ -5,8 +5,10 @@ import '../../../../core/theme/app_theme.dart';
 import '../../models/tienda.dart';
 import '../../providers/tiendas_provider.dart';
 import '../../providers/clientes_provider.dart';
+import '../../providers/tipos_tienda_provider.dart';
+import '../../providers/estados_provider.dart';
+import '../../providers/municipios_provider.dart';
 import '../../../../shared/widgets/modal_data_table.dart';
-
 class CrudTiendasModal extends ConsumerStatefulWidget {
   const CrudTiendasModal({super.key});
 
@@ -20,11 +22,13 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
 
   final _formKey = GlobalKey<FormState>();
   int? _idCliente;
-  late TextEditingController _codigoCtrl;
+  int? _idTipoTienda;
+  int? _idEstado;
+  int? _idMunicipio;
+  late TextEditingController _determinanteCtrl;
   late TextEditingController _nombreCtrl;
   late TextEditingController _direccionCtrl;
   late TextEditingController _codigoPostalCtrl;
-  late TextEditingController _correoCtrl;
   late TextEditingController _telefonoCtrl;
   String _estatus = 'Activo';
 
@@ -36,22 +40,23 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
 
   void _initControllers() {
     _idCliente = _selectedTienda?.idCliente;
-    _codigoCtrl = TextEditingController(text: _selectedTienda?.codigo ?? '');
+    _idTipoTienda = _selectedTienda?.idTipoTienda;
+    _idEstado = _selectedTienda?.idEstado;
+    _idMunicipio = _selectedTienda?.idMunicipio;
+    _determinanteCtrl = TextEditingController(text: _selectedTienda?.determinante ?? '');
     _nombreCtrl = TextEditingController(text: _selectedTienda?.nombre ?? '');
     _direccionCtrl = TextEditingController(text: _selectedTienda?.direccion ?? '');
     _codigoPostalCtrl = TextEditingController(text: _selectedTienda?.codigoPostal ?? '');
-    _correoCtrl = TextEditingController(text: _selectedTienda?.correoContacto ?? '');
-    _telefonoCtrl = TextEditingController(text: _selectedTienda?.telefonoContacto ?? '');
+    _telefonoCtrl = TextEditingController(text: _selectedTienda?.telefono ?? '');
     _estatus = _selectedTienda?.estatus ?? 'Activo';
   }
 
   @override
   void dispose() {
-    _codigoCtrl.dispose();
+    _determinanteCtrl.dispose();
     _nombreCtrl.dispose();
     _direccionCtrl.dispose();
     _codigoPostalCtrl.dispose();
-    _correoCtrl.dispose();
     _telefonoCtrl.dispose();
     super.dispose();
   }
@@ -73,21 +78,23 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
 
   Future<void> _saveForm() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_idCliente == null) {
+    if (_idCliente == null || _idTipoTienda == null || _idEstado == null || _idMunicipio == null) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Selecciona un Cliente')));
+          .showSnackBar(const SnackBar(content: Text('Faltan datos obligatorios (Cliente, Tipo, Estado, Municipio)')));
       return;
     }
 
     final newTienda = Tienda(
       idTienda: _selectedTienda?.idTienda,
       idCliente: _idCliente!,
-      codigo: _codigoCtrl.text.trim(),
+      idTipoTienda: _idTipoTienda!,
+      idEstado: _idEstado!,
+      idMunicipio: _idMunicipio!,
+      determinante: _determinanteCtrl.text.trim(),
       nombre: _nombreCtrl.text.trim(),
       direccion: _direccionCtrl.text.trim().isEmpty ? null : _direccionCtrl.text.trim(),
       codigoPostal: _codigoPostalCtrl.text.trim().isEmpty ? null : _codigoPostalCtrl.text.trim(),
-      correoContacto: _correoCtrl.text.trim().isEmpty ? null : _correoCtrl.text.trim(),
-      telefonoContacto: _telefonoCtrl.text.trim().isEmpty ? null : _telefonoCtrl.text.trim(),
+      telefono: _telefonoCtrl.text.trim().isEmpty ? null : _telefonoCtrl.text.trim(),
       estatus: _estatus,
       activo: _selectedTienda?.activo ?? true,
     );
@@ -213,14 +220,14 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
               }
               return ModalDataTable(dataTable: DataTable(
                     columns: [
-                      DataColumn(label: Text('CÓDIGO', style: TextStyle(color: context.mutedTextColor))),
+                      DataColumn(label: Text('DETERMINANTE', style: TextStyle(color: context.mutedTextColor))),
                       DataColumn(label: Text('NOMBRE', style: TextStyle(color: context.mutedTextColor))),
                       DataColumn(label: Text('ESTATUS', style: TextStyle(color: context.mutedTextColor))),
                       DataColumn(label: Text('ACCIONES', style: TextStyle(color: context.mutedTextColor))),
                     ],
                     rows: active.map((t) => DataRow(
                       cells: [
-                        DataCell(Text(t.codigo, style: TextStyle(color: context.textColor))),
+                        DataCell(Text(t.determinante, style: TextStyle(color: context.textColor))),
                         DataCell(Text(t.nombre, style: TextStyle(color: context.textColor))),
                         DataCell(Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -279,9 +286,14 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
             // Cliente selector
             clientesAsync.when(
               data: (clientes) {
-                final active = clientes.where((c) => c.activo).toList();
+                final active = clientes.where((c) => c.activo || c.idCliente == _idCliente).toList();
+                
+                // Asegurar que _idCliente realmente exista en la lista para evitar el crash de Flutter
+                final valueExists = active.any((c) => c.idCliente == _idCliente);
+                final safeValue = valueExists ? _idCliente : null;
+
                 return DropdownButtonFormField<int>(
-                  value: _idCliente,
+                  value: safeValue,
                   decoration: InputDecoration(
                     labelText: 'Cliente *',
                     labelStyle: TextStyle(color: context.textColor),
@@ -309,8 +321,39 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
             Row(
               children: [
                 Expanded(
+                  child: _buildDropdownAsync(
+                    'Tipo Tienda *',
+                    _idTipoTienda,
+                    ref.watch(helperTiposTiendaProvider),
+                    (v) => setState(() => _idTipoTienda = v as int?),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildDropdownAsync(
+                    'Estado *',
+                    _idEstado,
+                    ref.watch(helperEstadosProvider),
+                    (v) => setState(() => _idEstado = v as int?),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildDropdownAsync(
+                    'Municipio *',
+                    _idMunicipio,
+                    ref.watch(helperMunicipiosProvider),
+                    (v) => setState(() => _idMunicipio = v as int?),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
                   flex: 1,
-                  child: _buildTextField('Código *', _codigoCtrl, required: true, maxLength: 30),
+                  child: _buildTextField('Determinante *', _determinanteCtrl, required: true, maxLength: 30),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -331,32 +374,34 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
                 const SizedBox(width: 16),
                 Expanded(
                   flex: 2,
-                  child: _buildTextField('Correo de Contacto', _correoCtrl, maxLength: 200),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  flex: 2,
-                  child: _buildTextField('Teléfono de Contacto', _telefonoCtrl, maxLength: 30),
+                  child: _buildTextField('Teléfono', _telefonoCtrl, maxLength: 30),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _estatus,
-              decoration: InputDecoration(
-                labelText: 'Estatus',
-                labelStyle: TextStyle(color: context.textColor),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                filled: true,
-                fillColor: context.backgroundColor,
-              ),
-              dropdownColor: context.surfaceColor,
-              style: TextStyle(color: context.textColor),
-              items: ['Activo', 'Inactivo', 'Temporal']
-                  .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-                  .toList(),
-              onChanged: (v) => setState(() => _estatus = v!),
-            ),
+            Builder(builder: (_) {
+              final estatusOptions = ['Activo', 'Inactivo', 'Temporal'];
+              // Si el valor actual de la BD no coincide con ninguna opción, agregarlo
+              if (!estatusOptions.contains(_estatus)) {
+                estatusOptions.insert(0, _estatus);
+              }
+              return DropdownButtonFormField<String>(
+                value: _estatus,
+                decoration: InputDecoration(
+                  labelText: 'Estatus',
+                  labelStyle: TextStyle(color: context.textColor),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                  filled: true,
+                  fillColor: context.backgroundColor,
+                ),
+                dropdownColor: context.surfaceColor,
+                style: TextStyle(color: context.textColor),
+                items: estatusOptions
+                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                    .toList(),
+                onChanged: (v) => setState(() => _estatus = v!),
+              );
+            }),
             const SizedBox(height: 32),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -414,6 +459,50 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
           ),
           validator:
               required ? (v) => v == null || v.trim().isEmpty ? 'Requerido' : null : null,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDropdownAsync(String label, int? value, AsyncValue<List<Map<String, dynamic>>> asyncValue, Function(Object?) onChanged) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
+        const SizedBox(height: 8),
+        asyncValue.when(
+          loading: () => const LinearProgressIndicator(),
+          error: (e, st) => Text('Error al cargar', style: TextStyle(color: AppColors.red)),
+          data: (items) {
+            final activeItems = items.where((e) => (e['activo'] == true) || (e['id'] == value)).toList();
+            final valueExists = activeItems.any((e) => e['id'] == value);
+            final safeValue = valueExists ? value : null;
+
+            return DropdownButtonFormField<int>(
+              value: safeValue,
+              isExpanded: true,
+              dropdownColor: context.surfaceColor,
+              style: TextStyle(color: context.textColor),
+              decoration: InputDecoration(
+                isDense: true,
+                filled: true,
+                fillColor: context.backgroundColor,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: context.borderColor),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: context.borderColor),
+                ),
+              ),
+              items: activeItems.map((e) => DropdownMenuItem<int>(
+                value: e['id'] as int,
+                child: Text(e['nombre'].toString()),
+              )).toList(),
+              onChanged: onChanged,
+            );
+          },
         ),
       ],
     );

@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/providers/base_crud_notifier.dart';
 import '../models/tienda.dart';
 
 final tiendasProvider = StateNotifierProvider<TiendasNotifier, AsyncValue<List<Tienda>>>((ref) {
@@ -12,10 +14,11 @@ final helperTiendasProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((
   final state = ref.watch(tiendasProvider);
   return state.when(
     data: (list) => AsyncValue.data(
-      list.where((t) => t.activo).map((t) => {
+      list.map((t) => {
         'id': t.idTienda,
-        'nombre': '${t.codigo} - ${t.nombre}',
+        'nombre': '${t.determinante} - ${t.nombre}',
         'id_cliente': t.idCliente,
+        'activo': t.activo,
       }).toList(),
     ),
     loading: () => const AsyncValue.loading(),
@@ -23,85 +26,19 @@ final helperTiendasProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((
   );
 });
 
-class TiendasNotifier extends StateNotifier<AsyncValue<List<Tienda>>> {
-  final dynamic _supabase;
+class TiendasNotifier extends SupabaseCrudNotifier<Tienda> {
+  TiendasNotifier(SupabaseClient supabase)
+      : super(
+          supabase: supabase,
+          tableName: 'tienda',
+          primaryKey: 'id_tienda',
+          fromJson: (json) => Tienda.fromJson(json),
+          toJson: (item) => item.toJson(),
+          getId: (item) => item.idTienda,
+        );
 
-  TiendasNotifier(this._supabase) : super(const AsyncValue.loading()) {
-    fetchTiendas();
-  }
-
-  Future<void> fetchTiendas() async {
-    try {
-      state = const AsyncValue.loading();
-      final response = await _supabase
-          .from('tienda')
-          .select()
-          .order('id_tienda', ascending: true);
-
-      final tiendas = (response as List).map((json) => Tienda.fromJson(json)).toList();
-      state = AsyncValue.data(tiendas);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
-    }
-  }
-
-  Future<int> _getCurrentUserId() async {
-    try {
-      final authUser = _supabase.auth.currentUser;
-      if (authUser != null) {
-        final res = await _supabase
-            .from('usuario')
-            .select('id_usuario')
-            .eq('correo', authUser.email as Object)
-            .maybeSingle();
-        if (res != null) return res['id_usuario'] as int;
-      }
-    } catch (_) {}
-    return 1;
-  }
-
-  Future<void> addTienda(Tienda tienda) async {
-    try {
-      final idUsuario = await _getCurrentUserId();
-      final data = tienda.toJson();
-      data['creado_por'] = idUsuario;
-      data['actualizado_por'] = idUsuario;
-
-      await _supabase.from('tienda').insert(data);
-      await fetchTiendas();
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<void> updateTienda(Tienda tienda) async {
-    try {
-      if (tienda.idTienda == null) return;
-      final idUsuario = await _getCurrentUserId();
-      final data = tienda.toJson();
-      data['actualizado_por'] = idUsuario;
-      data['actualizado_en'] = DateTime.now().toIso8601String();
-
-      await _supabase
-          .from('tienda')
-          .update(data)
-          .eq('id_tienda', tienda.idTienda as Object);
-      await fetchTiendas();
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<void> deleteTienda(int idTienda) async {
-    try {
-      final idUsuario = await _getCurrentUserId();
-      await _supabase
-          .from('tienda')
-          .update({'activo': false, 'actualizado_por': idUsuario})
-          .eq('id_tienda', idTienda);
-      await fetchTiendas();
-    } catch (e) {
-      rethrow;
-    }
-  }
+  Future<void> fetchTiendas() => fetch();
+  Future<void> addTienda(Tienda tienda) => add(tienda);
+  Future<void> updateTienda(Tienda tienda) => updateItem(tienda);
+  Future<void> deleteTienda(int idTienda) => deleteItem(idTienda);
 }

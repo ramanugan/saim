@@ -1,28 +1,28 @@
 class Tienda {
   final int? idTienda;
   final int idCliente;
-  final int? idTipoTienda;
-  final String codigo;
+  final int idTipoTienda;
+  final int idEstado;
+  final int idMunicipio;
+  final String determinante;
   final String nombre;
   final String? direccion;
-  final int? idMunicipio;
   final String? codigoPostal;
-  final String? correoContacto;
-  final String? telefonoContacto;
+  final String? telefono;
   final String estatus;
   final bool activo;
 
   Tienda({
     this.idTienda,
     required this.idCliente,
-    this.idTipoTienda,
-    required this.codigo,
+    required this.idTipoTienda,
+    required this.idEstado,
+    required this.idMunicipio,
+    required this.determinante,
     required this.nombre,
     this.direccion,
-    this.idMunicipio,
     this.codigoPostal,
-    this.correoContacto,
-    this.telefonoContacto,
+    this.telefono,
     required this.estatus,
     this.activo = true,
   });
@@ -31,14 +31,14 @@ class Tienda {
     return Tienda(
       idTienda: json['id_tienda'],
       idCliente: json['id_cliente'] ?? 0,
-      idTipoTienda: json['id_tipo_tienda'],
-      codigo: json['codigo'] ?? '',
+      idTipoTienda: json['id_tipo_tienda'] ?? 0,
+      idEstado: json['id_estado'] ?? 0,
+      idMunicipio: json['id_municipio'] ?? 0,
+      determinante: json['determinante'] ?? '',
       nombre: json['nombre'] ?? '',
       direccion: json['direccion'],
-      idMunicipio: json['id_municipio'],
       codigoPostal: json['codigo_postal'],
-      correoContacto: json['correo_contacto'],
-      telefonoContacto: json['telefono_contacto'],
+      telefono: json['telefono'],
       estatus: json['estatus'] ?? 'Activo',
       activo: json['activo'] ?? true,
     );
@@ -47,18 +47,18 @@ class Tienda {
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{
       'id_cliente': idCliente,
-      'codigo': codigo,
+      'id_tipo_tienda': idTipoTienda,
+      'id_estado': idEstado,
+      'id_municipio': idMunicipio,
+      'determinante': determinante,
       'nombre': nombre,
       'estatus': estatus,
       'activo': activo,
     };
     if (idTienda != null) data['id_tienda'] = idTienda;
-    if (idTipoTienda != null) data['id_tipo_tienda'] = idTipoTienda;
     if (direccion != null) data['direccion'] = direccion;
-    if (idMunicipio != null) data['id_municipio'] = idMunicipio;
     if (codigoPostal != null) data['codigo_postal'] = codigoPostal;
-    if (correoContacto != null) data['correo_contacto'] = correoContacto;
-    if (telefonoContacto != null) data['telefono_contacto'] = telefonoContacto;
+    if (telefono != null) data['telefono'] = telefono;
     return data;
   }
 }
