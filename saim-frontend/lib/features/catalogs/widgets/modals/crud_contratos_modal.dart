@@ -269,7 +269,8 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
 
           if (currentVersion != null) {
             _idContratoVersion = currentVersion['id_contrato_version'];
-            _versionNumCtrl.text = currentVersion['numero_version']?.toString() ?? '1';
+            final currentVersionNum = currentVersion['numero_version'] ?? 0;
+            _versionNumCtrl.text = (currentVersionNum + 1).toString();
             _versionFechaInicioCtrl.text = currentVersion['fecha_inicio_vigencia'] ?? '';
             _versionFechaFinCtrl.text = currentVersion['fecha_fin_vigencia'] ?? '';
             _versionDescCtrl.text = currentVersion['motivo_version'] ?? '';
@@ -614,18 +615,18 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
                     : Text(isLast ? 'Confirmar y Guardar Todo' : 'Siguiente'),
               ),
               const SizedBox(width: 12),
+              if (_currentStep > 0) ...[
+                TextButton(
+                  onPressed: _isSaving ? null : () => details.onStepCancel?.call(),
+                  style: TextButton.styleFrom(foregroundColor: context.mutedTextColor),
+                  child: const Text('Atrás'),
+                ),
+                const SizedBox(width: 12),
+              ],
               TextButton(
-                onPressed: _isSaving
-                    ? null
-                    : () {
-                        if (_currentStep == 0) {
-                          _resetWizard();
-                        } else {
-                          details.onStepCancel?.call();
-                        }
-                      },
+                onPressed: _isSaving ? null : _resetWizard,
                 style: TextButton.styleFrom(foregroundColor: context.mutedTextColor),
-                child: Text(_currentStep == 0 ? 'Cancelar' : 'Atrás'),
+                child: const Text('Cancelar'),
               ),
             ],
           ),
@@ -791,7 +792,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
             Expanded(
                 flex: 1,
                 child: _textField('No. Versión *', _versionNumCtrl,
-                    required: true, keyboardType: TextInputType.number)),
+                    required: true, keyboardType: TextInputType.number, readOnly: true)),
             const SizedBox(width: 16),
             Expanded(flex: 3, child: _textField('Descripción', _versionDescCtrl)),
           ]),
@@ -1154,11 +1155,13 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
   Widget _textField(String label, TextEditingController ctrl,
       {bool required = false,
       TextInputType keyboardType = TextInputType.text,
-      int? maxLength}) {
+      int? maxLength,
+      bool readOnly = false}) {
     return TextFormField(
       controller: ctrl,
       keyboardType: keyboardType,
       maxLength: maxLength,
+      readOnly: readOnly,
       style: TextStyle(color: context.textColor),
       decoration: _inputDeco(label),
       validator:
