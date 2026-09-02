@@ -7,8 +7,11 @@ import '../../providers/contratos_provider.dart';
 import '../../models/contrato.dart';
 import '../../providers/zonas_contrato_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
+import 'dart:convert';
+import 'package:file_picker/file_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../shared/widgets/modal_data_table.dart';
-
 // ─────────────────────────────────────────────────────────────────────────────
 // State model — holds all wizard data in memory until final submit
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1151,11 +1154,22 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
               const SizedBox(width: 12),
               Expanded(
                 flex: 2,
-                child: TextFormField(
-                  initialValue: doc.rutaArchivo,
-                  style: TextStyle(color: context.textColor),
-                  decoration: _inputDeco('Ruta / URL'),
-                  onChanged: (v) => doc.rutaArchivo = v,
+                child: Row(
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () => _uploadFile(doc),
+                      icon: const Icon(Icons.upload_file, size: 16),
+                      label: const Text('Subir Archivo'),
+                    ),
+                    if (doc.rutaArchivo.isNotEmpty) ...[
+                      const SizedBox(width: 8),
+                      OutlinedButton.icon(
+                        onPressed: () => _downloadFile(doc),
+                        icon: const Icon(Icons.download, size: 16),
+                        label: const Text('Descargar'),
+                      ),
+                    ]
+                  ],
                 ),
               ),
             ]),
@@ -1163,11 +1177,11 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
             Row(children: [
               Expanded(
                 child: TextFormField(
-                  initialValue: doc.hashSha256,
+                  controller: TextEditingController(text: doc.hashSha256),
+                  readOnly: true,
                   style: TextStyle(color: context.textColor),
                   decoration: _inputDeco('Hash SHA-256'),
                   maxLength: 64,
-                  onChanged: (v) => doc.hashSha256 = v,
                 ),
               ),
               const SizedBox(width: 12),
@@ -1176,10 +1190,27 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
                   children: [
                     Expanded(
                       child: TextFormField(
-                        initialValue: doc.fechaDocumento,
+                        controller: TextEditingController(text: doc.fechaDocumento),
+                        readOnly: true,
                         style: TextStyle(color: context.textColor),
-                        decoration: _inputDeco('Fecha Documento (YYYY-MM-DD)'),
-                        onChanged: (v) => doc.fechaDocumento = v,
+                        decoration: _inputDeco('Fecha Documento (YYYY-MM-DD)').copyWith(
+                          suffixIcon: Icon(Icons.calendar_today, size: 16, color: context.mutedTextColor),
+                        ),
+                        onTap: () async {
+                           final picked = await showDatePicker(
+                             context: context,
+                             initialDate: doc.fechaDocumento.isNotEmpty
+                                 ? DateTime.tryParse(doc.fechaDocumento) ?? DateTime.now()
+                                 : DateTime.now(),
+                             firstDate: DateTime(2000),
+                             lastDate: DateTime(2150),
+                           );
+                           if (picked != null && mounted) {
+                             setState(() {
+                               doc.fechaDocumento = picked.toIso8601String().split('T').first;
+                             });
+                           }
+                        },
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -1197,6 +1228,67 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
         ),
       ),
     );
+  }
+
+  Future<void> _uploadFile(_DocumentoData doc) async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles();
+      if (result != null) {
+        final file = result.files.first;
+        if (file.bytes == null) {
+           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No se puede leer el archivo.')));
+           return;
+        }
+        
+        setState(() => _isSaving = true);
+        
+        var request = http.MultipartRequest(
+          'POST',
+          Uri.parse('http://localhost:8001/api/v1/contratos/documentos/upload'),
+        );
+        request.files.add(http.MultipartFile.fromBytes(
+          'file',
+          file.bytes!,
+          filename: file.name,
+        ));
+
+        var response = await request.send();
+        if (response.statusCode == 201 || response.statusCode == 200) {
+          final resStr = await response.stream.bytesToString();
+          final data = jsonDecode(resStr);
+          setState(() {
+            doc.rutaArchivo = data['ruta'];
+            doc.hashSha256 = data['hash'];
+            if (doc.nombreArchivo.isEmpty) {
+              doc.nombreArchivo = file.name;
+            }
+          });
+        } else {
+           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al subir: ${response.statusCode}')));
+        }
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al subir el archivo: $e')));
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _downloadFile(_DocumentoData doc) async {
+     try {
+        final response = await http.get(Uri.parse('http://localhost:8001/api/v1/contratos/documentos/download?ruta=${Uri.encodeComponent(doc.rutaArchivo)}'));
+        if (response.statusCode == 200) {
+            final data = jsonDecode(response.body);
+            final url = data['url'];
+            if (await canLaunchUrl(Uri.parse(url))) {
+                await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+            }
+        } else {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No se pudo obtener el enlace de descarga.')));
+        }
+     } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al descargar: $e')));
+     }
   }
 
   // ─────────────────────────────────────────────────────────────────────────

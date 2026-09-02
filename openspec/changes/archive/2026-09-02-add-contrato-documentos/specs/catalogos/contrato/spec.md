@@ -1,9 +1,4 @@
-# Contrato Specification
-
-## Purpose
-Permite gestionar el ciclo de vida completo de los contratos a través de un asistente paso a paso, garantizando que todos los registros relacionados se guarden atómicamente.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Registro Atómico de Contrato
 El sistema MUST asegurar que al finalizar el formulario multi-paso de contrato, la información de `contrato`, `contrato_version`, `zona_contrato`, `contrato_alcance`, `contrato_sla` y `contrato_documento` se inserte de manera atómica (todo o nada).
@@ -19,14 +14,3 @@ El sistema MUST asegurar que al finalizar el formulario multi-paso de contrato, 
 #### Scenario: Documentos con archivos subidos previamente
 - **WHEN** el usuario guarda un contrato que contiene documentos con archivos ya subidos asíncronamente
 - **THEN** el contrato guarda las referencias (ruta y hash) obtenidas durante la subida, manteniendo la atomicidad del registro principal.
-
-### Requirement: Importación de zonas existentes
-El sistema SHALL permitir al usuario en el paso "Zonas" del asistente de contratos, seleccionar zonas previamente registradas en el sistema para agregarlas a la lista de zonas del contrato actual, autocompletando su código, nombre y descripción.
-
-#### Scenario: Selección de zona existente
-- **WHEN** el usuario hace clic en "Importar Existente" y selecciona una zona de la lista
-- **THEN** la información de la zona seleccionada se carga como una nueva tarjeta apilada en el contrato actual y se cierra el diálogo.
-
-#### Scenario: Ausencia de zonas previas
-- **WHEN** el usuario hace clic en "Importar Existente" y no hay zonas registradas en el sistema
-- **THEN** el diálogo muestra un mensaje indicando que no hay zonas previas registradas.
