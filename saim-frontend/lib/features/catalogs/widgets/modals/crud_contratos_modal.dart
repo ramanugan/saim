@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../providers/clientes_provider.dart';
 import '../../providers/contratos_provider.dart';
+import '../../models/contrato.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../shared/widgets/modal_data_table.dart';
 
@@ -12,6 +13,7 @@ import '../../../../shared/widgets/modal_data_table.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _ZonaData {
+  int? idZonaContrato;
   String codigo;
   String nombre;
   String descripcion;
@@ -19,6 +21,7 @@ class _ZonaData {
   List<_SlaData> slas;
 
   _ZonaData({
+    this.idZonaContrato,
     this.codigo = '',
     this.nombre = '',
     this.descripcion = '',
@@ -28,6 +31,7 @@ class _ZonaData {
         slas = slas ?? [];
 
   Map<String, dynamic> toJson() => {
+        if (idZonaContrato != null) 'id_zona_contrato': idZonaContrato,
         'codigo': codigo,
         'nombre': nombre,
         'descripcion': descripcion,
@@ -37,23 +41,34 @@ class _ZonaData {
 }
 
 class _AlcanceData {
+  int? idAlcance;
   String idTipoServicio;
   String descripcion;
-  _AlcanceData({this.idTipoServicio = '', this.descripcion = ''});
+
+  _AlcanceData({
+    this.idAlcance,
+    this.idTipoServicio = '',
+    this.descripcion = '',
+  });
+
   Map<String, dynamic> toJson() => {
+        if (idAlcance != null) 'id_alcance': idAlcance,
         'id_tipo_servicio': idTipoServicio.isEmpty ? null : int.tryParse(idTipoServicio),
         'descripcion': descripcion,
       };
 }
 
 class _SlaData {
+  int? idSla;
   String prioridad;
   String horarioCobertura;
   String minutosRespuesta;
   String minutosLlegada;
   String minutosSolucion;
   String reglaEscalamiento;
+
   _SlaData({
+    this.idSla,
     this.prioridad = 'Media',
     this.horarioCobertura = '8x5',
     this.minutosRespuesta = '',
@@ -61,17 +76,20 @@ class _SlaData {
     this.minutosSolucion = '',
     this.reglaEscalamiento = '',
   });
+
   Map<String, dynamic> toJson() => {
+        if (idSla != null) 'id_sla': idSla,
         'prioridad': prioridad,
         'horario_cobertura': horarioCobertura,
         'minutos_respuesta': int.tryParse(minutosRespuesta) ?? 0,
         'minutos_llegada': minutosLlegada.isEmpty ? null : int.tryParse(minutosLlegada),
         'minutos_solucion_objetivo': minutosSolucion.isEmpty ? null : int.tryParse(minutosSolucion),
-        'regla_escalamiento': reglaEscalamiento.isEmpty ? null : reglaEscalamiento,
+        'regla_escalamiento': reglaEscalamiento,
       };
 }
 
 class _DocumentoData {
+  int? idDocumento;
   String tipoDocumento;
   String nombreArchivo;
   String rutaArchivo;
@@ -79,7 +97,8 @@ class _DocumentoData {
   String fechaDocumento;
   bool esVigente;
   _DocumentoData({
-    this.tipoDocumento = 'Contrato',
+    this.idDocumento,
+    this.tipoDocumento = 'Contrato Principal',
     this.nombreArchivo = '',
     this.rutaArchivo = '',
     this.hashSha256 = '',
@@ -87,6 +106,7 @@ class _DocumentoData {
     this.esVigente = true,
   });
   Map<String, dynamic> toJson() => {
+        if (idDocumento != null) 'id_documento': idDocumento,
         'tipo_documento': tipoDocumento,
         'nombre_archivo': nombreArchivo,
         'ruta_archivo': rutaArchivo,
@@ -118,6 +138,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
   final _step2Key = GlobalKey<FormState>();
 
   // ── Step 1: Contrato ──
+  int? _idContrato;
   int? _idCliente;
   final _numeroContratoCtrl = TextEditingController();
   final _nombreCtrl = TextEditingController();
@@ -130,6 +151,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
   String _estatus = 'Vigente';
 
   // ── Step 2: Versión ──
+  int? _idContratoVersion;
   final _versionNumCtrl = TextEditingController(text: '1');
   final _versionFechaInicioCtrl = TextEditingController();
   final _versionFechaFinCtrl = TextEditingController();
@@ -160,7 +182,10 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
     setState(() {
       _isCreating = false;
       _currentStep = 0;
+      _isSaving = false;
+      _idContrato = null;
       _idCliente = null;
+      _idContratoVersion = null;
       _numeroContratoCtrl.clear();
       _nombreCtrl.clear();
       _fechaFirmaCtrl.clear();
@@ -177,6 +202,129 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
       _zonas.clear();
       _documentos.clear();
     });
+  }
+
+  Future<void> _deleteContratoDialog(Contrato contrato) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Eliminar Contrato'),
+        content: const Text('¿Estás seguro de eliminar este contrato? Se marcará como inactivo.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancelar')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Eliminar', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true && contrato.idContrato != null) {
+      try {
+        await ref.read(contratosProvider.notifier).deleteContrato(contrato.idContrato!);
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Error al eliminar: $e')));
+        }
+      }
+    }
+  }
+
+  Future<void> _openEditWizard(Contrato contrato) async {
+    setState(() {
+      _isCreating = true;
+      _currentStep = 0;
+      _isSaving = true;
+    });
+
+    final supabase = ref.read(supabaseClientProvider);
+    try {
+      final data = await supabase
+          .from('contrato')
+          .select('*, contrato_version(*, zona_contrato(*, contrato_alcance(*), contrato_sla(*)), contrato_documento(*))')
+          .eq('id_contrato', contrato.idContrato!)
+          .single();
+
+      if (mounted) {
+        setState(() {
+          _idContrato = data['id_contrato'];
+          _idCliente = data['id_cliente'];
+          _numeroContratoCtrl.text = data['numero_contrato'] ?? '';
+          _nombreCtrl.text = data['nombre'] ?? '';
+          _fechaFirmaCtrl.text = data['fecha_firma'] ?? '';
+          _fechaInicioCtrl.text = data['fecha_inicio'] ?? '';
+          _fechaFinCtrl.text = data['fecha_fin'] ?? '';
+          _montoGlobalCtrl.text = data['monto_global']?.toString() ?? '';
+          _moneda = data['moneda'] ?? 'MXN';
+          _periodicidad = data['periodicidad_facturacion'] ?? 'Mensual';
+          _estatus = data['estatus'] ?? 'Vigente';
+
+          final versions = List<Map<String, dynamic>>.from(data['contrato_version'] ?? []);
+          final currentVersion = versions.where((v) => v['activo'] == true).firstOrNull ?? (versions.isNotEmpty ? versions.first : null);
+
+          if (currentVersion != null) {
+            _idContratoVersion = currentVersion['id_contrato_version'];
+            _versionNumCtrl.text = currentVersion['numero_version']?.toString() ?? '1';
+            _versionFechaInicioCtrl.text = currentVersion['fecha_inicio_vigencia'] ?? '';
+            _versionFechaFinCtrl.text = currentVersion['fecha_fin_vigencia'] ?? '';
+            _versionDescCtrl.text = currentVersion['descripcion'] ?? '';
+
+            final zonasData = List<Map<String, dynamic>>.from(currentVersion['zona_contrato'] ?? []).where((z) => z['activo'] == true).toList();
+            _zonas.clear();
+            for (var z in zonasData) {
+              final alcancesData = List<Map<String, dynamic>>.from(z['contrato_alcance'] ?? []).where((a) => a['activo'] == true).toList();
+              final slasData = List<Map<String, dynamic>>.from(z['contrato_sla'] ?? []).where((s) => s['activo'] == true).toList();
+
+              _zonas.add(_ZonaData(
+                idZonaContrato: z['id_zona_contrato'],
+                codigo: z['codigo'] ?? '',
+                nombre: z['nombre'] ?? '',
+                descripcion: z['descripcion'] ?? '',
+                alcances: alcancesData.map((a) => _AlcanceData(
+                  idAlcance: a['id_contrato_alcance'],
+                  idTipoServicio: a['id_tipo_servicio']?.toString() ?? '',
+                  descripcion: a['descripcion'] ?? '',
+                )).toList(),
+                slas: slasData.map((s) => _SlaData(
+                  idSla: s['id_contrato_sla'],
+                  prioridad: s['prioridad'] ?? 'Media',
+                  horarioCobertura: s['horario_cobertura'] ?? '8x5',
+                  minutosRespuesta: s['minutos_respuesta']?.toString() ?? '',
+                  minutosLlegada: s['minutos_llegada']?.toString() ?? '',
+                  minutosSolucion: s['minutos_solucion_objetivo']?.toString() ?? '',
+                  reglaEscalamiento: s['regla_escalamiento'] ?? '',
+                )).toList(),
+              ));
+            }
+
+            final docsData = List<Map<String, dynamic>>.from(currentVersion['contrato_documento'] ?? []).where((d) => d['activo'] == true).toList();
+            _documentos.clear();
+            for (var d in docsData) {
+              _documentos.add(_DocumentoData(
+                idDocumento: d['id_contrato_documento'],
+                tipoDocumento: d['tipo_documento'] ?? 'Contrato Principal',
+                nombreArchivo: d['nombre_archivo'] ?? '',
+                rutaArchivo: d['ruta_archivo'] ?? '',
+                hashSha256: d['hash_sha256'] ?? '',
+                fechaDocumento: d['fecha_documento'] ?? '',
+                esVigente: d['es_vigente'] ?? true,
+              ));
+            }
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al cargar contrato: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   Future<void> _pickDate(TextEditingController ctrl) async {
@@ -226,6 +374,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
       final userId = await _getCurrentUserId();
 
       final payload = {
+        if (_idContrato != null) 'id_contrato': _idContrato,
         'id_cliente': _idCliente,
         'numero_contrato': _numeroContratoCtrl.text.trim(),
         'nombre': _nombreCtrl.text.trim(),
@@ -237,19 +386,23 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
         'periodicidad_facturacion': _periodicidad,
         'estatus': _estatus,
         'creado_por': userId,
+        'actualizado_por': userId,
         'version': {
-          'numero_version': int.tryParse(_versionNumCtrl.text.trim()) ?? 1,
+          if (_idContratoVersion != null) 'id_contrato_version': _idContratoVersion,
+          'numero_version': _versionNumCtrl.text.trim(),
           'fecha_inicio_vigencia': _versionFechaInicioCtrl.text.trim(),
-          'fecha_fin_vigencia': _versionFechaFinCtrl.text.trim().isEmpty
-              ? null
-              : _versionFechaFinCtrl.text.trim(),
+          'fecha_fin_vigencia': _versionFechaFinCtrl.text.trim(),
           'descripcion': _versionDescCtrl.text.trim(),
         },
         'zonas': _zonas.map((z) => z.toJson()).toList(),
         'documentos': _documentos.map((d) => d.toJson()).toList(),
       };
 
-      await supabase.rpc('crear_contrato_completo', params: {'payload': payload});
+      if (_idContrato != null) {
+        await supabase.rpc('actualizar_contrato_completo', params: {'payload': payload});
+      } else {
+        await supabase.rpc('crear_contrato_completo', params: {'payload': payload});
+      }
 
       // Refresh the contracts list
       ref.read(contratosProvider.notifier).fetchContratos();
@@ -368,42 +521,59 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
                 style: TextStyle(color: context.mutedTextColor)),
           );
         }
-        return ModalDataTable(dataTable: DataTable(
-              columns: [
-                DataColumn(label: Text('CLIENTE', style: TextStyle(color: context.mutedTextColor))),
-                DataColumn(label: Text('NO. CONTRATO', style: TextStyle(color: context.mutedTextColor))),
-                DataColumn(label: Text('VIGENCIA', style: TextStyle(color: context.mutedTextColor))),
-                DataColumn(label: Text('ESTATUS', style: TextStyle(color: context.mutedTextColor))),
-              ],
-              rows: active.map((c) {
-                String clientName = '—';
-                clientesAsync.whenData((list) {
-                  final cl = list.where((cl) => cl.idCliente == c.idCliente).firstOrNull;
-                  if (cl != null) clientName = cl.nombreComercial;
-                });
-                return DataRow(cells: [
-                  DataCell(Text(clientName, style: TextStyle(color: context.textColor))),
-                  DataCell(Text(c.numeroContrato, style: TextStyle(color: context.textColor))),
-                  DataCell(Text('${c.fechaInicio} → ${c.fechaFin}',
-                      style: TextStyle(color: context.textColor))),
-                  DataCell(Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: c.estatus == 'Vigente'
-                          ? AppColors.green.withOpacity(0.15)
-                          : AppColors.red.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(c.estatus,
-                        style: TextStyle(
-                          color: c.estatus == 'Vigente' ? AppColors.green : AppColors.red,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        )),
-                  )),
-                ]);
-              }).toList(),
-            ));
+        return SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: ModalDataTable(dataTable: DataTable(
+                columns: [
+                  DataColumn(label: Text('CLIENTE', style: TextStyle(color: context.mutedTextColor))),
+                  DataColumn(label: Text('NO. CONTRATO', style: TextStyle(color: context.mutedTextColor))),
+                  DataColumn(label: Text('VIGENCIA', style: TextStyle(color: context.mutedTextColor))),
+                  DataColumn(label: Text('ESTATUS', style: TextStyle(color: context.mutedTextColor))),
+                  DataColumn(label: Text('ACCIONES', style: TextStyle(color: context.mutedTextColor))),
+                ],
+                rows: active.map((c) {
+                  String clientName = '—';
+                  clientesAsync.whenData((list) {
+                    final cl = list.where((cl) => cl.idCliente == c.idCliente).firstOrNull;
+                    if (cl != null) clientName = cl.nombreComercial;
+                  });
+                  return DataRow(cells: [
+                    DataCell(Text(clientName, style: TextStyle(color: context.textColor))),
+                    DataCell(Text(c.numeroContrato, style: TextStyle(color: context.textColor))),
+                    DataCell(Text('${c.fechaInicio} → ${c.fechaFin}',
+                        style: TextStyle(color: context.textColor))),
+                    DataCell(Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: c.estatus == 'Vigente'
+                            ? AppColors.green.withOpacity(0.15)
+                            : AppColors.red.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(c.estatus,
+                          style: TextStyle(
+                            color: c.estatus == 'Vigente' ? AppColors.green : AppColors.red,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          )),
+                    )),
+                    DataCell(Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.edit, color: AppColors.blue, size: 20),
+                          onPressed: () => _openEditWizard(c),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete, color: AppColors.red, size: 20),
+                          onPressed: () => _deleteContratoDialog(c),
+                        ),
+                      ],
+                    )),
+                  ]);
+                }).toList(),
+              )),
+        );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, st) =>
@@ -889,7 +1059,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
                   decoration: _inputDeco('Tipo'),
                   dropdownColor: context.surfaceColor,
                   style: TextStyle(color: context.textColor),
-                  items: ['Contrato', 'Anexo', 'Addendum', 'SLA', 'Otro']
+                  items: ['Contrato Principal', 'Anexo', 'Addendum', 'SLA', 'Otro']
                       .map((s) => DropdownMenuItem(
                           value: s, child: Text(s, style: TextStyle(color: context.textColor))))
                       .toList(),

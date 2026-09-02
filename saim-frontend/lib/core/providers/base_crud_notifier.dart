@@ -13,6 +13,8 @@ abstract class SupabaseCrudNotifier<T> extends StateNotifier<AsyncValue<List<T>>
 
   final String selectQuery;
   final bool ascending;
+  
+  RealtimeChannel? _channel;
 
   SupabaseCrudNotifier({
     required this.supabase,
@@ -26,11 +28,34 @@ abstract class SupabaseCrudNotifier<T> extends StateNotifier<AsyncValue<List<T>>
     this.ascending = true,
   }) : super(const AsyncValue.loading()) {
     fetch();
+    _setupRealtime();
   }
 
-  Future<void> fetch() async {
+  void _setupRealtime() {
+    _channel = supabase.channel('public:$tableName').onPostgresChanges(
+      event: PostgresChangeEvent.all,
+      schema: 'public',
+      table: tableName,
+      callback: (payload) {
+        // Fetch fresh data when any change happens in the database
+        fetch(isRealtimeUpdate: true);
+      },
+    );
+    _channel?.subscribe();
+  }
+
+  @override
+  void dispose() {
+    _channel?.unsubscribe();
+    super.dispose();
+  }
+
+  Future<void> fetch({bool isRealtimeUpdate = false}) async {
     try {
-      state = const AsyncValue.loading();
+      if (!isRealtimeUpdate) {
+        state = const AsyncValue.loading();
+      }
+      
       final response = await supabase
           .from(tableName)
           .select(selectQuery)
@@ -39,7 +64,9 @@ abstract class SupabaseCrudNotifier<T> extends StateNotifier<AsyncValue<List<T>>
       final list = (response as List).map((json) => fromJson(json)).toList();
       state = AsyncValue.data(list);
     } catch (e, st) {
-      state = AsyncValue.error(e, st);
+      if (!isRealtimeUpdate) {
+        state = AsyncValue.error(e, st);
+      }
     }
   }
 

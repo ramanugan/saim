@@ -4,6 +4,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/zona_tienda.dart';
 import '../../providers/zonas_tienda_provider.dart';
+import '../../providers/zonas_contrato_provider.dart';
+import '../../providers/tiendas_provider.dart';
 import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudZonasTiendaModal extends ConsumerStatefulWidget {
@@ -18,8 +20,8 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
   ZonaTienda? _selectedZona;
 
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _idZonaContratoCtrl;
-  late TextEditingController _idTiendaCtrl;
+  int? _idZonaContrato;
+  int? _idTienda;
   late TextEditingController _fechaInicioCtrl;
   late TextEditingController _fechaFinCtrl;
   late TextEditingController _numeroAnexoCtrl;
@@ -32,10 +34,8 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
   }
 
   void _initControllers() {
-    _idZonaContratoCtrl = TextEditingController(
-        text: _selectedZona?.idZonaContrato.toString() ?? '');
-    _idTiendaCtrl = TextEditingController(
-        text: _selectedZona?.idTienda.toString() ?? '');
+    _idZonaContrato = _selectedZona?.idZonaContrato;
+    _idTienda = _selectedZona?.idTienda;
     _fechaInicioCtrl = TextEditingController(
         text: _selectedZona != null
             ? _selectedZona!.fechaInicioCobertara.toIso8601String().split('T').first
@@ -53,8 +53,6 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
 
   @override
   void dispose() {
-    _idZonaContratoCtrl.dispose();
-    _idTiendaCtrl.dispose();
     _fechaInicioCtrl.dispose();
     _fechaFinCtrl.dispose();
     _numeroAnexoCtrl.dispose();
@@ -95,8 +93,8 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
 
     final newZona = ZonaTienda(
       idZonaTienda: _selectedZona?.idZonaTienda,
-      idZonaContrato: int.tryParse(_idZonaContratoCtrl.text.trim()) ?? 0,
-      idTienda: int.tryParse(_idTiendaCtrl.text.trim()) ?? 0,
+      idZonaContrato: _idZonaContrato ?? 0,
+      idTienda: _idTienda ?? 0,
       fechaInicioCobertara:
           DateTime.tryParse(_fechaInicioCtrl.text.trim()) ?? DateTime.now(),
       fechaFinCobertura: _fechaFinCtrl.text.trim().isNotEmpty
@@ -290,6 +288,9 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
   }
 
   Widget _buildForm() {
+    final zonasContratoAsync = ref.watch(helperZonasContratoProvider);
+    final tiendasAsync = ref.watch(helperTiendasProvider);
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Form(
@@ -300,13 +301,59 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
             Row(
               children: [
                 Expanded(
-                  child: _buildTextField('ID Zona Contrato *', _idZonaContratoCtrl,
-                      required: true, keyboardType: TextInputType.number),
+                  child: DropdownButtonFormField<int>(
+                    value: _idZonaContrato,
+                    decoration: InputDecoration(
+                      labelText: 'Zona Contrato *',
+                      labelStyle: TextStyle(color: context.textColor),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      filled: true,
+                      fillColor: context.backgroundColor,
+                    ),
+                    dropdownColor: context.surfaceColor,
+                    style: TextStyle(color: context.textColor),
+                    isExpanded: true,
+                    items: zonasContratoAsync.when(
+                      data: (list) => list.map((item) {
+                        return DropdownMenuItem<int>(
+                          value: item['id'],
+                          child: Text(item['nombre'], overflow: TextOverflow.ellipsis),
+                        );
+                      }).toList(),
+                      loading: () => [],
+                      error: (_, __) => [],
+                    ),
+                    onChanged: (v) => setState(() => _idZonaContrato = v),
+                    validator: (v) => v == null ? 'Requerido' : null,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: _buildTextField('ID Tienda *', _idTiendaCtrl,
-                      required: true, keyboardType: TextInputType.number),
+                  child: DropdownButtonFormField<int>(
+                    value: _idTienda,
+                    decoration: InputDecoration(
+                      labelText: 'Tienda *',
+                      labelStyle: TextStyle(color: context.textColor),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      filled: true,
+                      fillColor: context.backgroundColor,
+                    ),
+                    dropdownColor: context.surfaceColor,
+                    style: TextStyle(color: context.textColor),
+                    isExpanded: true,
+                    items: tiendasAsync.when(
+                      data: (list) => list.map((item) {
+                        return DropdownMenuItem<int>(
+                          value: item['id'],
+                          child: Text(item['nombre'], overflow: TextOverflow.ellipsis),
+                        );
+                      }).toList(),
+                      loading: () => [],
+                      error: (_, __) => [],
+                    ),
+                    onChanged: (v) => setState(() => _idTienda = v),
+                    validator: (v) => v == null ? 'Requerido' : null,
+                  ),
                 ),
               ],
             ),
@@ -336,7 +383,7 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
               ),
               dropdownColor: context.surfaceColor,
               style: TextStyle(color: context.textColor),
-              items: ['Activo', 'Inactivo', 'Pendiente']
+              items: {'Activo', 'Inactivo', 'Pendiente', 'VIGENTE', 'Vigente', _estatus}
                   .map((s) => DropdownMenuItem(value: s, child: Text(s)))
                   .toList(),
               onChanged: (v) => setState(() => _estatus = v!),
