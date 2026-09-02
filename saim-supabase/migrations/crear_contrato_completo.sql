@@ -55,7 +55,8 @@ BEGIN
     numero_version,
     fecha_inicio_vigencia,
     fecha_fin_vigencia,
-    descripcion,
+    motivo_version,
+    estatus,
     creado_por,
     actualizado_por
   ) VALUES (
@@ -63,7 +64,8 @@ BEGIN
     (payload->'version'->>'numero_version')::INTEGER,
     (payload->'version'->>'fecha_inicio_vigencia')::DATE,
     NULLIF(payload->'version'->>'fecha_fin_vigencia', '')::DATE,
-    payload->'version'->>'descripcion',
+    payload->'version'->>'motivo_version',
+    'VIGENTE',
     (payload->>'creado_por')::BIGINT,
     (payload->>'creado_por')::BIGINT
   )
@@ -77,6 +79,7 @@ BEGIN
       codigo,
       nombre,
       descripcion,
+      fecha_inicio,
       creado_por,
       actualizado_por
     ) VALUES (
@@ -84,6 +87,7 @@ BEGIN
       zona_item->>'codigo',
       zona_item->>'nombre',
       zona_item->>'descripcion',
+      (payload->'version'->>'fecha_inicio_vigencia')::DATE,
       (payload->>'creado_por')::BIGINT,
       (payload->>'creado_por')::BIGINT
     )

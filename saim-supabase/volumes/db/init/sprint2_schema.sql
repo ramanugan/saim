@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS contrato_documento (
 CREATE TABLE IF NOT EXISTS contrato_alcance (
     id_contrato_alcance BIGINT GENERATED ALWAYS AS IDENTITY NOT NULL,
     id_contrato_version BIGINT NOT NULL,
+    id_zona_contrato BIGINT NULL,
     id_tipo_servicio BIGINT NULL,
     clasificacion VARCHAR(30) NOT NULL,
     concepto VARCHAR(250) NOT NULL,
@@ -251,6 +252,7 @@ ALTER TABLE contrato_documento ADD CONSTRAINT fk_contrato_documento_id_contrato_
 ALTER TABLE contrato_documento ADD CONSTRAINT fk_contrato_documento_creado_por FOREIGN KEY (creado_por) REFERENCES usuario(id_usuario);
 ALTER TABLE contrato_documento ADD CONSTRAINT fk_contrato_documento_actualizado_por FOREIGN KEY (actualizado_por) REFERENCES usuario(id_usuario);
 ALTER TABLE contrato_alcance ADD CONSTRAINT fk_contrato_alcance_id_contrato_version FOREIGN KEY (id_contrato_version) REFERENCES contrato_version(id_contrato_version);
+ALTER TABLE contrato_alcance ADD CONSTRAINT fk_contrato_alcance_id_zona_contrato FOREIGN KEY (id_zona_contrato) REFERENCES zona_contrato(id_zona_contrato);
 ALTER TABLE contrato_alcance ADD CONSTRAINT fk_contrato_alcance_id_tipo_servicio FOREIGN KEY (id_tipo_servicio) REFERENCES tipo_servicio(id_tipo_servicio);
 ALTER TABLE contrato_alcance ADD CONSTRAINT fk_contrato_alcance_creado_por FOREIGN KEY (creado_por) REFERENCES usuario(id_usuario);
 ALTER TABLE contrato_alcance ADD CONSTRAINT fk_contrato_alcance_actualizado_por FOREIGN KEY (actualizado_por) REFERENCES usuario(id_usuario);

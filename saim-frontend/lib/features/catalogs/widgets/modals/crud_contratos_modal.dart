@@ -272,7 +272,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
             _versionNumCtrl.text = currentVersion['numero_version']?.toString() ?? '1';
             _versionFechaInicioCtrl.text = currentVersion['fecha_inicio_vigencia'] ?? '';
             _versionFechaFinCtrl.text = currentVersion['fecha_fin_vigencia'] ?? '';
-            _versionDescCtrl.text = currentVersion['descripcion'] ?? '';
+            _versionDescCtrl.text = currentVersion['motivo_version'] ?? '';
 
             final zonasData = List<Map<String, dynamic>>.from(currentVersion['zona_contrato'] ?? []).where((z) => z['activo'] == true).toList();
             _zonas.clear();
@@ -392,7 +392,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
           'numero_version': _versionNumCtrl.text.trim(),
           'fecha_inicio_vigencia': _versionFechaInicioCtrl.text.trim(),
           'fecha_fin_vigencia': _versionFechaFinCtrl.text.trim(),
-          'descripcion': _versionDescCtrl.text.trim(),
+          'motivo_version': _versionDescCtrl.text.trim(),
         },
         'zonas': _zonas.map((z) => z.toJson()).toList(),
         'documentos': _documentos.map((d) => d.toJson()).toList(),
