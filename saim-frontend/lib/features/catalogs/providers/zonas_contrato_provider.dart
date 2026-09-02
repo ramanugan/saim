@@ -24,6 +24,27 @@ final helperZonasContratoProvider = Provider<AsyncValue<List<Map<String, dynamic
   );
 });
 
+final helperZonasContratoUnicasProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final state = ref.watch(zonasContratoProvider);
+  return state.when(
+    data: (list) {
+      final Map<String, Map<String, dynamic>> unicas = {};
+      for (final z in list) {
+        if (!unicas.containsKey(z.codigo)) {
+          unicas[z.codigo!] = {
+            'codigo': z.codigo,
+            'nombre': z.nombre,
+            'descripcion': z.descripcion ?? '',
+          };
+        }
+      }
+      return AsyncValue.data(unicas.values.toList());
+    },
+    loading: () => const AsyncValue.loading(),
+    error: (e, st) => AsyncValue.error(e, st),
+  );
+});
+
 class ZonasContratoNotifier extends SupabaseCrudNotifier<ZonaContrato> {
   ZonasContratoNotifier(SupabaseClient supabase)
       : super(

@@ -5,6 +5,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../providers/clientes_provider.dart';
 import '../../providers/contratos_provider.dart';
 import '../../models/contrato.dart';
+import '../../providers/zonas_contrato_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../shared/widgets/modal_data_table.dart';
 
@@ -821,11 +822,22 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
           return _buildZonaCard(idx, zona);
         }),
         const SizedBox(height: 12),
-        OutlinedButton.icon(
-          onPressed: () => setState(() => _zonas.add(_ZonaData())),
-          icon: const Icon(Icons.add),
-          label: const Text('Agregar Zona'),
-          style: OutlinedButton.styleFrom(foregroundColor: AppColors.blue),
+        Row(
+          children: [
+            OutlinedButton.icon(
+              onPressed: () => setState(() => _zonas.add(_ZonaData())),
+              icon: const Icon(Icons.add),
+              label: const Text('Agregar Zona'),
+              style: OutlinedButton.styleFrom(foregroundColor: AppColors.blue),
+            ),
+            const SizedBox(width: 12),
+            OutlinedButton.icon(
+              onPressed: () => _mostrarDialogoZonasUnicas(context),
+              icon: const Icon(Icons.search),
+              label: const Text('Importar Existente'),
+              style: OutlinedButton.styleFrom(foregroundColor: context.textColor),
+            ),
+          ],
         ),
         if (_zonas.isEmpty)
           Padding(
@@ -834,6 +846,65 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
                 style: TextStyle(color: AppColors.red, fontSize: 12)),
           ),
       ],
+    );
+  }
+
+  void _mostrarDialogoZonasUnicas(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: context.surfaceColor,
+          title: Text('Importar Zona Existente', style: TextStyle(color: context.textColor)),
+          content: SizedBox(
+            width: 400,
+            child: Consumer(
+              builder: (context, ref, child) {
+                final state = ref.watch(helperZonasContratoUnicasProvider);
+                return state.when(
+                  data: (zonas) {
+                    if (zonas.isEmpty) {
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text('No hay zonas previas registradas.', style: TextStyle(color: context.mutedTextColor)),
+                      );
+                    }
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: zonas.length,
+                      itemBuilder: (context, index) {
+                        final z = zonas[index];
+                        return ListTile(
+                          title: Text('${z['codigo']} - ${z['nombre']}', style: TextStyle(color: context.textColor)),
+                          subtitle: Text(z['descripcion'] ?? '', style: TextStyle(color: context.mutedTextColor)),
+                          onTap: () {
+                            setState(() {
+                              _zonas.add(_ZonaData(
+                                codigo: z['codigo'],
+                                nombre: z['nombre'],
+                                descripcion: z['descripcion'] ?? '',
+                              ));
+                            });
+                            Navigator.of(ctx).pop();
+                          },
+                        );
+                      },
+                    );
+                  },
+                  loading: () => const Center(child: CircularProgressIndicator()),
+                  error: (err, st) => Text('Error al cargar zonas: $err', style: TextStyle(color: AppColors.red)),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Cerrar'),
+            ),
+          ],
+        );
+      },
     );
   }
 
