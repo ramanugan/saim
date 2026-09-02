@@ -24,25 +24,7 @@ class CoverageTab extends ConsumerWidget {
           child: CatalogPanel(
             title: 'Cliente y contratos',
             subtitle: 'Escenario contractual',
-            trailing: isAdmin ? Row(
-              children: [
-                TextButton(
-                  onPressed: () {
-                    showDialog(context: context, builder: (ctx) => CrudClientesModal());
-                  },
-                  style: TextButton.styleFrom(foregroundColor: AppColors.red),
-                  child: Text('Clientes +'),
-                ),
-                SizedBox(width: 8),
-                TextButton(
-                  onPressed: () {
-                    showDialog(context: context, builder: (ctx) => CrudContratosModal());
-                  },
-                  style: TextButton.styleFrom(foregroundColor: AppColors.red),
-                  child: Text('Contratos +'),
-                ),
-              ],
-            ) : null,
+            trailing: null,
             child: CatalogDataTable(
               columns: ['CONTRATO', 'VIGENCIA', 'ZONAS', 'TIENDAS', 'ESTADO'],
               rows: [
@@ -70,25 +52,7 @@ class CoverageTab extends ConsumerWidget {
           child: CatalogPanel(
             title: 'Zonas y estados',
             subtitle: 'Alcance territorial del contrato',
-            trailing: isAdmin ? Row(
-              children: [
-                TextButton(
-                  onPressed: () {
-                    showDialog(context: context, builder: (ctx) => CrudZonasEstadoModal());
-                  },
-                  style: TextButton.styleFrom(foregroundColor: AppColors.red),
-                  child: Text('Zonas +'),
-                ),
-                SizedBox(width: 8),
-                TextButton(
-                  onPressed: () {
-                    showDialog(context: context, builder: (ctx) => CrudEstadosModal());
-                  },
-                  style: TextButton.styleFrom(foregroundColor: AppColors.red),
-                  child: Text('Estados +'),
-                ),
-              ],
-            ) : null,
+            trailing: null,
             child: CatalogDataTable(
               columns: ['ZONA', 'COORDINACIÓN', 'ESTADOS', 'TIENDAS', ''],
               rows: [
