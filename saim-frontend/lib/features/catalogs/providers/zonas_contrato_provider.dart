@@ -12,13 +12,19 @@ final zonasContratoProvider = StateNotifierProvider<ZonasContratoNotifier, Async
 final helperZonasContratoProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
   final state = ref.watch(zonasContratoProvider);
   return state.when(
-    data: (list) => AsyncValue.data(
-      list.map((z) => {
-        'id': z.idZonaContrato,
-        'nombre': '${z.codigo} - ${z.nombre}',
-        'activo': z.activo,
+    data: (list) {
+      final filteredList = list.where((z) => z.versionActiva == true).toList();
+      return AsyncValue.data(
+        filteredList.map((z) {
+        final prefix = z.numeroContrato != null ? '${z.numeroContrato} | ' : '';
+        return {
+          'id': z.idZonaContrato,
+          'nombre': '$prefix${z.codigo} - ${z.nombre}',
+          'activo': z.activo,
+        };
       }).toList(),
-    ),
+      );
+    },
     loading: () => const AsyncValue.loading(),
     error: (e, st) => AsyncValue.error(e, st),
   );
@@ -51,6 +57,7 @@ class ZonasContratoNotifier extends SupabaseCrudNotifier<ZonaContrato> {
           supabase: supabase,
           tableName: 'zona_contrato',
           primaryKey: 'id_zona_contrato',
+          selectQuery: '*, zona(codigo, nombre, descripcion), contrato_version(activo, contrato(numero_contrato))',
           fromJson: (json) => ZonaContrato.fromJson(json),
           toJson: (item) => item.toJson(),
           getId: (item) => item.idZonaContrato,

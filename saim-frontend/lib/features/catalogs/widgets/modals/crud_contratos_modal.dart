@@ -903,7 +903,12 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
                               }
                             });
                           },
-                          validator: (v) => v == null ? 'Selecciona una zona' : null,
+                          validator: (v) {
+                            if (v == null) return 'Selecciona una zona';
+                            final count = _zonas.where((z) => z.idZona == v).length;
+                            if (count > 1) return 'Zona duplicada';
+                            return null;
+                          },
                         );
                       },
                       loading: () => const LinearProgressIndicator(),
