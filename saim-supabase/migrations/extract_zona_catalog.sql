@@ -142,12 +142,14 @@ BEGIN
     INSERT INTO public.zona_contrato (
       id_contrato_version,
       id_zona,
+      coordinador_responsable,
       fecha_inicio,
       creado_por,
       actualizado_por
     ) VALUES (
       v_id_version,
       (zona_item->>'id_zona')::BIGINT,
+      (zona_item->>'coordinador_responsable')::BIGINT,
       (payload->'version'->>'fecha_inicio_vigencia')::DATE,
       (payload->>'creado_por')::BIGINT,
       (payload->>'creado_por')::BIGINT
@@ -314,12 +316,14 @@ BEGIN
     INSERT INTO public.zona_contrato (
       id_contrato_version,
       id_zona,
+      coordinador_responsable,
       fecha_inicio,
       creado_por,
       actualizado_por
     ) VALUES (
       v_id_nueva_version,
       (zona_item->>'id_zona')::BIGINT,
+      (zona_item->>'coordinador_responsable')::BIGINT,
       CURRENT_DATE,
       v_usuario,
       v_usuario

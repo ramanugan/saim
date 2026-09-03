@@ -6,6 +6,7 @@ import '../../providers/clientes_provider.dart';
 import '../../providers/contratos_provider.dart';
 import '../../models/contrato.dart';
 import '../../providers/zonas_provider.dart';
+import '../../providers/empleados_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
@@ -19,6 +20,7 @@ import '../../../../shared/widgets/modal_data_table.dart';
 class _ZonaData {
   int? idZonaContrato;
   int? idZona;
+  int? coordinadorResponsable;
   String codigo;
   String nombre;
   String descripcion;
@@ -28,6 +30,7 @@ class _ZonaData {
   _ZonaData({
     this.idZonaContrato,
     this.idZona,
+    this.coordinadorResponsable,
     this.codigo = '',
     this.nombre = '',
     this.descripcion = '',
@@ -39,6 +42,7 @@ class _ZonaData {
   Map<String, dynamic> toJson() => {
         if (idZonaContrato != null) 'id_zona_contrato': idZonaContrato,
         if (idZona != null) 'id_zona': idZona,
+        if (coordinadorResponsable != null) 'coordinador_responsable': coordinadorResponsable,
         'codigo': codigo,
         'nombre': nombre,
         'descripcion': descripcion,
@@ -291,6 +295,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
               _zonas.add(_ZonaData(
                 idZonaContrato: z['id_zona_contrato'],
                 idZona: z['id_zona'],
+                coordinadorResponsable: z['coordinador_responsable'],
                 codigo: z['codigo'] ?? '',
                 nombre: z['nombre'] ?? '',
                 descripcion: z['descripcion'] ?? '',
@@ -849,8 +854,6 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
     );
   }
 
-  // Dialog for unique zones removed as it is now a standard dropdown catalog
-
   Widget _buildZonaCard(int idx, _ZonaData zona) {
     return Card(
       color: context.backgroundColor,
@@ -907,6 +910,35 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
                       error: (err, st) => Text('Error al cargar zonas: $err'),
                     );
                   }
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Consumer(
+                  builder: (context, ref, child) {
+                    final empleadosAsync = ref.watch(helperEmpleadosProvider);
+                    return empleadosAsync.when(
+                      data: (empleadosMap) {
+                        return DropdownButtonFormField<int>(
+                          value: zona.coordinadorResponsable,
+                          decoration: _inputDeco('Coordinador Responsable'),
+                          dropdownColor: context.surfaceColor,
+                          style: TextStyle(color: context.textColor),
+                          items: empleadosMap
+                              .map((e) => DropdownMenuItem<int>(
+                                  value: e['id'] as int,
+                                  child: Text(e['nombre'] as String,
+                                      style: TextStyle(color: context.textColor))))
+                              .toList(),
+                          onChanged: (v) {
+                            setState(() => zona.coordinadorResponsable = v);
+                          },
+                        );
+                      },
+                      loading: () => const LinearProgressIndicator(),
+                      error: (err, st) => Text('Error al cargar empleados: $err'),
+                    );
+                  },
                 ),
               ),
             ]),
