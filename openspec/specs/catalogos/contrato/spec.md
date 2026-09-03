@@ -20,13 +20,13 @@ El sistema MUST asegurar que al finalizar el formulario multi-paso de contrato, 
 - **WHEN** el usuario guarda un contrato que contiene documentos con archivos ya subidos asíncronamente
 - **THEN** el contrato guarda las referencias (ruta y hash) obtenidas durante la subida, manteniendo la atomicidad del registro principal.
 
-### Requirement: Importación de zonas existentes
-El sistema SHALL permitir al usuario en el paso "Zonas" del asistente de contratos, seleccionar zonas previamente registradas en el sistema para agregarlas a la lista de zonas del contrato actual, autocompletando su código, nombre y descripción.
+### Requirement: Selección de zonas de cobertura
+El sistema SHALL permitir al usuario en el paso "Zonas" del asistente de contratos, seleccionar zonas del catálogo maestro para asignarlas como zonas de cobertura del contrato actual.
 
-#### Scenario: Selección de zona existente
-- **WHEN** el usuario hace clic en "Importar Existente" y selecciona una zona de la lista
-- **THEN** la información de la zona seleccionada se carga como una nueva tarjeta apilada en el contrato actual y se cierra el diálogo.
+#### Scenario: Selección de zona de cobertura
+- **WHEN** el usuario hace clic en "Agregar Zona" y selecciona una zona del catálogo maestro
+- **THEN** el contrato se vincula a la zona existente, sin duplicar ni crear un nuevo registro de zona independiente.
 
-#### Scenario: Ausencia de zonas previas
-- **WHEN** el usuario hace clic en "Importar Existente" y no hay zonas registradas en el sistema
-- **THEN** el diálogo muestra un mensaje indicando que no hay zonas previas registradas.
+#### Scenario: Ausencia de zonas en el catálogo
+- **WHEN** el usuario intenta agregar una zona y el catálogo maestro está vacío
+- **THEN** el sistema indica que no hay zonas registradas y provee un enlace o mensaje indicando que deben crearse primero en el catálogo maestro.

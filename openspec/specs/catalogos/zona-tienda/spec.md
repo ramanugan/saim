@@ -6,8 +6,8 @@ Permite gestionar la asignación de tiendas individuales (zona_tienda) a zonas c
 ## Requirements
 
 ### Requirement: CRUD de Zona Tienda
-El sistema MUST permitir la creación, lectura, actualización y eliminación de los registros de zonas de tiendas desde un modal.
+El sistema MUST permitir la creación, lectura, actualización y eliminación de los registros de asignación de tiendas a zonas geográficas (catálogo maestro) desde un modal, sin duplicar la zona geográfica.
 
-#### Scenario: Tienda específica agregada a zona
-- **WHEN** un usuario asigna una tienda específica a una zona
-- **THEN** el sistema registra la tienda como parte de la cobertura de dicha zona contractual.
+#### Scenario: Tienda específica agregada a zona del catálogo maestro
+- **WHEN** un usuario asigna una tienda específica a una zona del catálogo maestro
+- **THEN** el sistema registra la tienda como perteneciente a dicha zona, lo cual automáticamente incluirá a la tienda en cualquier contrato que cubra esa misma zona.
