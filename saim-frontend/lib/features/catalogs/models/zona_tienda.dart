@@ -1,6 +1,6 @@
 class ZonaTienda {
   final int? idZonaTienda;
-  final int idZonaContrato;
+  final int idZona;
   final int idTienda;
   final DateTime fechaInicioCobertara;
   final DateTime? fechaFinCobertura;
@@ -11,7 +11,7 @@ class ZonaTienda {
 
   ZonaTienda({
     this.idZonaTienda,
-    required this.idZonaContrato,
+    required this.idZona,
     required this.idTienda,
     required this.fechaInicioCobertara,
     this.fechaFinCobertura,
@@ -24,7 +24,7 @@ class ZonaTienda {
   factory ZonaTienda.fromJson(Map<String, dynamic> json) {
     return ZonaTienda(
       idZonaTienda: json['id_zona_tienda'],
-      idZonaContrato: json['id_zona_contrato'] ?? 0,
+      idZona: json['id_zona'] ?? 0,
       idTienda: json['id_tienda'] ?? 0,
       fechaInicioCobertara: json['fecha_inicio_cobertura'] != null
           ? DateTime.parse(json['fecha_inicio_cobertura'])
@@ -41,7 +41,7 @@ class ZonaTienda {
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{
-      'id_zona_contrato': idZonaContrato,
+      'id_zona': idZona,
       'id_tienda': idTienda,
       'fecha_inicio_cobertura': fechaInicioCobertara.toIso8601String().split('T').first,
       'estatus': estatus,

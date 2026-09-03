@@ -1,9 +1,10 @@
 from fastapi import APIRouter
-from app.api.endpoints import clientes, contratos, tiendas, igualas, servicios, categorias_servicios
+from app.api.endpoints import clientes, contratos, tiendas, igualas, servicios, categorias_servicios, zonas
 from app.api.endpoints import cuadrillas, tecnicos, refacciones, inventario, presupuestos, cotizaciones, tipo_equipo, equipo
 
 api_router = APIRouter()
 
+api_router.include_router(zonas.router, prefix="/zonas", tags=["Zonas"])
 api_router.include_router(clientes.router, prefix="/clientes", tags=["Clientes"])
 api_router.include_router(contratos.router, prefix="/contratos", tags=["Contratos"])
 api_router.include_router(tiendas.router, prefix="/tiendas", tags=["Tiendas"])

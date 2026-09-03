@@ -4,6 +4,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/zona_estado.dart';
 import '../../providers/zonas_estado_provider.dart';
+import '../../providers/zonas_contrato_provider.dart';
+import '../../providers/estados_provider.dart';
 import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudZonasEstadoModal extends ConsumerStatefulWidget {
@@ -18,12 +20,13 @@ class _CrudZonasEstadoModalState extends ConsumerState<CrudZonasEstadoModal> {
   ZonaEstado? _selectedZona;
 
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _idZonaContratoCtrl;
-  late TextEditingController _idEstadoCtrl;
+  int? _idZonaContrato;
+  int? _idEstado;
   late TextEditingController _fechaInicioCtrl;
   late TextEditingController _fechaFinCtrl;
   late TextEditingController _justificacionCtrl;
   bool _esExcepcion = false;
+  bool _activo = true;
 
   @override
   void initState() {
@@ -32,8 +35,8 @@ class _CrudZonasEstadoModalState extends ConsumerState<CrudZonasEstadoModal> {
   }
 
   void _initControllers() {
-    _idZonaContratoCtrl = TextEditingController(text: _selectedZona?.idZonaContrato.toString() ?? '');
-    _idEstadoCtrl = TextEditingController(text: _selectedZona?.idEstado.toString() ?? '');
+    _idZonaContrato = _selectedZona?.idZonaContrato;
+    _idEstado = _selectedZona?.idEstado;
     
     _fechaInicioCtrl = TextEditingController(
       text: _selectedZona != null 
@@ -45,12 +48,11 @@ class _CrudZonasEstadoModalState extends ConsumerState<CrudZonasEstadoModal> {
     );
     _justificacionCtrl = TextEditingController(text: _selectedZona?.justificacion ?? '');
     _esExcepcion = _selectedZona?.esExcepcion ?? false;
+    _activo = _selectedZona?.activo ?? true;
   }
 
   @override
   void dispose() {
-    _idZonaContratoCtrl.dispose();
-    _idEstadoCtrl.dispose();
     _fechaInicioCtrl.dispose();
     _fechaFinCtrl.dispose();
     _justificacionCtrl.dispose();
@@ -91,13 +93,13 @@ class _CrudZonasEstadoModalState extends ConsumerState<CrudZonasEstadoModal> {
 
     final newZona = ZonaEstado(
       idZonaEstado: _selectedZona?.idZonaEstado,
-      idZonaContrato: int.tryParse(_idZonaContratoCtrl.text.trim()) ?? 1,
-      idEstado: int.tryParse(_idEstadoCtrl.text.trim()) ?? 1,
+      idZonaContrato: _idZonaContrato ?? 1,
+      idEstado: _idEstado ?? 1,
       fechaInicio: fechaInicio,
       fechaFin: fechaFin,
       esExcepcion: _esExcepcion,
       justificacion: _justificacionCtrl.text.trim().isEmpty ? null : _justificacionCtrl.text.trim(),
-      activo: _selectedZona?.activo ?? true,
+      activo: _activo,
     );
 
     try {
@@ -238,6 +240,9 @@ class _CrudZonasEstadoModalState extends ConsumerState<CrudZonasEstadoModal> {
   }
 
   Widget _buildForm() {
+    final zonasContratoAsync = ref.watch(helperZonasContratoProvider);
+    final estadosAsync = ref.watch(helperEstadosProvider);
+
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Form(
@@ -249,11 +254,59 @@ class _CrudZonasEstadoModalState extends ConsumerState<CrudZonasEstadoModal> {
               Row(
                 children: [
                   Expanded(
-                    child: _buildTextField('ID Zona Contrato *', _idZonaContratoCtrl, required: true),
+                    child: DropdownButtonFormField<int>(
+                      value: _idZonaContrato,
+                      decoration: InputDecoration(
+                        labelText: 'Zona Contrato *',
+                        labelStyle: TextStyle(color: context.textColor),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        filled: true,
+                        fillColor: context.backgroundColor,
+                      ),
+                      dropdownColor: context.surfaceColor,
+                      style: TextStyle(color: context.textColor),
+                      isExpanded: true,
+                      items: zonasContratoAsync.when(
+                        data: (list) => list.map((item) {
+                          return DropdownMenuItem<int>(
+                            value: item['id'],
+                            child: Text(item['nombre'], overflow: TextOverflow.ellipsis),
+                          );
+                        }).toList(),
+                        loading: () => [],
+                        error: (_, __) => [],
+                      ),
+                      onChanged: (v) => setState(() => _idZonaContrato = v),
+                      validator: (v) => v == null ? 'Requerido' : null,
+                    ),
                   ),
                   SizedBox(width: 16),
                   Expanded(
-                    child: _buildTextField('ID Estado *', _idEstadoCtrl, required: true),
+                    child: DropdownButtonFormField<int>(
+                      value: _idEstado,
+                      decoration: InputDecoration(
+                        labelText: 'Estado *',
+                        labelStyle: TextStyle(color: context.textColor),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        filled: true,
+                        fillColor: context.backgroundColor,
+                      ),
+                      dropdownColor: context.surfaceColor,
+                      style: TextStyle(color: context.textColor),
+                      isExpanded: true,
+                      items: estadosAsync.when(
+                        data: (list) => list.map((item) {
+                          return DropdownMenuItem<int>(
+                            value: item['id'],
+                            child: Text(item['nombre'], overflow: TextOverflow.ellipsis),
+                          );
+                        }).toList(),
+                        loading: () => [],
+                        error: (_, __) => [],
+                      ),
+                      onChanged: (v) => setState(() => _idEstado = v),
+                      validator: (v) => v == null ? 'Requerido' : null,
+                    ),
                   ),
                 ],
               ),
@@ -261,11 +314,11 @@ class _CrudZonasEstadoModalState extends ConsumerState<CrudZonasEstadoModal> {
               Row(
                 children: [
                   Expanded(
-                    child: _buildTextField('Fecha Inicio (YYYY-MM-DD) *', _fechaInicioCtrl, required: true),
+                    child: _buildDatePickerField(context, 'Fecha Inicio (YYYY-MM-DD) *', _fechaInicioCtrl, required: true),
                   ),
                   SizedBox(width: 16),
                   Expanded(
-                    child: _buildTextField('Fecha Fin (YYYY-MM-DD)', _fechaFinCtrl),
+                    child: _buildDatePickerField(context, 'Fecha Fin (YYYY-MM-DD)', _fechaFinCtrl),
                   ),
                 ],
               ),
@@ -289,6 +342,22 @@ class _CrudZonasEstadoModalState extends ConsumerState<CrudZonasEstadoModal> {
                 SizedBox(height: 16),
                 _buildTextField('Justificación', _justificacionCtrl),
               ],
+              SizedBox(height: 16),
+              Row(
+                children: [
+                  Text('Activo', style: TextStyle(color: context.textColor, fontWeight: FontWeight.w600)),
+                  SizedBox(width: 8),
+                  Switch(
+                    value: _activo,
+                    onChanged: (val) {
+                      setState(() {
+                        _activo = val;
+                      });
+                    },
+                    activeColor: AppColors.green,
+                  ),
+                ],
+              ),
               SizedBox(height: 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -338,6 +407,64 @@ class _CrudZonasEstadoModalState extends ConsumerState<CrudZonasEstadoModal> {
               borderSide: BorderSide(color: context.borderColor),
             ),
           ),
+          validator: required ? (v) => v == null || v.trim().isEmpty ? 'Requerido' : null : null,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDatePickerField(BuildContext context, String label, TextEditingController controller, {bool required = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
+        SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          readOnly: true,
+          style: TextStyle(color: context.textColor),
+          decoration: InputDecoration(
+            isDense: true,
+            filled: true,
+            fillColor: context.backgroundColor,
+            suffixIcon: Icon(Icons.calendar_today, size: 18, color: context.mutedTextColor),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: context.borderColor),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: context.borderColor),
+            ),
+          ),
+          onTap: () async {
+            DateTime initialDate = DateTime.now();
+            if (controller.text.isNotEmpty) {
+              try {
+                initialDate = DateTime.parse(controller.text);
+              } catch (_) {}
+            }
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: initialDate,
+              firstDate: DateTime(2000),
+              lastDate: DateTime(2100),
+              builder: (context, child) {
+                return Theme(
+                  data: Theme.of(context).copyWith(
+                    colorScheme: Theme.of(context).colorScheme.copyWith(
+                      primary: AppColors.blue,
+                      onPrimary: Colors.white,
+                    ),
+                  ),
+                  child: child!,
+                );
+              },
+            );
+            if (picked != null) {
+              controller.text = picked.toIso8601String().split('T').first;
+            }
+          },
           validator: required ? (v) => v == null || v.trim().isEmpty ? 'Requerido' : null : null,
         ),
       ],

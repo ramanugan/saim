@@ -5,7 +5,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../providers/clientes_provider.dart';
 import '../../providers/contratos_provider.dart';
 import '../../models/contrato.dart';
-import '../../providers/zonas_contrato_provider.dart';
+import '../../providers/zonas_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
@@ -18,6 +18,7 @@ import '../../../../shared/widgets/modal_data_table.dart';
 
 class _ZonaData {
   int? idZonaContrato;
+  int? idZona;
   String codigo;
   String nombre;
   String descripcion;
@@ -26,6 +27,7 @@ class _ZonaData {
 
   _ZonaData({
     this.idZonaContrato,
+    this.idZona,
     this.codigo = '',
     this.nombre = '',
     this.descripcion = '',
@@ -36,6 +38,7 @@ class _ZonaData {
 
   Map<String, dynamic> toJson() => {
         if (idZonaContrato != null) 'id_zona_contrato': idZonaContrato,
+        if (idZona != null) 'id_zona': idZona,
         'codigo': codigo,
         'nombre': nombre,
         'descripcion': descripcion,
@@ -287,6 +290,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
 
               _zonas.add(_ZonaData(
                 idZonaContrato: z['id_zona_contrato'],
+                idZona: z['id_zona'],
                 codigo: z['codigo'] ?? '',
                 nombre: z['nombre'] ?? '',
                 descripcion: z['descripcion'] ?? '',
@@ -833,13 +837,6 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
               label: const Text('Agregar Zona'),
               style: OutlinedButton.styleFrom(foregroundColor: AppColors.blue),
             ),
-            const SizedBox(width: 12),
-            OutlinedButton.icon(
-              onPressed: () => _mostrarDialogoZonasUnicas(context),
-              icon: const Icon(Icons.search),
-              label: const Text('Importar Existente'),
-              style: OutlinedButton.styleFrom(foregroundColor: context.textColor),
-            ),
           ],
         ),
         if (_zonas.isEmpty)
@@ -852,64 +849,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
     );
   }
 
-  void _mostrarDialogoZonasUnicas(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          backgroundColor: context.surfaceColor,
-          title: Text('Importar Zona Existente', style: TextStyle(color: context.textColor)),
-          content: SizedBox(
-            width: 400,
-            child: Consumer(
-              builder: (context, ref, child) {
-                final state = ref.watch(helperZonasContratoUnicasProvider);
-                return state.when(
-                  data: (zonas) {
-                    if (zonas.isEmpty) {
-                      return Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text('No hay zonas previas registradas.', style: TextStyle(color: context.mutedTextColor)),
-                      );
-                    }
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: zonas.length,
-                      itemBuilder: (context, index) {
-                        final z = zonas[index];
-                        return ListTile(
-                          title: Text('${z['codigo']} - ${z['nombre']}', style: TextStyle(color: context.textColor)),
-                          subtitle: Text(z['descripcion'] ?? '', style: TextStyle(color: context.mutedTextColor)),
-                          onTap: () {
-                            setState(() {
-                              _zonas.add(_ZonaData(
-                                codigo: z['codigo'],
-                                nombre: z['nombre'],
-                                descripcion: z['descripcion'] ?? '',
-                              ));
-                            });
-                            Navigator.of(ctx).pop();
-                          },
-                        );
-                      },
-                    );
-                  },
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (err, st) => Text('Error al cargar zonas: $err', style: TextStyle(color: AppColors.red)),
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Cerrar'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // Dialog for unique zones removed as it is now a standard dropdown catalog
 
   Widget _buildZonaCard(int idx, _ZonaData zona) {
     return Card(
@@ -935,32 +875,38 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
             const SizedBox(height: 8),
             Row(children: [
               Expanded(
-                flex: 1,
-                child: TextFormField(
-                  initialValue: zona.codigo,
-                  style: TextStyle(color: context.textColor),
-                  decoration: _inputDeco('Código'),
-                  onChanged: (v) => zona.codigo = v,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                flex: 2,
-                child: TextFormField(
-                  initialValue: zona.nombre,
-                  style: TextStyle(color: context.textColor),
-                  decoration: _inputDeco('Nombre *'),
-                  onChanged: (v) => zona.nombre = v,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                flex: 3,
-                child: TextFormField(
-                  initialValue: zona.descripcion,
-                  style: TextStyle(color: context.textColor),
-                  decoration: _inputDeco('Descripción'),
-                  onChanged: (v) => zona.descripcion = v,
+                child: Consumer(
+                  builder: (context, ref, child) {
+                    final zonasAsync = ref.watch(helperZonasProvider);
+                    return zonasAsync.when(
+                      data: (zonasMap) {
+                        return DropdownButtonFormField<int>(
+                          value: zona.idZona,
+                          decoration: _inputDeco('Zona Geográfica *'),
+                          dropdownColor: context.surfaceColor,
+                          style: TextStyle(color: context.textColor),
+                          items: zonasMap
+                              .map((z) => DropdownMenuItem<int>(
+                                  value: z['id'] as int,
+                                  child: Text(z['nombre'] as String,
+                                      style: TextStyle(color: context.textColor))))
+                              .toList(),
+                          onChanged: (v) {
+                            setState(() {
+                              zona.idZona = v;
+                              if (v != null) {
+                                final selected = zonasMap.firstWhere((z) => z['id'] == v);
+                                zona.nombre = selected['nombre'] as String;
+                              }
+                            });
+                          },
+                          validator: (v) => v == null ? 'Selecciona una zona' : null,
+                        );
+                      },
+                      loading: () => const LinearProgressIndicator(),
+                      error: (err, st) => Text('Error al cargar zonas: $err'),
+                    );
+                  }
                 ),
               ),
             ]),

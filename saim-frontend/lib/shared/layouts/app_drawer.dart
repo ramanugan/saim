@@ -32,6 +32,7 @@ import '../../features/catalogs/widgets/modals/crud_instalacion_refaccion_modal.
 import '../../features/catalogs/widgets/modals/crud_solicitud_refaccion_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_tiendas_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_zonas_estado_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_zonas_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_zonas_tienda_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_clientes_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_contratos_modal.dart';
@@ -515,6 +516,19 @@ class AppDrawer extends ConsumerWidget {
                                   showDialog(
                                     context: context,
                                     builder: (ctx) => const CrudZonasTiendaModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Zona',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudZonasModal(),
                                   );
                                   if (isModal) Navigator.pop(context);
                                 },

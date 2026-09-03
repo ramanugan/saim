@@ -4,7 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/zona_tienda.dart';
 import '../../providers/zonas_tienda_provider.dart';
-import '../../providers/zonas_contrato_provider.dart';
+import '../../providers/zonas_provider.dart';
 import '../../providers/tiendas_provider.dart';
 import '../../../../shared/widgets/modal_data_table.dart';
 
@@ -20,7 +20,7 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
   ZonaTienda? _selectedZona;
 
   final _formKey = GlobalKey<FormState>();
-  int? _idZonaContrato;
+  int? _idZona;
   int? _idTienda;
   late TextEditingController _fechaInicioCtrl;
   late TextEditingController _fechaFinCtrl;
@@ -34,7 +34,7 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
   }
 
   void _initControllers() {
-    _idZonaContrato = _selectedZona?.idZonaContrato;
+    _idZona = _selectedZona?.idZona;
     _idTienda = _selectedZona?.idTienda;
     _fechaInicioCtrl = TextEditingController(
         text: _selectedZona != null
@@ -93,7 +93,7 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
 
     final newZona = ZonaTienda(
       idZonaTienda: _selectedZona?.idZonaTienda,
-      idZonaContrato: _idZonaContrato ?? 0,
+      idZona: _idZona ?? 0,
       idTienda: _idTienda ?? 0,
       fechaInicioCobertara:
           DateTime.tryParse(_fechaInicioCtrl.text.trim()) ?? DateTime.now(),
@@ -231,7 +231,7 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
               }
               return ModalDataTable(dataTable: DataTable(
                     columns: [
-                      DataColumn(label: Text('ID ZONA CONTRATO', style: TextStyle(color: context.mutedTextColor))),
+                      DataColumn(label: Text('ID ZONA', style: TextStyle(color: context.mutedTextColor))),
                       DataColumn(label: Text('ID TIENDA', style: TextStyle(color: context.mutedTextColor))),
                       DataColumn(label: Text('INICIO COBERTURA', style: TextStyle(color: context.mutedTextColor))),
                       DataColumn(label: Text('FIN COBERTURA', style: TextStyle(color: context.mutedTextColor))),
@@ -240,7 +240,7 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
                     ],
                     rows: zonas.map((z) => DataRow(
                       cells: [
-                        DataCell(Text(z.idZonaContrato.toString(), style: TextStyle(color: context.textColor))),
+                        DataCell(Text(z.idZona.toString(), style: TextStyle(color: context.textColor))),
                         DataCell(Text(z.idTienda.toString(), style: TextStyle(color: context.textColor))),
                         DataCell(Text(z.fechaInicioCobertara.toIso8601String().split('T').first, style: TextStyle(color: context.textColor))),
                         DataCell(Text(z.fechaFinCobertura?.toIso8601String().split('T').first ?? '—', style: TextStyle(color: context.textColor))),
@@ -288,7 +288,7 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
   }
 
   Widget _buildForm() {
-    final zonasContratoAsync = ref.watch(helperZonasContratoProvider);
+    final zonasAsync = ref.watch(helperZonasProvider);
     final tiendasAsync = ref.watch(helperTiendasProvider);
 
     return SingleChildScrollView(
@@ -302,9 +302,9 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<int>(
-                    value: _idZonaContrato,
+                    value: _idZona,
                     decoration: InputDecoration(
-                      labelText: 'Zona Contrato *',
+                      labelText: 'Zona *',
                       labelStyle: TextStyle(color: context.textColor),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                       filled: true,
@@ -313,7 +313,7 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
                     dropdownColor: context.surfaceColor,
                     style: TextStyle(color: context.textColor),
                     isExpanded: true,
-                    items: zonasContratoAsync.when(
+                    items: zonasAsync.when(
                       data: (list) => list.map((item) {
                         return DropdownMenuItem<int>(
                           value: item['id'],
@@ -323,7 +323,7 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
                       loading: () => [],
                       error: (_, __) => [],
                     ),
-                    onChanged: (v) => setState(() => _idZonaContrato = v),
+                    onChanged: (v) => setState(() => _idZona = v),
                     validator: (v) => v == null ? 'Requerido' : null,
                   ),
                 ),
