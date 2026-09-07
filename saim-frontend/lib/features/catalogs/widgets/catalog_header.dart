@@ -20,17 +20,7 @@ class CatalogHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'DATOS RELACIONADOS DE PRUEBA',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.0,
-                    color: AppColors.blue,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Catálogos de demostración',
+                  'Catálogos',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
@@ -40,7 +30,7 @@ class CatalogHeader extends StatelessWidget {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'Clientes, contrato, zonas, tiendas, equipos, personas, refacciones, materiales y proveedores usados en los recorridos.',
+                  'Clientes, contrato, zonas, tiendas, equipos, personas, refacciones, materiales y proveedores.',
                   style: TextStyle(
                     fontSize: 14,
                     color: context.mutedTextColor,
@@ -48,21 +38,6 @@ class CatalogHeader extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-          Row(
-            children: [
-              StatusPill(
-                text: 'Datos cargados',
-                type: StatusType.success,
-                large: true,
-              ),
-              SizedBox(width: 12),
-              SaimButton(
-                text: 'Restablecer demo',
-                type: SaimButtonType.secondary,
-                onPressed: () {},
-              ),
-            ],
           ),
         ],
       ),

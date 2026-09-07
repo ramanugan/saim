@@ -64,6 +64,7 @@ class AppLayout extends StatelessWidget {
           return Scaffold(
             appBar: appBar,
             body: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
                   width: 280,

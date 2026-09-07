@@ -22,7 +22,7 @@ class _CatalogsScreenState extends State<CatalogsScreen> {
   @override
   Widget build(BuildContext context) {
     return AppLayout(
-      title: 'Catálogos de demostración',
+      title: 'Catálogos',
       child: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
         child: Column(
@@ -40,7 +40,6 @@ class _CatalogsScreenState extends State<CatalogsScreen> {
             ),
             _buildTabContent(),
             SizedBox(height: 32),
-            _buildDisclaimer(),
           ],
         ),
       ),
@@ -62,38 +61,5 @@ class _CatalogsScreenState extends State<CatalogsScreen> {
       default:
         return SizedBox.shrink();
     }
-  }
-
-  Widget _buildDisclaimer() {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Color(0xFFF1F7FC), // AppColors.blue with opacity 0.05 approx
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Color(0xFFD3E4F5)),
-      ),
-      child: Row(
-        children: [
-          Text(
-            'Todos los datos son ficticios',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF17365D), // AppColors.navy
-            ),
-          ),
-          SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              'Están conectados mediante identificadores para validar navegación, filtros, formularios y trazabilidad sin utilizar información productiva.',
-              style: TextStyle(
-                fontSize: 12,
-                color: Color(0xFF334155), // AppColors.ink
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
