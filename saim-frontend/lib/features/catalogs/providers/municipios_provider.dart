@@ -18,6 +18,7 @@ final helperMunicipiosProvider = Provider<AsyncValue<List<Map<String, dynamic>>>
         'id': m.idMunicipio,
         'nombre': m.nombre,
         'activo': m.activo,
+        'id_estado': m.idEstado,
       }).toList(),
     ),
     loading: () => const AsyncValue.loading(),

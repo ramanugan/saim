@@ -335,7 +335,12 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
                     'Estado *',
                     _idEstado,
                     ref.watch(helperEstadosProvider),
-                    (v) => setState(() => _idEstado = v as int?),
+                    (v) => setState(() {
+                      if (_idEstado != v) {
+                        _idEstado = v as int?;
+                        _idMunicipio = null;
+                      }
+                    }),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -345,6 +350,7 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
                     _idMunicipio,
                     ref.watch(helperMunicipiosProvider),
                     (v) => setState(() => _idMunicipio = v as int?),
+                    _idEstado != null ? (m) => m['id_estado'] == _idEstado : null,
                   ),
                 ),
               ],
@@ -465,7 +471,7 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
     );
   }
 
-  Widget _buildDropdownAsync(String label, int? value, AsyncValue<List<Map<String, dynamic>>> asyncValue, Function(Object?) onChanged) {
+  Widget _buildDropdownAsync(String label, int? value, AsyncValue<List<Map<String, dynamic>>> asyncValue, Function(Object?) onChanged, [bool Function(Map<String, dynamic>)? filter]) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -475,7 +481,12 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
           loading: () => const LinearProgressIndicator(),
           error: (e, st) => Text('Error al cargar', style: TextStyle(color: AppColors.red)),
           data: (items) {
-            final activeItems = items.where((e) => (e['activo'] == true) || (e['id'] == value)).toList();
+            var activeItems = items.where((e) => (e['activo'] == true) || (e['id'] == value)).toList();
+            if (filter != null) {
+              activeItems = activeItems.where((e) => filter(e) || (e['id'] == value)).toList();
+            }
+            activeItems.sort((a, b) => a['nombre'].toString().toLowerCase().compareTo(b['nombre'].toString().toLowerCase()));
+            
             final valueExists = activeItems.any((e) => e['id'] == value);
             final safeValue = valueExists ? value : null;
 

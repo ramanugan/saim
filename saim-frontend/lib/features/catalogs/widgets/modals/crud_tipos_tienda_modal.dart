@@ -65,7 +65,7 @@ class _CrudTiposTiendaModalState extends ConsumerState<CrudTiposTiendaModal> {
     
     final newTipo = TipoTienda(
       idTipoTienda: _selectedTipoTienda?.idTipoTienda,
-      codigo: _codigoCtrl.text.trim(),
+      codigo: _isEditing && _selectedTipoTienda != null ? _codigoCtrl.text.trim() : 'AUTO',
       nombre: _nombreCtrl.text.trim(),
       descripcion: _descripcionCtrl.text.trim().isEmpty ? null : _descripcionCtrl.text.trim(),
       activo: _activo,
@@ -233,7 +233,34 @@ class _CrudTiposTiendaModalState extends ConsumerState<CrudTiposTiendaModal> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildTextField('Código *', _codigoCtrl, required: true),
+              if (_selectedTipoTienda != null)
+                _buildTextField('Código *', _codigoCtrl, required: true, readOnly: true)
+              else
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Código *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
+                    SizedBox(height: 8),
+                    TextFormField(
+                      initialValue: 'Autogenerado',
+                      readOnly: true,
+                      style: TextStyle(color: context.mutedTextColor, fontStyle: FontStyle.italic),
+                      decoration: InputDecoration(
+                        isDense: true,
+                        filled: true,
+                        fillColor: context.backgroundColor,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: context.borderColor),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: context.borderColor),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               SizedBox(height: 16),
               _buildTextField('Nombre *', _nombreCtrl, required: true),
               SizedBox(height: 16),
@@ -277,7 +304,7 @@ class _CrudTiposTiendaModalState extends ConsumerState<CrudTiposTiendaModal> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {bool required = false}) {
+  Widget _buildTextField(String label, TextEditingController controller, {bool required = false, bool readOnly = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -285,7 +312,8 @@ class _CrudTiposTiendaModalState extends ConsumerState<CrudTiposTiendaModal> {
         SizedBox(height: 8),
         TextFormField(
           controller: controller,
-          style: TextStyle(color: context.textColor),
+          readOnly: readOnly,
+          style: TextStyle(color: readOnly ? context.mutedTextColor : context.textColor),
           decoration: InputDecoration(
             isDense: true,
             filled: true,

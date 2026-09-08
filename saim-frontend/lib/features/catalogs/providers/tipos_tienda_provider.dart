@@ -39,6 +39,41 @@ class TiposTiendaNotifier extends SupabaseCrudNotifier<TipoTienda> {
         );
 
   Future<void> fetchTiposTienda() => fetch();
-  Future<void> addTipoTienda(TipoTienda item) => add(item);
+
+  Future<void> addTipoTienda(TipoTienda item) async {
+    try {
+      final currentList = state.value ?? [];
+      final userIdInt = await getCurrentUserId();
+
+      final data = item.toJson();
+      data['creado_por'] = userIdInt;
+      data['actualizado_por'] = userIdInt;
+      
+      // We pass a dummy 'AUTO' value initially, it will be updated right after
+      data['codigo'] = 'AUTO';
+      
+      final response = await supabase
+          .from('tipo_tienda')
+          .insert(data)
+          .select()
+          .single();
+          
+      final int id = response['id_tipo_tienda'];
+      final codigoPad = id.toString().padLeft(3, '0');
+      
+      final updateResponse = await supabase
+          .from('tipo_tienda')
+          .update({'codigo': codigoPad})
+          .eq('id_tipo_tienda', id)
+          .select()
+          .single();
+
+      final newItem = TipoTienda.fromJson(updateResponse);
+      state = AsyncValue.data([newItem, ...currentList]);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<void> updateTipoTienda(TipoTienda item) => updateItem(item);
 }
