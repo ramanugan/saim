@@ -188,6 +188,7 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
 
   Widget _buildList() {
     final tiendasAsync = ref.watch(tiendasProvider);
+    final tiposTiendaAsync = ref.watch(tiposTiendaProvider);
 
     return Column(
       children: [
@@ -221,47 +222,57 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
               return ModalDataTable(
                     columns: [
                       DataColumn(label: Text('DETERMINANTE', style: TextStyle(color: context.mutedTextColor))),
+                      DataColumn(label: Text('TIPO DE TIENDA', style: TextStyle(color: context.mutedTextColor))),
                       DataColumn(label: Text('NOMBRE', style: TextStyle(color: context.mutedTextColor))),
                       DataColumn(label: Text('ESTATUS', style: TextStyle(color: context.mutedTextColor))),
                       DataColumn(label: Text('ACCIONES', style: TextStyle(color: context.mutedTextColor))),
                     ],
-                    rows: active.map((t) => DataRow(
-                      cells: [
-                        DataCell(Text(t.determinante, style: TextStyle(color: context.textColor))),
-                        DataCell(Text(t.nombre, style: TextStyle(color: context.textColor))),
-                        DataCell(Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: t.estatus == 'Activo'
-                                ? AppColors.green.withOpacity(0.15)
-                                : AppColors.red.withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            t.estatus,
-                            style: TextStyle(
-                              color: t.estatus == 'Activo' ? AppColors.green : AppColors.red,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
+                    rows: active.map((t) {
+                      final tipoTienda = tiposTiendaAsync.value?.where((tipo) => tipo.idTipoTienda == t.idTipoTienda).firstOrNull;
+                      final tipoNombre = tipoTienda?.nombre ?? 'Desconocido';
+                      
+                      return DataRow(
+                        cells: [
+                          DataCell(Text(t.determinante, style: TextStyle(color: context.textColor))),
+                          DataCell(Text(tipoNombre, style: TextStyle(color: context.textColor))),
+                          DataCell(Text(t.nombre, style: TextStyle(color: context.textColor))),
+                          DataCell(Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: t.estatus == 'Activo'
+                                  ? AppColors.green.withValues(alpha: 0.15)
+                                  : AppColors.red.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                          ),
-                        )),
-                        DataCell(Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.edit, color: AppColors.blue, size: 20),
-                              onPressed: () => _openForm(t),
+                            child: Text(
+                              t.estatus,
+                              style: TextStyle(
+                                color: t.estatus == 'Activo' ? AppColors.green : AppColors.red,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            IconButton(
-                              icon: Icon(Icons.delete, color: AppColors.red, size: 20),
-                              onPressed: () => _deleteTienda(t),
-                            ),
-                          ],
-                        )),
-                      ],
-                    )).toList(),
-                    searchableValues: active.map((t) => '${t.determinante} ${t.nombre} ${t.estatus}').toList(),
+                          )),
+                          DataCell(Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.edit, color: AppColors.blue, size: 20),
+                                onPressed: () => _openForm(t),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete, color: AppColors.red, size: 20),
+                                onPressed: () => _deleteTienda(t),
+                              ),
+                            ],
+                          )),
+                        ],
+                      );
+                    }).toList(),
+                    searchableValues: active.map((t) {
+                      final tipoTienda = tiposTiendaAsync.value?.where((tipo) => tipo.idTipoTienda == t.idTipoTienda).firstOrNull;
+                      return '${t.determinante} ${tipoTienda?.nombre ?? ''} ${t.nombre} ${t.estatus}';
+                    }).toList(),
                   );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
@@ -370,18 +381,18 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
               ],
             ),
             const SizedBox(height: 16),
-            _buildTextField('Dirección', _direccionCtrl, maxLength: 300),
+            _buildTextField('Dirección *', _direccionCtrl, required: true, maxLength: 300),
             const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   flex: 1,
-                  child: _buildTextField('Código Postal', _codigoPostalCtrl, maxLength: 10),
+                  child: _buildTextField('Código Postal *', _codigoPostalCtrl, required: true, maxLength: 10),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   flex: 2,
-                  child: _buildTextField('Teléfono', _telefonoCtrl, maxLength: 30),
+                  child: _buildTextField('Teléfono *', _telefonoCtrl, required: true, maxLength: 30),
                 ),
               ],
             ),

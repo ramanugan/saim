@@ -302,58 +302,20 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
             Row(
               children: [
                 Expanded(
-                  child: DropdownButtonFormField<int>(
-                    value: _idZona,
-                    decoration: InputDecoration(
-                      labelText: 'Zona *',
-                      labelStyle: TextStyle(color: context.textColor),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                      filled: true,
-                      fillColor: context.backgroundColor,
-                    ),
-                    dropdownColor: context.surfaceColor,
-                    style: TextStyle(color: context.textColor),
-                    isExpanded: true,
-                    items: zonasAsync.when(
-                      data: (list) => list.map((item) {
-                        return DropdownMenuItem<int>(
-                          value: item['id'],
-                          child: Text(item['nombre'], overflow: TextOverflow.ellipsis),
-                        );
-                      }).toList(),
-                      loading: () => [],
-                      error: (_, __) => [],
-                    ),
-                    onChanged: (v) => setState(() => _idZona = v),
-                    validator: (v) => v == null ? 'Requerido' : null,
+                  child: _buildDropdownAsync(
+                    'Zona *',
+                    _idZona,
+                    zonasAsync,
+                    (v) => setState(() => _idZona = v as int?),
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: DropdownButtonFormField<int>(
-                    value: _idTienda,
-                    decoration: InputDecoration(
-                      labelText: 'Tienda *',
-                      labelStyle: TextStyle(color: context.textColor),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                      filled: true,
-                      fillColor: context.backgroundColor,
-                    ),
-                    dropdownColor: context.surfaceColor,
-                    style: TextStyle(color: context.textColor),
-                    isExpanded: true,
-                    items: tiendasAsync.when(
-                      data: (list) => list.map((item) {
-                        return DropdownMenuItem<int>(
-                          value: item['id'],
-                          child: Text(item['nombre'], overflow: TextOverflow.ellipsis),
-                        );
-                      }).toList(),
-                      loading: () => [],
-                      error: (_, __) => [],
-                    ),
-                    onChanged: (v) => setState(() => _idTienda = v),
-                    validator: (v) => v == null ? 'Requerido' : null,
+                  child: _buildDropdownAsync(
+                    'Tienda *',
+                    _idTienda,
+                    tiendasAsync,
+                    (v) => setState(() => _idTienda = v as int?),
                   ),
                 ),
               ],
@@ -486,6 +448,55 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
           validator: required
               ? (v) => v == null || v.trim().isEmpty ? 'Requerido' : null
               : null,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDropdownAsync(String label, int? value, AsyncValue<List<Map<String, dynamic>>> asyncValue, Function(Object?) onChanged) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
+        const SizedBox(height: 8),
+        asyncValue.when(
+          loading: () => const LinearProgressIndicator(),
+          error: (e, st) => Text('Error al cargar', style: TextStyle(color: AppColors.red)),
+          data: (items) {
+            // Because some providers might already filter inactive items, we rely on the ones returned.
+            // We just ensure the current value is valid for the list, otherwise we set to null.
+            final activeItems = List<Map<String, dynamic>>.from(items);
+            activeItems.sort((a, b) => a['nombre'].toString().toLowerCase().compareTo(b['nombre'].toString().toLowerCase()));
+            
+            final valueExists = activeItems.any((e) => e['id'] == value);
+            final safeValue = valueExists ? value : null;
+
+            return DropdownButtonFormField<int>(
+              value: safeValue,
+              isExpanded: true,
+              dropdownColor: context.surfaceColor,
+              style: TextStyle(color: context.textColor),
+              decoration: InputDecoration(
+                isDense: true,
+                filled: true,
+                fillColor: context.backgroundColor,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: context.borderColor),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: context.borderColor),
+                ),
+              ),
+              items: activeItems.map((e) => DropdownMenuItem<int>(
+                value: e['id'] as int,
+                child: Text(e['nombre'].toString()),
+              )).toList(),
+              onChanged: onChanged,
+              validator: (v) => v == null ? 'Requerido' : null,
+            );
+          },
         ),
       ],
     );
