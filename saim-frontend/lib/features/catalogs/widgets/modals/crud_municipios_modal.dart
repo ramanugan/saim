@@ -305,6 +305,7 @@ class _CrudMunicipiosModalState extends ConsumerState<CrudMunicipiosModal> {
           error: (err, st) => Text('Error: $err', style: TextStyle(color: AppColors.red)),
           data: (paises) {
             final activePaises = paises.where((p) => p.activo).toList();
+            activePaises.sort((a, b) => a.nombre.toLowerCase().compareTo(b.nombre.toLowerCase()));
             if (activePaises.isEmpty && _selectedPaisId == null) {
               return Text('No hay países activos', style: TextStyle(color: context.mutedTextColor));
             }
@@ -360,6 +361,7 @@ class _CrudMunicipiosModalState extends ConsumerState<CrudMunicipiosModal> {
             if (_selectedPaisId != null) {
               activeEstados = activeEstados.where((e) => e.idPais == _selectedPaisId).toList();
             }
+            activeEstados.sort((a, b) => a.nombre.toLowerCase().compareTo(b.nombre.toLowerCase()));
             if (activeEstados.isEmpty && _selectedEstadoId == null) {
               return Text('No hay estados activos para el país seleccionado', style: TextStyle(color: context.mutedTextColor));
             }
