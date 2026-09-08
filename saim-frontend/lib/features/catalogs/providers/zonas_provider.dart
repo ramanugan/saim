@@ -23,6 +23,36 @@ class ZonasNotifier extends SupabaseCrudNotifier<Zona> {
         );
 
   Future<void> fetchZonas() => fetch();
+  @override
+  Future<void> add(Zona item) async {
+    try {
+      final data = item.toJson();
+      data.remove('id_zona');
+
+      final inserted = await supabase
+          .from('zona')
+          .insert(data)
+          .select()
+          .single();
+
+      final newId = inserted['id_zona'] as int;
+
+      if (item.codigo == 'AUTO' || item.codigo.isEmpty) {
+        final generatedCodigo = newId.toString().padLeft(3, '0');
+        await supabase
+            .from('zona')
+            .update({'codigo': generatedCodigo})
+            .eq('id_zona', newId);
+        inserted['codigo'] = generatedCodigo;
+      }
+
+      state = AsyncValue.data([...state.value ?? [], Zona.fromJson(inserted)]);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+      rethrow;
+    }
+  }
+
   Future<void> addZona(Zona zona) => add(zona);
   Future<void> updateZona(Zona zona) => updateItem(zona);
   Future<void> deleteZona(int idZona) => deleteItem(idZona);

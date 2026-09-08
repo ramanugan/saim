@@ -64,7 +64,7 @@ class _CrudZonasModalState extends ConsumerState<CrudZonasModal> {
 
     final newZona = Zona(
       idZona: _selectedZona?.idZona,
-      codigo: _codigoCtrl.text.trim(),
+      codigo: _isEditing && _selectedZona != null ? _codigoCtrl.text.trim() : 'AUTO',
       nombre: _nombreCtrl.text.trim(),
       descripcion: _descripcionCtrl.text.trim().isEmpty ? null : _descripcionCtrl.text.trim(),
       activo: _activo,
@@ -220,7 +220,33 @@ class _CrudZonasModalState extends ConsumerState<CrudZonasModal> {
               Row(
                 children: [
                   Expanded(
-                    child: _buildTextField('Código *', _codigoCtrl, required: true),
+                    child: _selectedZona != null
+                        ? _buildTextField('Código *', _codigoCtrl, required: true, readOnly: true)
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Código *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
+                              SizedBox(height: 8),
+                              TextFormField(
+                                initialValue: 'Autogenerado',
+                                readOnly: true,
+                                style: TextStyle(color: context.mutedTextColor, fontStyle: FontStyle.italic),
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  filled: true,
+                                  fillColor: context.backgroundColor,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(color: context.borderColor),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(color: context.borderColor),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                   ),
                   SizedBox(width: 16),
                   Expanded(
@@ -273,7 +299,7 @@ class _CrudZonasModalState extends ConsumerState<CrudZonasModal> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {bool required = false}) {
+  Widget _buildTextField(String label, TextEditingController controller, {bool required = false, bool readOnly = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -281,7 +307,8 @@ class _CrudZonasModalState extends ConsumerState<CrudZonasModal> {
         SizedBox(height: 8),
         TextFormField(
           controller: controller,
-          style: TextStyle(color: context.textColor),
+          readOnly: readOnly,
+          style: TextStyle(color: readOnly ? context.mutedTextColor : context.textColor),
           decoration: InputDecoration(
             isDense: true,
             filled: true,
