@@ -175,7 +175,7 @@ class _CrudTiposTiendaModalState extends ConsumerState<CrudTiposTiendaModal> {
           );
         }
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('CÓDIGO', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('NOMBRE', style: TextStyle(color: context.mutedTextColor))),
@@ -218,7 +218,8 @@ class _CrudTiposTiendaModalState extends ConsumerState<CrudTiposTiendaModal> {
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: tipos.map((t) => '${t.nombre}').toList(),
+            );
       },
     );
   }

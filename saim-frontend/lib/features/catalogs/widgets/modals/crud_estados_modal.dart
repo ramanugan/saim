@@ -179,7 +179,7 @@ class _CrudEstadosModalState extends ConsumerState<CrudEstadosModal> {
           );
         }
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('NOMBRE', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('CLAVE INEGI', style: TextStyle(color: context.mutedTextColor))),
@@ -222,7 +222,8 @@ class _CrudEstadosModalState extends ConsumerState<CrudEstadosModal> {
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: estados.map((e) => '${e.nombre} ${e.claveInegi ?? ""}').toList(),
+            );
       },
     );
   }

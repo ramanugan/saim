@@ -193,7 +193,7 @@ class _CrudProveedoresModalState extends ConsumerState<CrudProveedoresModal> {
           );
         }
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('RAZÓN SOCIAL', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('RFC', style: TextStyle(color: context.mutedTextColor))),
@@ -242,7 +242,8 @@ class _CrudProveedoresModalState extends ConsumerState<CrudProveedoresModal> {
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: proveedores.map((p) => '${p.razonSocial} ${p.rfc ?? ""} ${p.tipoProveedor} ${p.contacto ?? ""} ${p.estatus}').toList(),
+            );
       },
     );
   }

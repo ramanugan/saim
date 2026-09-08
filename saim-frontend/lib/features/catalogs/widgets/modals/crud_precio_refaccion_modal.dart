@@ -249,7 +249,7 @@ class _CrudPrecioRefaccionModalState extends ConsumerState<CrudPrecioRefaccionMo
             item['id_proveedor'] as int: item['razon_social'] as String
         };
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('REFACCIÓN', style: TextStyle(color: context.mutedTextColor))),
@@ -304,7 +304,8 @@ class _CrudPrecioRefaccionModalState extends ConsumerState<CrudPrecioRefaccionMo
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: list.map((item) => '${item.idPrecioRefaccion}').toList(),
+            );
       },
     );
   }

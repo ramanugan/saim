@@ -246,7 +246,7 @@ class _CrudIgualaCondicionesModalState extends ConsumerState<CrudIgualaCondicion
             (item['id_iguala'] as num).toInt(): item['codigo_iguala'] as String
         };
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('IGUALA', style: TextStyle(color: context.mutedTextColor))),
@@ -295,7 +295,8 @@ class _CrudIgualaCondicionesModalState extends ConsumerState<CrudIgualaCondicion
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: list.map((item) => '${item.idIgualaCondicion}').toList(),
+            );
       },
     );
   }

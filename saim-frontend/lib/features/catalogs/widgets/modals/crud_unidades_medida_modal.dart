@@ -192,7 +192,7 @@ class _CrudUnidadesMedidaModalState extends ConsumerState<CrudUnidadesMedidaModa
         if (items.isEmpty) {
           return Center(child: Text('No hay unidades de medida.', style: TextStyle(color: context.mutedTextColor)));
         }
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               headingTextStyle: TextStyle(fontWeight: FontWeight.bold, color: context.mutedTextColor),
               columns: const [
                 DataColumn(label: Text('ID')),
@@ -249,7 +249,8 @@ class _CrudUnidadesMedidaModalState extends ConsumerState<CrudUnidadesMedidaModa
                   ],
                 );
               }).toList(),
-            ));
+              searchableValues: items.map((item) => '${item.nombre} ${item.codigo} ${item.simbolo ?? ""}').toList(),
+            );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, stack) => Center(child: Text('Error: $err', style: TextStyle(color: AppColors.red))),

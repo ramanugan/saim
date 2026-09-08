@@ -256,7 +256,7 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
             item['id_unidad_medida'] as int: '${item['nombre']} (${item['simbolo']})'
         };
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('CÓDIGO INTERNO', style: TextStyle(color: context.mutedTextColor))),
@@ -311,7 +311,8 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: list.map((item) => '${item.codigoInterno} ${item.descripcionHomologada} ${item.marca ?? ""} ${item.numeroParte ?? ""}').toList(),
+            );
       },
     );
   }

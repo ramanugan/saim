@@ -179,7 +179,7 @@ class _CrudMunicipiosModalState extends ConsumerState<CrudMunicipiosModal> {
           );
         }
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('NOMBRE', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('CLAVE INEGI', style: TextStyle(color: context.mutedTextColor))),
@@ -222,7 +222,8 @@ class _CrudMunicipiosModalState extends ConsumerState<CrudMunicipiosModal> {
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: municipios.map((m) => '${m.nombre} ${m.claveInegi ?? ""}').toList(),
+            );
       },
     );
   }

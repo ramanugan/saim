@@ -218,7 +218,7 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
                       style: TextStyle(color: context.mutedTextColor)),
                 );
               }
-              return ModalDataTable(dataTable: DataTable(
+              return ModalDataTable(
                     columns: [
                       DataColumn(label: Text('DETERMINANTE', style: TextStyle(color: context.mutedTextColor))),
                       DataColumn(label: Text('NOMBRE', style: TextStyle(color: context.mutedTextColor))),
@@ -261,7 +261,8 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
                         )),
                       ],
                     )).toList(),
-                  ));
+                    searchableValues: active.map((t) => '${t.determinante} ${t.nombre} ${t.estatus}').toList(),
+                  );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, st) => Center(

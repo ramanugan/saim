@@ -535,58 +535,63 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
                 style: TextStyle(color: context.mutedTextColor)),
           );
         }
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: ModalDataTable(dataTable: DataTable(
-                columns: [
-                  DataColumn(label: Text('CLIENTE', style: TextStyle(color: context.mutedTextColor))),
-                  DataColumn(label: Text('NO. CONTRATO', style: TextStyle(color: context.mutedTextColor))),
-                  DataColumn(label: Text('VIGENCIA', style: TextStyle(color: context.mutedTextColor))),
-                  DataColumn(label: Text('ESTATUS', style: TextStyle(color: context.mutedTextColor))),
-                  DataColumn(label: Text('ACCIONES', style: TextStyle(color: context.mutedTextColor))),
-                ],
-                rows: active.map((c) {
-                  String clientName = '—';
-                  clientesAsync.whenData((list) {
-                    final cl = list.where((cl) => cl.idCliente == c.idCliente).firstOrNull;
-                    if (cl != null) clientName = cl.nombreComercial;
-                  });
-                  return DataRow(cells: [
-                    DataCell(Text(clientName, style: TextStyle(color: context.textColor))),
-                    DataCell(Text(c.numeroContrato, style: TextStyle(color: context.textColor))),
-                    DataCell(Text('${c.fechaInicio} → ${c.fechaFin}',
-                        style: TextStyle(color: context.textColor))),
-                    DataCell(Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: c.estatus == 'Vigente'
-                            ? AppColors.green.withOpacity(0.15)
-                            : AppColors.red.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(c.estatus,
-                          style: TextStyle(
-                            color: c.estatus == 'Vigente' ? AppColors.green : AppColors.red,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          )),
+        return ModalDataTable(
+          columns: [
+            DataColumn(label: Text('CLIENTE', style: TextStyle(color: context.mutedTextColor))),
+            DataColumn(label: Text('NO. CONTRATO', style: TextStyle(color: context.mutedTextColor))),
+            DataColumn(label: Text('VIGENCIA', style: TextStyle(color: context.mutedTextColor))),
+            DataColumn(label: Text('ESTATUS', style: TextStyle(color: context.mutedTextColor))),
+            DataColumn(label: Text('ACCIONES', style: TextStyle(color: context.mutedTextColor))),
+          ],
+          rows: active.map((c) {
+            String clientName = '—';
+            clientesAsync.whenData((list) {
+              final cl = list.where((cl) => cl.idCliente == c.idCliente).firstOrNull;
+              if (cl != null) clientName = cl.nombreComercial;
+            });
+            return DataRow(cells: [
+              DataCell(Text(clientName, style: TextStyle(color: context.textColor))),
+              DataCell(Text(c.numeroContrato, style: TextStyle(color: context.textColor))),
+              DataCell(Text('${c.fechaInicio} → ${c.fechaFin}',
+                  style: TextStyle(color: context.textColor))),
+              DataCell(Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: c.estatus == 'Vigente'
+                      ? AppColors.green.withOpacity(0.15)
+                      : AppColors.red.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(c.estatus,
+                    style: TextStyle(
+                      color: c.estatus == 'Vigente' ? AppColors.green : AppColors.red,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
                     )),
-                    DataCell(Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.edit, color: AppColors.blue, size: 20),
-                          onPressed: () => _openEditWizard(c),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete, color: AppColors.red, size: 20),
-                          onPressed: () => _deleteContratoDialog(c),
-                        ),
-                      ],
-                    )),
-                  ]);
-                }).toList(),
               )),
+              DataCell(Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.edit, color: AppColors.blue, size: 20),
+                    onPressed: () => _openEditWizard(c),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: AppColors.red, size: 20),
+                    onPressed: () => _deleteContratoDialog(c),
+                  ),
+                ],
+              )),
+            ]);
+          }).toList(),
+          searchableValues: active.map((c) {
+            String clientName = '';
+            clientesAsync.whenData((list) {
+              final cl = list.where((cl) => cl.idCliente == c.idCliente).firstOrNull;
+              if (cl != null) clientName = cl.nombreComercial;
+            });
+            return '$clientName ${c.numeroContrato} ${c.estatus} ${c.fechaInicio} ${c.fechaFin}';
+          }).toList(),
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),

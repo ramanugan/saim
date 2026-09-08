@@ -164,7 +164,7 @@ class _CrudMovimientosInventarioModalState extends ConsumerState<CrudMovimientos
             item['id_refaccion'] as int: '[${item['codigo_interno']}] ${item['descripcion_homologada']}'
         };
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('ALMACÉN', style: TextStyle(color: context.mutedTextColor))),
@@ -223,7 +223,8 @@ class _CrudMovimientosInventarioModalState extends ConsumerState<CrudMovimientos
                   ],
                 );
               }).toList(),
-            ));
+              searchableValues: list.map((item) => '${item.idMovimiento} ${item.tipoMovimiento}').toList(),
+            );
       },
     );
   }

@@ -260,7 +260,7 @@ class _CrudSuministrosRefaccionModalState extends ConsumerState<CrudSuministrosR
             item['id_almacen'] as int: item['nombre'] as String
         };
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('FOLIO SOLICITUD', style: TextStyle(color: context.mutedTextColor))),
@@ -322,7 +322,8 @@ class _CrudSuministrosRefaccionModalState extends ConsumerState<CrudSuministrosR
                   ],
                 );
               }).toList(),
-            ));
+              searchableValues: list.map((item) => '${item.idSuministro} ${item.fuenteSuministro}').toList(),
+            );
       },
     );
   }

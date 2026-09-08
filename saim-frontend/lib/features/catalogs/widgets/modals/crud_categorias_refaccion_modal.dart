@@ -184,7 +184,7 @@ class _CrudCategoriasRefaccionModalState extends ConsumerState<CrudCategoriasRef
           );
         }
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('CÓDIGO', style: TextStyle(color: context.mutedTextColor))),
@@ -231,7 +231,8 @@ class _CrudCategoriasRefaccionModalState extends ConsumerState<CrudCategoriasRef
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: list.map((item) => '${item.nombre}').toList(),
+            );
       },
     );
   }

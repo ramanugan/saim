@@ -171,7 +171,7 @@ class _CrudPaisesModalState extends ConsumerState<CrudPaisesModal> {
           );
         }
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('CÓDIGO ISO', style: TextStyle(color: context.mutedTextColor))),
@@ -216,7 +216,8 @@ class _CrudPaisesModalState extends ConsumerState<CrudPaisesModal> {
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: paises.map((p) => '${p.nombre} ${p.codigoIso}').toList(),
+            );
       },
     );
   }

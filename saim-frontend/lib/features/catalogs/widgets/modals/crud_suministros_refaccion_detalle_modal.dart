@@ -215,7 +215,7 @@ class _CrudSuministrosRefaccionDetalleModalState extends ConsumerState<CrudSumin
             }()
         };
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('SUMINISTRO', style: TextStyle(color: context.mutedTextColor))),
@@ -266,7 +266,8 @@ class _CrudSuministrosRefaccionDetalleModalState extends ConsumerState<CrudSumin
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: list.map((item) => '${item.idSuministroDetalle}').toList(),
+            );
       },
     );
   }

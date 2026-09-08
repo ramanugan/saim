@@ -265,7 +265,7 @@ class _CrudInstalacionRefaccionModalState extends ConsumerState<CrudInstalacionR
             item['id_equipo'] as int: '${item['codigo_activo_cliente'] ?? 'S/C'} (${item['marca'] ?? ''} ${item['modelo'] ?? ''})'
         };
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('ORDEN DE SERVICIO', style: TextStyle(color: context.mutedTextColor))),
@@ -320,7 +320,8 @@ class _CrudInstalacionRefaccionModalState extends ConsumerState<CrudInstalacionR
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: list.map((item) => '${item.idInstalacion}').toList(),
+            );
       },
     );
   }

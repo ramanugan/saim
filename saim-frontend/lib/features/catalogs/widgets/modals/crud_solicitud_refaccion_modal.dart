@@ -253,7 +253,7 @@ class _CrudSolicitudRefaccionModalState extends ConsumerState<CrudSolicitudRefac
             item['id_usuario'] as int: item['nombre_usuario'] as String
         };
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('FOLIO', style: TextStyle(color: context.mutedTextColor))),
@@ -306,7 +306,8 @@ class _CrudSolicitudRefaccionModalState extends ConsumerState<CrudSolicitudRefac
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: list.map((item) => '${item.folio}').toList(),
+            );
       },
     );
   }

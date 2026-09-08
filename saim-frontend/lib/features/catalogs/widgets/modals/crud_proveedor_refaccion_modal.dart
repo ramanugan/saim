@@ -206,7 +206,7 @@ class _CrudProveedorRefaccionModalState extends ConsumerState<CrudProveedorRefac
             item['id_refaccion'] as int: '[${item['codigo_interno']}] ${item['descripcion_homologada']}'
         };
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('PROVEEDOR', style: TextStyle(color: context.mutedTextColor))),
@@ -263,7 +263,8 @@ class _CrudProveedorRefaccionModalState extends ConsumerState<CrudProveedorRefac
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: list.map((item) => '${item.idProveedorRefaccion}').toList(),
+            );
       },
     );
   }

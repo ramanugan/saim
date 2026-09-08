@@ -253,7 +253,7 @@ class _CrudOportunidadSuministroModalState extends ConsumerState<CrudOportunidad
             item['id_cotizacion'] as int: item['numero_cotizacion'] as String
         };
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('REFACCIÓN SOLICITADA', style: TextStyle(color: context.mutedTextColor))),
@@ -306,7 +306,8 @@ class _CrudOportunidadSuministroModalState extends ConsumerState<CrudOportunidad
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: list.map((item) => '${item.idOportunidad}').toList(),
+            );
       },
     );
   }

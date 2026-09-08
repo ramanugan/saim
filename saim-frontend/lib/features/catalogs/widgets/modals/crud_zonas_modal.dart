@@ -173,7 +173,7 @@ class _CrudZonasModalState extends ConsumerState<CrudZonasModal> {
           );
         }
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('CÓDIGO', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('NOMBRE', style: TextStyle(color: context.mutedTextColor))),
@@ -202,7 +202,8 @@ class _CrudZonasModalState extends ConsumerState<CrudZonasModal> {
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: zonas.map((z) => '${z.codigo} ${z.nombre}').toList(),
+            );
       },
     );
   }

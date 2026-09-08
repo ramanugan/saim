@@ -201,7 +201,7 @@ class _CrudAlmacenesModalState extends ConsumerState<CrudAlmacenesModal> {
             item.idMunicipio as int: item.nombre
         };
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('CÓDIGO', style: TextStyle(color: context.mutedTextColor))),
@@ -250,7 +250,8 @@ class _CrudAlmacenesModalState extends ConsumerState<CrudAlmacenesModal> {
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: list.map((item) => '${item.codigo} ${item.nombre}').toList(),
+            );
       },
     );
   }

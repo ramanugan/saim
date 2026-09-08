@@ -185,7 +185,7 @@ class _CrudClientesModalState extends ConsumerState<CrudClientesModal> {
               if (activeClientes.isEmpty) {
                 return Center(child: Text('No hay clientes registrados', style: TextStyle(color: context.mutedTextColor)));
               }
-              return ModalDataTable(dataTable: DataTable(
+              return ModalDataTable(
                     columns: const [
                       DataColumn(label: Text('CÓDIGO')),
                       DataColumn(label: Text('NOMBRE COMERCIAL')),
@@ -213,7 +213,8 @@ class _CrudClientesModalState extends ConsumerState<CrudClientesModal> {
                         )),
                       ]
                     )).toList(),
-                  ));
+                    searchableValues: activeClientes.map((c) => '${c.codigo} ${c.nombreComercial} ${c.razonSocial} ${c.estatus}').toList(),
+                  );
             },
             loading: () => Center(child: CircularProgressIndicator()),
             error: (e, st) => Center(child: Text('Error: $e')),

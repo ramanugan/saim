@@ -209,7 +209,7 @@ class _CrudEquiposModalState extends ConsumerState<CrudEquiposModal> {
           );
         }
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('TIENDA', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('TIPO EQUIPO', style: TextStyle(color: context.mutedTextColor))),
@@ -256,7 +256,8 @@ class _CrudEquiposModalState extends ConsumerState<CrudEquiposModal> {
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: equipos.map((e) => '${e.nombreTienda ?? ""} ${e.nombreTipoEquipo ?? ""} ${e.numeroSerie ?? ""} ${e.estadoOperativo}').toList(),
+            );
       },
     );
   }

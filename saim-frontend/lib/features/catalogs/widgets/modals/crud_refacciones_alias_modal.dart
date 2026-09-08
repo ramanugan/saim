@@ -203,7 +203,7 @@ class _CrudRefaccionesAliasModalState extends ConsumerState<CrudRefaccionesAlias
             item['id_usuario'] as int: item['nombre_usuario'] as String
         };
 
-        return ModalDataTable(dataTable: DataTable(
+        return ModalDataTable(
               columns: [
                 DataColumn(label: Text('ID', style: TextStyle(color: context.mutedTextColor))),
                 DataColumn(label: Text('REFACCIÓN', style: TextStyle(color: context.mutedTextColor))),
@@ -254,7 +254,8 @@ class _CrudRefaccionesAliasModalState extends ConsumerState<CrudRefaccionesAlias
                   )),
                 ],
               )).toList(),
-            ));
+              searchableValues: list.map((item) => '${item.alias}').toList(),
+            );
       },
     );
   }
