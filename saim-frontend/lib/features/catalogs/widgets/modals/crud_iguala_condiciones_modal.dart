@@ -295,7 +295,10 @@ class _CrudIgualaCondicionesModalState extends ConsumerState<CrudIgualaCondicion
                   )),
                 ],
               )).toList(),
-              searchableValues: list.map((item) => '${item.idIgualaCondicion}').toList(),
+              searchableValues: list.map((item) {
+                final igualaDesc = igualasMap[item.idIguala] ?? '${item.idIguala}';
+                return '${item.idIgualaCondicion} $igualaDesc ${item.montoPeriodico} ${item.moneda} ${item.activo ? "Activa" : "Inactiva"}';
+              }).toList(),
             );
       },
     );

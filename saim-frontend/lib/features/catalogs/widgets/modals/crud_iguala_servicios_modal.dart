@@ -260,7 +260,10 @@ class _CrudIgualaServiciosModalState extends ConsumerState<CrudIgualaServiciosMo
                   )),
                 ],
               )).toList(),
-              searchableValues: list.map((item) => '${item.idIgualaServicio}').toList(),
+              searchableValues: list.map((item) {
+                final igualaDesc = igualasMap[item.idIguala] ?? '${item.idIguala}';
+                return '${item.idIgualaServicio} $igualaDesc ${item.esPrincipal ? "Sí" : "No"} ${item.estatus} ${item.activo ? "Activo" : "Inactivo"}';
+              }).toList(),
             );
       },
     );

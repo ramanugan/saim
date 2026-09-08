@@ -5,6 +5,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../models/municipio.dart';
 import '../../providers/municipios_provider.dart';
 import '../../providers/estados_provider.dart';
+import '../../providers/paises_provider.dart';
 import '../../../../shared/widgets/modal_data_table.dart';
 
 class CrudMunicipiosModal extends ConsumerStatefulWidget {
@@ -22,6 +23,7 @@ class _CrudMunicipiosModalState extends ConsumerState<CrudMunicipiosModal> {
   late TextEditingController _nombreCtrl;
   late TextEditingController _claveInegiCtrl;
 
+  int? _selectedPaisId;
   int? _selectedEstadoId;
   bool _activo = true;
 
@@ -50,6 +52,13 @@ class _CrudMunicipiosModalState extends ConsumerState<CrudMunicipiosModal> {
       _selectedMunicipio = municipio;
       _initControllers();
       _isEditing = true;
+      if (municipio != null) {
+        final estados = ref.read(estadosProvider).value ?? [];
+        final estado = estados.where((e) => e.idEstado == municipio.idEstado).firstOrNull;
+        _selectedPaisId = estado?.idPais;
+      } else {
+        _selectedPaisId = null;
+      }
     });
   }
 
@@ -237,6 +246,8 @@ class _CrudMunicipiosModalState extends ConsumerState<CrudMunicipiosModal> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              _buildPaisDropdown(),
+              SizedBox(height: 16),
               _buildEstadoDropdown(),
               SizedBox(height: 16),
               _buildTextField('Nombre *', _nombreCtrl, required: true),
@@ -281,6 +292,58 @@ class _CrudMunicipiosModalState extends ConsumerState<CrudMunicipiosModal> {
     );
   }
 
+  Widget _buildPaisDropdown() {
+    final paisesAsync = ref.watch(paisesProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('País *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
+        SizedBox(height: 8),
+        paisesAsync.when(
+          loading: () => CircularProgressIndicator(),
+          error: (err, st) => Text('Error: $err', style: TextStyle(color: AppColors.red)),
+          data: (paises) {
+            final activePaises = paises.where((p) => p.activo).toList();
+            if (activePaises.isEmpty && _selectedPaisId == null) {
+              return Text('No hay países activos', style: TextStyle(color: context.mutedTextColor));
+            }
+            return DropdownButtonFormField<int>(
+              value: _selectedPaisId,
+              decoration: InputDecoration(
+                isDense: true,
+                filled: true,
+                fillColor: context.backgroundColor,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: context.borderColor),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: context.borderColor),
+                ),
+              ),
+              dropdownColor: context.surfaceColor,
+              items: activePaises.map((p) => DropdownMenuItem<int>(
+                value: p.idPais,
+                child: Text(p.nombre, style: TextStyle(color: context.textColor)),
+              )).toList(),
+              onChanged: (val) {
+                setState(() {
+                  if (_selectedPaisId != val) {
+                    _selectedPaisId = val;
+                    _selectedEstadoId = null; // reset estado when pais changes
+                  }
+                });
+              },
+              validator: (v) => v == null ? 'Requerido' : null,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
   Widget _buildEstadoDropdown() {
     final estadosAsync = ref.watch(estadosProvider);
 
@@ -293,9 +356,12 @@ class _CrudMunicipiosModalState extends ConsumerState<CrudMunicipiosModal> {
           loading: () => CircularProgressIndicator(),
           error: (err, st) => Text('Error: $err', style: TextStyle(color: AppColors.red)),
           data: (estados) {
-            final activeEstados = estados.where((e) => e.activo).toList();
+            var activeEstados = estados.where((e) => e.activo).toList();
+            if (_selectedPaisId != null) {
+              activeEstados = activeEstados.where((e) => e.idPais == _selectedPaisId).toList();
+            }
             if (activeEstados.isEmpty && _selectedEstadoId == null) {
-              return Text('No hay estados activos', style: TextStyle(color: context.mutedTextColor));
+              return Text('No hay estados activos para el país seleccionado', style: TextStyle(color: context.mutedTextColor));
             }
             return DropdownButtonFormField<int>(
               value: _selectedEstadoId,

@@ -13,7 +13,7 @@ class ModalDataTable extends StatefulWidget {
     required this.columns,
     required this.rows,
     required this.searchableValues,
-    this.rowsPerPage = 10,
+    this.rowsPerPage = 6,
     this.headingTextStyle,
   }) : assert(rows.length == searchableValues.length,
             'rows.length must equal searchableValues.length');
