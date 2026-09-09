@@ -3,22 +3,23 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/base_crud_notifier.dart';
 import '../models/suministro_refaccion_detalle.dart';
+import 'suministros_refaccion_provider.dart';
+import 'solicitudes_refaccion_detalle_provider.dart';
 
-final helperSuministrosForDetalleProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('suministro_refaccion')
-      .select('id_suministro, documento_referencia, fuente_suministro')
-      .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+final helperSuministrosForDetalleProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final asyncData = ref.watch(suministrosRefaccionProvider);
+  return asyncData.whenData((items) => items
+      .map((e) => e.toJson())
+      .where((json) => json.containsKey('activo') ? json['activo'] == true : true)
+      .toList());
 });
 
-final helperSolicitudDetallesForSuministroProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('solicitud_refaccion_detalle')
-      .select('id_solicitud_refaccion_detalle, cantidad_solicitada, refaccion(codigo_interno, descripcion_homologada)');
-  return List<Map<String, dynamic>>.from(response as List);
+final helperSolicitudDetallesForSuministroProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final asyncData = ref.watch(solicitudesRefaccionDetalleProvider);
+  return asyncData.whenData((items) => items
+      .map((e) => e.toJson())
+      .where((json) => json.containsKey('activo') ? json['activo'] == true : true)
+      .toList());
 });
 
 final suministrosRefaccionDetalleProvider = StateNotifierProvider<SuministrosRefaccionDetalleNotifier, AsyncValue<List<SuministroRefaccionDetalle>>>((ref) {

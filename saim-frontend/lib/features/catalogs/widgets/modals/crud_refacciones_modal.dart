@@ -239,7 +239,8 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
     return listAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: const TextStyle(color: AppColors.red))),
-      data: (list) {
+      data: (rawList) {
+        final list = rawList.where((e) => e.activo).toList();
         if (list.isEmpty) {
           return Center(
             child: Text('No hay registros de refacciones.', style: TextStyle(color: context.mutedTextColor)),
@@ -338,7 +339,7 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
                       children: [
                         Text('Categoría Refacción *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int>(
+                        DropdownButtonFormField<int>(isExpanded: true, 
                           value: _selectedCategoriaId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -373,7 +374,7 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
                       children: [
                         Text('Unidad Medida *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int>(
+                        DropdownButtonFormField<int>(isExpanded: true, 
                           value: _selectedUnidadId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -413,7 +414,7 @@ class _CrudRefaccionesModalState extends ConsumerState<CrudRefaccionesModal> {
                       children: [
                         Text('Criticidad Default', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<String?>(
+                        DropdownButtonFormField<String?>(isExpanded: true, 
                           value: _criticidadDefault,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,

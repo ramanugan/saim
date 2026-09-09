@@ -180,7 +180,8 @@ class _CrudClientesModalState extends ConsumerState<CrudClientesModal> {
         ),
         Expanded(
           child: clientesAsync.when(
-            data: (clientes) {
+            data: (rawList) {
+        final clientes = rawList.where((e) => e.activo).toList();
               final activeClientes = clientes.where((c) => c.activo).toList();
               if (activeClientes.isEmpty) {
                 return Center(child: Text('No hay clientes registrados', style: TextStyle(color: context.mutedTextColor)));
@@ -264,7 +265,7 @@ class _CrudClientesModalState extends ConsumerState<CrudClientesModal> {
               decoration: InputDecoration(labelText: 'Teléfono de Contacto', border: OutlineInputBorder()),
             ),
             SizedBox(height: 16),
-            DropdownButtonFormField<String>(
+            DropdownButtonFormField<String>(isExpanded: true, 
               value: _estatus,
               decoration: InputDecoration(labelText: 'Estatus', border: OutlineInputBorder()),
               items: ['Activo', 'Inactivo', 'Prospecto'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),

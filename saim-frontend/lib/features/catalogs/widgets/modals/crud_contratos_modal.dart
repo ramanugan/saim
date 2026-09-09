@@ -716,7 +716,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
           clientesAsync.when(
             data: (clientes) {
               final active = clientes.where((c) => c.activo).toList();
-              return DropdownButtonFormField<int>(
+              return DropdownButtonFormField<int>(isExpanded: true, 
                 value: _idCliente,
                 decoration: _inputDeco('Cliente *'),
                 dropdownColor: context.surfaceColor,
@@ -751,7 +751,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
           const SizedBox(height: 16),
           Row(children: [
             Expanded(
-              child: DropdownButtonFormField<String>(
+              child: DropdownButtonFormField<String>(isExpanded: true, 
                 value: _moneda,
                 decoration: _inputDeco('Moneda'),
                 dropdownColor: context.surfaceColor,
@@ -768,7 +768,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
                     keyboardType: TextInputType.number)),
             const SizedBox(width: 16),
             Expanded(
-              child: DropdownButtonFormField<String>(
+              child: DropdownButtonFormField<String>(isExpanded: true, 
                 value: _periodicidad,
                 decoration: _inputDeco('Periodicidad Facturación'),
                 dropdownColor: context.surfaceColor,
@@ -781,7 +781,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: DropdownButtonFormField<String>(
+              child: DropdownButtonFormField<String>(isExpanded: true, 
                 value: _estatus,
                 decoration: _inputDeco('Estatus'),
                 dropdownColor: context.surfaceColor,
@@ -888,7 +888,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
                     final zonasAsync = ref.watch(helperZonasProvider);
                     return zonasAsync.when(
                       data: (zonasMap) {
-                        return DropdownButtonFormField<int>(
+                        return DropdownButtonFormField<int>(isExpanded: true, 
                           value: zona.idZona,
                           decoration: _inputDeco('Zona Geográfica *'),
                           dropdownColor: context.surfaceColor,
@@ -929,7 +929,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
                     final empleadosAsync = ref.watch(helperEmpleadosProvider);
                     return empleadosAsync.when(
                       data: (empleadosMap) {
-                        return DropdownButtonFormField<int>(
+                        return DropdownButtonFormField<int>(isExpanded: true, 
                           value: zona.coordinadorResponsable,
                           decoration: _inputDeco('Coordinador Responsable'),
                           dropdownColor: context.surfaceColor,
@@ -1007,7 +1007,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
       child: Row(
         children: [
           Expanded(
-            child: DropdownButtonFormField<String>(
+            child: DropdownButtonFormField<String>(isExpanded: true, 
               value: sla.prioridad,
               decoration: _inputDeco('Prioridad'),
               dropdownColor: context.surfaceColor,
@@ -1117,7 +1117,7 @@ class _CrudContratosModalState extends ConsumerState<CrudContratosModal> {
             const SizedBox(height: 8),
             Row(children: [
               Expanded(
-                child: DropdownButtonFormField<String>(
+                child: DropdownButtonFormField<String>(isExpanded: true, 
                   value: doc.tipoDocumento,
                   decoration: _inputDeco('Tipo'),
                   dropdownColor: context.surfaceColor,

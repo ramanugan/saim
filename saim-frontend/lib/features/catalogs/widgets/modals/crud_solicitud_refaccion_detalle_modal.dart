@@ -268,7 +268,8 @@ class _CrudSolicitudRefaccionDetalleModalState extends ConsumerState<CrudSolicit
     return listAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: const TextStyle(color: AppColors.red))),
-      data: (list) {
+      data: (rawList) {
+        final list = rawList.where((e) => e.activo).toList();
         if (list.isEmpty) {
           return Center(
             child: Text('No hay registros de detalles.', style: TextStyle(color: context.mutedTextColor)),
@@ -375,7 +376,7 @@ class _CrudSolicitudRefaccionDetalleModalState extends ConsumerState<CrudSolicit
                       children: [
                         Text('Solicitud de Refacción *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int>(
+                        DropdownButtonFormField<int>(isExpanded: true, 
                           value: _selectedSolicitudId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -405,7 +406,7 @@ class _CrudSolicitudRefaccionDetalleModalState extends ConsumerState<CrudSolicit
                       children: [
                         Text('Refacción Homologada (Opcional)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int?>(
+                        DropdownButtonFormField<int?>(isExpanded: true, 
                           value: _selectedRefaccionId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -445,7 +446,7 @@ class _CrudSolicitudRefaccionDetalleModalState extends ConsumerState<CrudSolicit
                       children: [
                         Text('Equipo (Opcional)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int?>(
+                        DropdownButtonFormField<int?>(isExpanded: true, 
                           value: _selectedEquipoId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -554,7 +555,7 @@ class _CrudSolicitudRefaccionDetalleModalState extends ConsumerState<CrudSolicit
                       children: [
                         Text('Criticidad', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<String?>(
+                        DropdownButtonFormField<String?>(isExpanded: true, 
                           value: _selectedCriticidad,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -593,7 +594,7 @@ class _CrudSolicitudRefaccionDetalleModalState extends ConsumerState<CrudSolicit
                       children: [
                         Text('Estado Partida *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<String>(
+                        DropdownButtonFormField<String>(isExpanded: true, 
                           value: _selectedEstado,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,

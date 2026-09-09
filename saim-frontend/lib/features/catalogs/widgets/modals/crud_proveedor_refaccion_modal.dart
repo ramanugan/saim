@@ -189,7 +189,8 @@ class _CrudProveedorRefaccionModalState extends ConsumerState<CrudProveedorRefac
     return listAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: const TextStyle(color: AppColors.red))),
-      data: (list) {
+      data: (rawList) {
+        final list = rawList.where((e) => e.activo).toList();
         if (list.isEmpty) {
           return Center(
             child: Text('No hay refacciones asociadas a proveedores.', style: TextStyle(color: context.mutedTextColor)),
@@ -290,7 +291,7 @@ class _CrudProveedorRefaccionModalState extends ConsumerState<CrudProveedorRefac
                       children: [
                         Text('Proveedor *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int>(
+                        DropdownButtonFormField<int>(isExpanded: true, 
                           value: _selectedProveedorId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -320,7 +321,7 @@ class _CrudProveedorRefaccionModalState extends ConsumerState<CrudProveedorRefac
                       children: [
                         Text('Refacción *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int>(
+                        DropdownButtonFormField<int>(isExpanded: true, 
                           value: _selectedRefaccionId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,

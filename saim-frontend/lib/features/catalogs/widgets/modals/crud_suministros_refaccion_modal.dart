@@ -238,7 +238,8 @@ class _CrudSuministrosRefaccionModalState extends ConsumerState<CrudSuministrosR
     return listAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: const TextStyle(color: AppColors.red))),
-      data: (list) {
+      data: (rawList) {
+        final list = rawList.where((e) => e.activo).toList();
         if (list.isEmpty) {
           return Center(
             child: Text('No hay registros de suministros.', style: TextStyle(color: context.mutedTextColor)),
@@ -350,7 +351,7 @@ class _CrudSuministrosRefaccionModalState extends ConsumerState<CrudSuministrosR
                       children: [
                         Text('Solicitud Refacción *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int>(
+                        DropdownButtonFormField<int>(isExpanded: true, 
                           value: _selectedSolicitudId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -380,7 +381,7 @@ class _CrudSuministrosRefaccionModalState extends ConsumerState<CrudSuministrosR
                       children: [
                         Text('Fuente Suministro *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<String>(
+                        DropdownButtonFormField<String>(isExpanded: true, 
                           value: _selectedFuenteSuministro,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -422,7 +423,7 @@ class _CrudSuministrosRefaccionModalState extends ConsumerState<CrudSuministrosR
                   children: [
                     Text('Proveedor *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                     const SizedBox(height: 8),
-                    DropdownButtonFormField<int>(
+                    DropdownButtonFormField<int>(isExpanded: true, 
                       value: _selectedProveedorId,
                       style: TextStyle(color: context.textColor),
                       dropdownColor: context.surfaceColor,
@@ -452,7 +453,7 @@ class _CrudSuministrosRefaccionModalState extends ConsumerState<CrudSuministrosR
                   children: [
                     Text('Almacén *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                     const SizedBox(height: 8),
-                    DropdownButtonFormField<int>(
+                    DropdownButtonFormField<int>(isExpanded: true, 
                       value: _selectedAlmacenId,
                       style: TextStyle(color: context.textColor),
                       dropdownColor: context.surfaceColor,

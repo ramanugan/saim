@@ -232,7 +232,8 @@ class _CrudPrecioRefaccionModalState extends ConsumerState<CrudPrecioRefaccionMo
     return listAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: const TextStyle(color: AppColors.red))),
-      data: (list) {
+      data: (rawList) {
+        final list = rawList.where((e) => e.activo).toList();
         if (list.isEmpty) {
           return Center(
             child: Text('No hay precios registrados.', style: TextStyle(color: context.mutedTextColor)),
@@ -331,7 +332,7 @@ class _CrudPrecioRefaccionModalState extends ConsumerState<CrudPrecioRefaccionMo
                       children: [
                         Text('Refacción *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int>(
+                        DropdownButtonFormField<int>(isExpanded: true, 
                           value: _selectedRefaccionId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -363,7 +364,7 @@ class _CrudPrecioRefaccionModalState extends ConsumerState<CrudPrecioRefaccionMo
                       children: [
                         Text('Proveedor (Opcional)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int?>(
+                        DropdownButtonFormField<int?>(isExpanded: true, 
                           value: _selectedProveedorId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -401,7 +402,7 @@ class _CrudPrecioRefaccionModalState extends ConsumerState<CrudPrecioRefaccionMo
                       children: [
                         Text('Tipo Precio *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<String>(
+                        DropdownButtonFormField<String>(isExpanded: true, 
                           value: _selectedTipoPrecio,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -434,7 +435,7 @@ class _CrudPrecioRefaccionModalState extends ConsumerState<CrudPrecioRefaccionMo
                       children: [
                         Text('Moneda *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<String>(
+                        DropdownButtonFormField<String>(isExpanded: true, 
                           value: _selectedMoneda,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,

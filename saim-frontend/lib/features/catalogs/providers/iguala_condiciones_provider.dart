@@ -3,32 +3,24 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/base_crud_notifier.dart';
 import '../models/iguala_condicion.dart';
+import 'iguala_servicios_provider.dart';
+import 'igualas_provider.dart';
 
 // Helper providers for foreign key dropdowns
-final helperIgualasProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('iguala')
-      .select('id_iguala, codigo_iguala')
-      .eq('activo', true);
-  // Deduplicate por id_iguala para evitar assertion de DropdownButton
-  final seen = <int>{};
-  return List<Map<String, dynamic>>.from(response as List)
-      .where((item) => seen.add((item['id_iguala'] as num).toInt()))
-      .toList();
+final helperIgualasProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final asyncData = ref.watch(igualasProvider);
+  return asyncData.whenData((items) => items
+      .map((e) => e.toJson())
+      .where((json) => json.containsKey('activo') ? json['activo'] == true : true)
+      .toList());
 });
 
-final helperIgualaServiciosProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('iguala_servicio')
-      .select('id_iguala_servicio, id_iguala, alcance_particular')
-      .eq('activo', true);
-  // Deduplicate por id_iguala_servicio
-  final seen = <int>{};
-  return List<Map<String, dynamic>>.from(response as List)
-      .where((item) => seen.add((item['id_iguala_servicio'] as num).toInt()))
-      .toList();
+final helperIgualaServiciosProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final asyncData = ref.watch(igualaServiciosProvider);
+  return asyncData.whenData((items) => items
+      .map((e) => e.toJson())
+      .where((json) => json.containsKey('activo') ? json['activo'] == true : true)
+      .toList());
 });
 
 

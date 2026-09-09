@@ -184,7 +184,8 @@ class _CrudAlmacenesModalState extends ConsumerState<CrudAlmacenesModal> {
     return listAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: const TextStyle(color: AppColors.red))),
-      data: (list) {
+      data: (rawList) {
+        final list = rawList.where((e) => e.activo).toList();
         if (list.isEmpty) {
           return Center(
             child: Text('No hay registros de almacenes.', style: TextStyle(color: context.mutedTextColor)),
@@ -295,7 +296,7 @@ class _CrudAlmacenesModalState extends ConsumerState<CrudAlmacenesModal> {
                       children: [
                         Text('Estado', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int?>(
+                        DropdownButtonFormField<int?>(isExpanded: true, 
                           value: _selectedEstadoId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -330,7 +331,7 @@ class _CrudAlmacenesModalState extends ConsumerState<CrudAlmacenesModal> {
                       children: [
                         Text('Municipio', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int?>(
+                        DropdownButtonFormField<int?>(isExpanded: true, 
                           value: _selectedMunicipioId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,

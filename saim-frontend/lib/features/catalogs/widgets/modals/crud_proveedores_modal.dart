@@ -186,7 +186,8 @@ class _CrudProveedoresModalState extends ConsumerState<CrudProveedoresModal> {
     return proveedoresAsync.when(
       loading: () => Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: TextStyle(color: AppColors.red))),
-      data: (proveedores) {
+      data: (rawList) {
+        final proveedores = rawList.where((e) => e.activo).toList();
         if (proveedores.isEmpty) {
           return Center(
             child: Text('No hay proveedores registrados.', style: TextStyle(color: context.mutedTextColor)),

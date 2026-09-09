@@ -147,7 +147,8 @@ class _CrudMovimientosInventarioModalState extends ConsumerState<CrudMovimientos
     return listAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: const TextStyle(color: AppColors.red))),
-      data: (list) {
+      data: (rawList) {
+        final list = rawList;
         if (list.isEmpty) {
           return Center(
             child: Text('No hay registros de movimientos de inventario.', style: TextStyle(color: context.mutedTextColor)),
@@ -250,7 +251,7 @@ class _CrudMovimientosInventarioModalState extends ConsumerState<CrudMovimientos
                       children: [
                         Text('Almacén *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int>(
+                        DropdownButtonFormField<int>(isExpanded: true, 
                           value: _selectedAlmacenId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -280,7 +281,7 @@ class _CrudMovimientosInventarioModalState extends ConsumerState<CrudMovimientos
                       children: [
                         Text('Refacción *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int>(
+                        DropdownButtonFormField<int>(isExpanded: true, 
                           value: _selectedRefaccionId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -318,7 +319,7 @@ class _CrudMovimientosInventarioModalState extends ConsumerState<CrudMovimientos
                       children: [
                         Text('Tipo Movimiento *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<String>(
+                        DropdownButtonFormField<String>(isExpanded: true, 
                           value: _selectedTipoMovimiento,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,

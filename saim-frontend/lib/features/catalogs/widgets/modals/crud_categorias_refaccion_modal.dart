@@ -177,7 +177,8 @@ class _CrudCategoriasRefaccionModalState extends ConsumerState<CrudCategoriasRef
     return listAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: const TextStyle(color: AppColors.red))),
-      data: (list) {
+      data: (rawList) {
+        final list = rawList.where((e) => e.activo).toList();
         if (list.isEmpty) {
           return Center(
             child: Text('No hay registros de categorías.', style: TextStyle(color: context.mutedTextColor)),

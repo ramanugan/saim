@@ -172,7 +172,8 @@ class _CrudEstadosModalState extends ConsumerState<CrudEstadosModal> {
     return estadosAsync.when(
       loading: () => Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: TextStyle(color: AppColors.red))),
-      data: (estados) {
+      data: (rawList) {
+        final estados = rawList.where((e) => e.activo).toList();
         if (estados.isEmpty) {
           return Center(
             child: Text('No hay estados registrados.', style: TextStyle(color: context.mutedTextColor)),
@@ -299,7 +300,7 @@ class _CrudEstadosModalState extends ConsumerState<CrudEstadosModal> {
             if (activePaises.isEmpty && _selectedPaisId == null) {
               return Text('No hay países activos', style: TextStyle(color: context.mutedTextColor));
             }
-            return DropdownButtonFormField<int>(
+            return DropdownButtonFormField<int>(isExpanded: true, 
               value: _selectedPaisId,
               decoration: InputDecoration(
                 isDense: true,

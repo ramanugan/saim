@@ -3,23 +3,23 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/base_crud_notifier.dart';
 import '../models/refaccion_compatibilidad.dart';
+import 'refacciones_provider.dart';
+import 'tipos_equipo_provider.dart';
 
-final helperRefaccionesForCompatibilidadProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('refaccion')
-      .select('id_refaccion, codigo_interno, descripcion_homologada')
-      .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+final helperRefaccionesForCompatibilidadProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final asyncData = ref.watch(refaccionesProvider);
+  return asyncData.whenData((items) => items
+      .map((e) => e.toJson())
+      .where((json) => json.containsKey('activo') ? json['activo'] == true : true)
+      .toList());
 });
 
-final helperTiposEquipoForCompatibilidadProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('tipo_equipo')
-      .select('id_tipo_equipo, nombre')
-      .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+final helperTiposEquipoForCompatibilidadProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final asyncData = ref.watch(tiposEquipoProvider);
+  return asyncData.whenData((items) => items
+      .map((e) => e.toJson())
+      .where((json) => json.containsKey('activo') ? json['activo'] == true : true)
+      .toList());
 });
 
 final refaccionesCompatibilidadProvider = StateNotifierProvider<RefaccionesCompatibilidadNotifier, AsyncValue<List<RefaccionCompatibilidad>>>((ref) {

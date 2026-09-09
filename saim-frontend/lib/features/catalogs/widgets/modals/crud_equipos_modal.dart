@@ -202,7 +202,8 @@ class _CrudEquiposModalState extends ConsumerState<CrudEquiposModal> {
     return equiposAsync.when(
       loading: () => Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: TextStyle(color: AppColors.red))),
-      data: (equipos) {
+      data: (rawList) {
+        final equipos = rawList.where((e) => e.activo).toList();
         if (equipos.isEmpty) {
           return Center(
             child: Text('No hay equipos registrados.', style: TextStyle(color: context.mutedTextColor)),

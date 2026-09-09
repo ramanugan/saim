@@ -188,7 +188,8 @@ class _CrudUnidadesMedidaModalState extends ConsumerState<CrudUnidadesMedidaModa
     final listAsync = ref.watch(unidadesMedidaProvider);
 
     return listAsync.when(
-      data: (items) {
+      data: (rawList) {
+        final items = rawList.where((e) => e.activo).toList();
         if (items.isEmpty) {
           return Center(child: Text('No hay unidades de medida.', style: TextStyle(color: context.mutedTextColor)));
         }

@@ -233,7 +233,8 @@ class _CrudInventarioRefaccionesModalState extends ConsumerState<CrudInventarioR
     return listAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: const TextStyle(color: AppColors.red))),
-      data: (list) {
+      data: (rawList) {
+        final list = rawList.where((e) => e.activo).toList();
         if (list.isEmpty) {
           return Center(
             child: Text('No hay registros de inventario de refacciones.', style: TextStyle(color: context.mutedTextColor)),
@@ -340,7 +341,7 @@ class _CrudInventarioRefaccionesModalState extends ConsumerState<CrudInventarioR
                       children: [
                         Text('Almacén *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int>(
+                        DropdownButtonFormField<int>(isExpanded: true, 
                           value: _selectedAlmacenId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -370,7 +371,7 @@ class _CrudInventarioRefaccionesModalState extends ConsumerState<CrudInventarioR
                       children: [
                         Text('Refacción *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int>(
+                        DropdownButtonFormField<int>(isExpanded: true, 
                           value: _selectedRefaccionId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,

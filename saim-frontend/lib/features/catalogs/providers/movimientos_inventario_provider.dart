@@ -3,23 +3,23 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/base_crud_notifier.dart';
 import '../models/movimiento_inventario.dart';
+import 'refacciones_provider.dart';
+import 'almacenes_provider.dart';
 
-final helperAlmacenesForMovimientoProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('almacen')
-      .select('id_almacen, nombre')
-      .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+final helperAlmacenesForMovimientoProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final asyncData = ref.watch(almacenesProvider);
+  return asyncData.whenData((items) => items
+      .map((e) => e.toJson())
+      .where((json) => json.containsKey('activo') ? json['activo'] == true : true)
+      .toList());
 });
 
-final helperRefaccionesForMovimientoProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('refaccion')
-      .select('id_refaccion, codigo_interno, descripcion_homologada')
-      .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+final helperRefaccionesForMovimientoProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final asyncData = ref.watch(refaccionesProvider);
+  return asyncData.whenData((items) => items
+      .map((e) => e.toJson())
+      .where((json) => json.containsKey('activo') ? json['activo'] == true : true)
+      .toList());
 });
 
 final movimientosInventarioProvider = StateNotifierProvider<MovimientosInventarioNotifier, AsyncValue<List<MovimientoInventario>>>((ref) {

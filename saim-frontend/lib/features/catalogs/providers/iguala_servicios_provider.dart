@@ -3,23 +3,23 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/base_crud_notifier.dart';
 import '../models/iguala_servicio.dart';
+import 'tipos_servicio_provider.dart';
+import 'igualas_provider.dart';
 
-final helperIgualasForServicioProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('iguala')
-      .select('id_iguala, codigo_iguala')
-      .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+final helperIgualasForServicioProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final asyncData = ref.watch(igualasProvider);
+  return asyncData.whenData((items) => items
+      .map((e) => e.toJson())
+      .where((json) => json.containsKey('activo') ? json['activo'] == true : true)
+      .toList());
 });
 
-final helperTiposServicioProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('tipo_servicio')
-      .select('id_tipo_servicio, nombre')
-      .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+final helperTiposServicioProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final asyncData = ref.watch(tiposServicioProvider);
+  return asyncData.whenData((items) => items
+      .map((e) => e.toJson())
+      .where((json) => json.containsKey('activo') ? json['activo'] == true : true)
+      .toList());
 });
 
 final igualaServiciosProvider = StateNotifierProvider<IgualaServiciosNotifier, AsyncValue<List<IgualaServicio>>>((ref) {

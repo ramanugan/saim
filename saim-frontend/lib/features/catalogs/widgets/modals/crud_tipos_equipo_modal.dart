@@ -168,7 +168,8 @@ class _CrudTiposEquipoModalState extends ConsumerState<CrudTiposEquipoModal> {
     return tiposAsync.when(
       loading: () => Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: TextStyle(color: AppColors.red))),
-      data: (tipos) {
+      data: (rawList) {
+        final tipos = rawList.where((e) => e.activo).toList();
         if (tipos.isEmpty) {
           return Center(
             child: Text('No hay tipos de equipo registrados.', style: TextStyle(color: context.mutedTextColor)),

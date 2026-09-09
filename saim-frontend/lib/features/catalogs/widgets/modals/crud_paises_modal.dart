@@ -164,7 +164,8 @@ class _CrudPaisesModalState extends ConsumerState<CrudPaisesModal> {
     return paisesAsync.when(
       loading: () => Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: TextStyle(color: AppColors.red))),
-      data: (paises) {
+      data: (rawList) {
+        final paises = rawList.where((e) => e.activo).toList();
         if (paises.isEmpty) {
           return Center(
             child: Text('No hay registros de países.', style: TextStyle(color: context.mutedTextColor)),

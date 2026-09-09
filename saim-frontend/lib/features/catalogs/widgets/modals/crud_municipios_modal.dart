@@ -181,7 +181,8 @@ class _CrudMunicipiosModalState extends ConsumerState<CrudMunicipiosModal> {
     return municipiosAsync.when(
       loading: () => Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: TextStyle(color: AppColors.red))),
-      data: (municipios) {
+      data: (rawList) {
+        final municipios = rawList.where((e) => e.activo).toList();
         if (municipios.isEmpty) {
           return Center(
             child: Text('No hay municipios registrados.', style: TextStyle(color: context.mutedTextColor)),
@@ -309,7 +310,7 @@ class _CrudMunicipiosModalState extends ConsumerState<CrudMunicipiosModal> {
             if (activePaises.isEmpty && _selectedPaisId == null) {
               return Text('No hay países activos', style: TextStyle(color: context.mutedTextColor));
             }
-            return DropdownButtonFormField<int>(
+            return DropdownButtonFormField<int>(isExpanded: true, 
               value: _selectedPaisId,
               decoration: InputDecoration(
                 isDense: true,
@@ -365,7 +366,7 @@ class _CrudMunicipiosModalState extends ConsumerState<CrudMunicipiosModal> {
             if (activeEstados.isEmpty && _selectedEstadoId == null) {
               return Text('No hay estados activos para el país seleccionado', style: TextStyle(color: context.mutedTextColor));
             }
-            return DropdownButtonFormField<int>(
+            return DropdownButtonFormField<int>(isExpanded: true, 
               value: _selectedEstadoId,
               decoration: InputDecoration(
                 isDense: true,

@@ -211,7 +211,8 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
         ),
         Expanded(
           child: tiendasAsync.when(
-            data: (tiendas) {
+            data: (rawList) {
+        final tiendas = rawList.where((e) => e.activo).toList();
               final active = tiendas.where((t) => t.activo).toList();
               if (active.isEmpty) {
                 return Center(
@@ -304,7 +305,7 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
                 final valueExists = active.any((c) => c.idCliente == _idCliente);
                 final safeValue = valueExists ? _idCliente : null;
 
-                return DropdownButtonFormField<int>(
+                return DropdownButtonFormField<int>(isExpanded: true, 
                   value: safeValue,
                   decoration: InputDecoration(
                     labelText: 'Cliente *',
@@ -403,7 +404,7 @@ class _CrudTiendasModalState extends ConsumerState<CrudTiendasModal> {
               if (!estatusOptions.contains(_estatus)) {
                 estatusOptions.insert(0, _estatus);
               }
-              return DropdownButtonFormField<String>(
+              return DropdownButtonFormField<String>(isExpanded: true, 
                 value: _estatus,
                 decoration: InputDecoration(
                   labelText: 'Estatus',

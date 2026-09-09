@@ -3,14 +3,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/base_crud_notifier.dart';
 import '../models/refaccion_alias.dart';
+import 'refacciones_provider.dart';
 
-final helperRefaccionesForAliasProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('refaccion')
-      .select('id_refaccion, codigo_interno, descripcion_homologada')
-      .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+final helperRefaccionesForAliasProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final asyncData = ref.watch(refaccionesProvider);
+  return asyncData.whenData((items) => items
+      .map((e) => e.toJson())
+      .where((json) => json.containsKey('activo') ? json['activo'] == true : true)
+      .toList());
 });
 
 final helperUsuariosForAliasProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {

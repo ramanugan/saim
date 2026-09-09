@@ -3,14 +3,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/base_crud_notifier.dart';
 import '../models/instalacion_refaccion.dart';
+import 'equipos_provider.dart';
+import 'solicitudes_refaccion_detalle_provider.dart';
 
-final helperSolicitudDetallesForInstalacionProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('solicitud_refaccion_detalle')
-      .select('id_solicitud_refaccion_detalle, cantidad_solicitada, refaccion(codigo_interno, descripcion_homologada)')
-      .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+final helperSolicitudDetallesForInstalacionProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final asyncData = ref.watch(solicitudesRefaccionDetalleProvider);
+  return asyncData.whenData((items) => items
+      .map((e) => e.toJson())
+      .where((json) => json.containsKey('activo') ? json['activo'] == true : true)
+      .toList());
 });
 
 final helperOrdenesForInstalacionProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
@@ -22,13 +23,12 @@ final helperOrdenesForInstalacionProvider = FutureProvider<List<Map<String, dyna
   return List<Map<String, dynamic>>.from(response as List);
 });
 
-final helperEquiposForInstalacionProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('equipo')
-      .select('id_equipo, codigo_activo_cliente, marca, modelo')
-      .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+final helperEquiposForInstalacionProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final asyncData = ref.watch(equiposProvider);
+  return asyncData.whenData((items) => items
+      .map((e) => e.toJson())
+      .where((json) => json.containsKey('activo') ? json['activo'] == true : true)
+      .toList());
 });
 
 final instalacionesRefaccionProvider = StateNotifierProvider<InstalacionesRefaccionNotifier, AsyncValue<List<InstalacionRefaccion>>>((ref) {

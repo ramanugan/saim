@@ -4,14 +4,14 @@ import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/base_crud_notifier.dart';
 import '../models/iguala.dart';
 import 'tipos_servicio_provider.dart';
+import 'tiendas_provider.dart';
 
-final helperTiendasForIgualaProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('tienda')
-      .select('id_tienda, nombre, determinante')
-      .eq('activo', true);
-  return List<Map<String, dynamic>>.from(response as List);
+final helperTiendasForIgualaProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {
+  final asyncData = ref.watch(tiendasProvider);
+  return asyncData.whenData((items) => items
+      .map((e) => e.toJson())
+      .where((json) => json.containsKey('activo') ? json['activo'] == true : true)
+      .toList());
 });
 
 final helperTiposServicioForIgualaProvider = Provider<AsyncValue<List<Map<String, dynamic>>>>((ref) {

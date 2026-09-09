@@ -234,7 +234,8 @@ class _CrudIgualaCondicionesModalState extends ConsumerState<CrudIgualaCondicion
     return listAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: const TextStyle(color: AppColors.red))),
-      data: (list) {
+      data: (rawList) {
+        final list = rawList.where((e) => e.activo).toList();
         if (list.isEmpty) {
           return Center(
             child: Text('No hay registros de condiciones de iguala.', style: TextStyle(color: context.mutedTextColor)),
@@ -341,7 +342,7 @@ class _CrudIgualaCondicionesModalState extends ConsumerState<CrudIgualaCondicion
                       children: [
                         Text('Iguala *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int>(
+                        DropdownButtonFormField<int>(isExpanded: true, 
                           value: _selectedIgualaId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -371,7 +372,7 @@ class _CrudIgualaCondicionesModalState extends ConsumerState<CrudIgualaCondicion
                       children: [
                         Text('Iguala Servicio (Opcional)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<int?>(
+                        DropdownButtonFormField<int?>(isExpanded: true, 
                           value: _selectedIgualaServicioId,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -426,7 +427,7 @@ class _CrudIgualaCondicionesModalState extends ConsumerState<CrudIgualaCondicion
                       children: [
                         Text('Periodicidad Preventivo *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<String>(
+                        DropdownButtonFormField<String>(isExpanded: true, 
                           value: _selectedPeriodicidadPreventivo,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,
@@ -457,7 +458,7 @@ class _CrudIgualaCondicionesModalState extends ConsumerState<CrudIgualaCondicion
                       children: [
                         Text('Periodicidad Facturación *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<String>(
+                        DropdownButtonFormField<String>(isExpanded: true, 
                           value: _selectedPeriodicidadFacturacion,
                           style: TextStyle(color: context.textColor),
                           dropdownColor: context.surfaceColor,

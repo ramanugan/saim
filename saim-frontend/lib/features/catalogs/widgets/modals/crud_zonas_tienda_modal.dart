@@ -222,7 +222,8 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
         ),
         Expanded(
           child: zonasAsync.when(
-            data: (zonas) {
+            data: (rawList) {
+        final zonas = rawList.where((e) => e.activo).toList();
               if (zonas.isEmpty) {
                 return Center(
                   child: Text('No hay registros de Zona Tienda.',
@@ -335,7 +336,7 @@ class _CrudZonasTiendaModalState extends ConsumerState<CrudZonasTiendaModal> {
             const SizedBox(height: 16),
             _buildTextField('Número de Anexo', _numeroAnexoCtrl, maxLength: 100),
             const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
+            DropdownButtonFormField<String>(isExpanded: true, 
               value: _estatus,
               decoration: InputDecoration(
                 labelText: 'Estatus',

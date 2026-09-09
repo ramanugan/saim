@@ -198,7 +198,8 @@ class _CrudZonasEstadoModalState extends ConsumerState<CrudZonasEstadoModal> {
     return zonasAsync.when(
       loading: () => Center(child: CircularProgressIndicator()),
       error: (err, st) => Center(child: Text('Error: $err', style: TextStyle(color: AppColors.red))),
-      data: (zonas) {
+      data: (rawList) {
+        final zonas = rawList.where((e) => e.activo).toList();
         if (zonas.isEmpty) {
           return Center(
             child: Text('No hay registros de zonas-estados.', style: TextStyle(color: context.mutedTextColor)),
