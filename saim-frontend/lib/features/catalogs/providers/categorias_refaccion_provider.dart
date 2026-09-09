@@ -22,6 +22,37 @@ class CategoriasRefaccionNotifier extends SupabaseCrudNotifier<CategoriaRefaccio
         );
 
   Future<void> fetchCategorias() => fetch();
+  
+  @override
+  Future<void> add(CategoriaRefaccion item) async {
+    try {
+      final data = item.toJson();
+      data.remove('id_categoria_refaccion');
+
+      final inserted = await supabase
+          .from('categoria_refaccion')
+          .insert(data)
+          .select()
+          .single();
+
+      final newId = inserted['id_categoria_refaccion'] as int;
+
+      if (item.codigo == 'AUTO' || item.codigo.isEmpty) {
+        final generatedCodigo = newId.toString().padLeft(3, '0');
+        await supabase
+            .from('categoria_refaccion')
+            .update({'codigo': generatedCodigo})
+            .eq('id_categoria_refaccion', newId);
+        inserted['codigo'] = generatedCodigo;
+      }
+
+      state = AsyncValue.data([...state.value ?? [], CategoriaRefaccion.fromJson(inserted)]);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+      rethrow;
+    }
+  }
+
   Future<void> addCategoria(CategoriaRefaccion item) => add(item);
   Future<void> updateCategoria(CategoriaRefaccion item) => updateItem(item);
 }

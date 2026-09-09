@@ -68,7 +68,7 @@ class _CrudCategoriasRefaccionModalState extends ConsumerState<CrudCategoriasRef
 
     final item = CategoriaRefaccion(
       idCategoriaRefaccion: _selectedItem?.idCategoriaRefaccion,
-      codigo: _codigoCtrl.text.trim(),
+      codigo: _isEditing && _selectedItem != null ? _codigoCtrl.text.trim() : 'AUTO',
       nombre: _nombreCtrl.text.trim(),
       descripcion: _descripcionCtrl.text.trim().isEmpty ? null : _descripcionCtrl.text.trim(),
       activo: _activo,
@@ -249,7 +249,33 @@ class _CrudCategoriasRefaccionModalState extends ConsumerState<CrudCategoriasRef
             Row(
               children: [
                 Expanded(
-                  child: _buildTextField('Código *', _codigoCtrl, required: true),
+                  child: _selectedItem != null
+                      ? _buildTextField('Código *', _codigoCtrl, required: true, readOnly: true)
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Código *', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.textColor)),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              initialValue: 'Autogenerado',
+                              readOnly: true,
+                              style: TextStyle(color: context.mutedTextColor, fontStyle: FontStyle.italic),
+                              decoration: InputDecoration(
+                                isDense: true,
+                                filled: true,
+                                fillColor: context.backgroundColor,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: context.borderColor),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: context.borderColor),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -301,7 +327,7 @@ class _CrudCategoriasRefaccionModalState extends ConsumerState<CrudCategoriasRef
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {bool required = false}) {
+  Widget _buildTextField(String label, TextEditingController controller, {bool required = false, bool readOnly = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -309,6 +335,7 @@ class _CrudCategoriasRefaccionModalState extends ConsumerState<CrudCategoriasRef
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
+          readOnly: readOnly,
           style: TextStyle(color: context.textColor),
           decoration: InputDecoration(
             isDense: true,
