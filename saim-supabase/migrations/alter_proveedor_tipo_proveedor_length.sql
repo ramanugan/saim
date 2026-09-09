@@ -1,0 +1,1 @@
+ALTER TABLE proveedor ALTER COLUMN tipo_proveedor TYPE VARCHAR(524);
