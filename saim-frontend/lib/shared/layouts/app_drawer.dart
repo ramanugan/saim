@@ -751,12 +751,43 @@ class AppDrawer extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    _buildNavItem(
+                    _buildExpandableNavItem(
                       context: context,
                       icon: Icons.admin_panel_settings_outlined,
-                      label: 'Usuarios y roles',
-                      route: '/admin/usuarios',
-                      isActive: GoRouterState.of(context).uri.toString().contains('/admin/usuarios'),
+                      label: 'Seguridad',
+                      isActive: GoRouterState.of(context).uri.toString().contains('/admin/'),
+                      children: [
+                        _buildSubNavItem(
+                          context: context,
+                          label: 'Usuarios',
+                          isActive: GoRouterState.of(context).uri.toString() == '/admin/usuarios',
+                          paddingLeft: 40,
+                          onTap: () {
+                            context.go('/admin/usuarios');
+                            if (isModal) Navigator.pop(context);
+                          },
+                        ),
+                        _buildSubNavItem(
+                          context: context,
+                          label: 'Roles',
+                          isActive: GoRouterState.of(context).uri.toString() == '/admin/roles',
+                          paddingLeft: 40,
+                          onTap: () {
+                            context.go('/admin/roles');
+                            if (isModal) Navigator.pop(context);
+                          },
+                        ),
+                        _buildSubNavItem(
+                          context: context,
+                          label: 'Organización proveedora',
+                          isActive: GoRouterState.of(context).uri.toString() == '/admin/organizacion-proveedora',
+                          paddingLeft: 40,
+                          onTap: () {
+                            context.go('/admin/organizacion-proveedora');
+                            if (isModal) Navigator.pop(context);
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ],

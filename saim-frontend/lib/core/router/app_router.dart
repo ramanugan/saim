@@ -15,7 +15,9 @@ import '../../features/correctivos/correctivos_screen.dart';
 import '../../features/expenses/screens/expenses_screen.dart';
 import '../../features/billing/screens/billing_screen.dart';
 import '../../features/auth/login_screen.dart';
-import '../../features/users_admin/screens/users_admin_screen.dart';
+import '../../features/security/screens/usuarios_screen.dart';
+import '../../features/security/screens/roles_screen.dart';
+import '../../features/security/screens/organizacion_proveedora_screen.dart';
 import '../../shared/widgets/role_guard.dart';
 import '../providers/auth_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -126,7 +128,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/admin/usuarios',
         builder: (context, state) => RoleGuard(
           allowedRoles: ['Administrador'],
-          child: UsersAdminScreen(),
+          child: UsuariosScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/admin/roles',
+        builder: (context, state) => RoleGuard(
+          allowedRoles: ['Administrador'],
+          child: RolesScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/admin/organizacion-proveedora',
+        builder: (context, state) => RoleGuard(
+          allowedRoles: ['Administrador'],
+          child: OrganizacionProveedoraScreen(),
         ),
       ),
     ],

@@ -14,23 +14,35 @@ final currentUserProfileProvider = FutureProvider<UserProfile?>((ref) async {
   if (session == null) return null;
   
   final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase
-      .from('user_profiles')
-      .select('*, roles(*)')
-      .eq('id', session.user.id)
-      .maybeSingle();
-      
-  if (response == null) return null;
-  
-  final profile = UserProfile.fromJson(response);
-  
-  if (!profile.isActive) {
-    // Si está inactivo, forzar el cierre de sesión
-    Future.microtask(() => ref.read(authServiceProvider).signOut());
-    return null;
+  try {
+    final response = await supabase
+        .from('user_profiles')
+        .select('*, roles(*)')
+        .eq('id', session.user.id)
+        .maybeSingle();
+        
+    if (response == null) return null;
+    
+    final profile = UserProfile.fromJson(response);
+    
+    if (!profile.isActive) {
+      // Si está inactivo, forzar el cierre de sesión
+      Future.microtask(() => ref.read(authServiceProvider).signOut());
+      return null;
+    }
+    
+    return profile;
+  } catch (e) {
+    if (e is PostgrestException && (e.code == 'PGRST301' || e.message.contains('JWT') || e.code == '401' || e.code == '403')) {
+      Future.microtask(() => ref.read(authServiceProvider).signOut());
+      return null;
+    }
+    if (e is AuthException) {
+      Future.microtask(() => ref.read(authServiceProvider).signOut());
+      return null;
+    }
+    rethrow;
   }
-  
-  return profile;
 });
 
 final myPermissionsProvider = FutureProvider<List<Permission>>((ref) async {
@@ -40,9 +52,12 @@ final myPermissionsProvider = FutureProvider<List<Permission>>((ref) async {
   if (session == null) return [];
   
   final supabase = ref.read(supabaseClientProvider);
-  final response = await supabase.from('my_permissions').select();
-  
-  return (response as List).map((json) => Permission.fromJson(json)).toList();
+  try {
+    final response = await supabase.from('my_permissions').select();
+    return (response as List).map((json) => Permission.fromJson(json)).toList();
+  } catch (e) {
+    return [];
+  }
 });
 
 final authStateProvider = StreamProvider<AuthState>((ref) {

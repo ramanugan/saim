@@ -8,6 +8,7 @@ class CustomTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final int maxLines;
   final String? Function(String?)? validator;
+  final bool enabled;
 
   CustomTextField({
     Key? key,
@@ -18,6 +19,7 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.maxLines = 1,
     this.validator,
+    this.enabled = true,
   }) : super(key: key);
 
   @override
@@ -40,6 +42,7 @@ class CustomTextField extends StatelessWidget {
           keyboardType: keyboardType,
           maxLines: maxLines,
           validator: validator,
+          enabled: enabled,
           decoration: InputDecoration(
             hintText: hintText,
           ),

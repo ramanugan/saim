@@ -10,6 +10,7 @@ class SaimButton extends StatelessWidget {
   final IconData? icon;
   final bool fullWidth;
   final bool small;
+  final bool isLoading;
 
   SaimButton({
     Key? key,
@@ -19,6 +20,7 @@ class SaimButton extends StatelessWidget {
     this.icon,
     this.fullWidth = false,
     this.small = false,
+    this.isLoading = false,
   }) : super(key: key);
 
   @override
@@ -90,6 +92,16 @@ class SaimButton extends StatelessWidget {
   }
 
   Widget _buildContent() {
+    if (isLoading) {
+      return SizedBox(
+        width: small ? 14 : 18,
+        height: small ? 14 : 18,
+        child: const CircularProgressIndicator(
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        ),
+      );
+    }
     if (icon != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,
