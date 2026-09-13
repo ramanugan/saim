@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
-import '../providers/users_provider.dart';
+import '../providers/roles_provider.dart';
 import '../providers/permissions_provider.dart';
 import '../../../core/models/permission.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/providers/auth_provider.dart';
 
 class PermissionsMatrix extends ConsumerStatefulWidget {
   PermissionsMatrix({super.key});
@@ -18,7 +19,7 @@ class _PermissionsMatrixState extends ConsumerState<PermissionsMatrix> {
 
   @override
   Widget build(BuildContext context) {
-    final rolesAsync = ref.watch(rolesProvider);
+    final rolesAsync = ref.watch(seguridadRolesProvider);
     final allPermissionsAsync = ref.watch(allPermissionsProvider);
 
     return Container(
@@ -50,11 +51,17 @@ class _PermissionsMatrixState extends ConsumerState<PermissionsMatrix> {
                         ),
                         value: _selectedRoleId,
                         hint: Text('Elige un rol para ver sus permisos'),
-                        items: roles.map((role) {
-                          return DropdownMenuItem(
-                            value: role.id,
-                            child: Text(role.name),
-                          );
+                        items: roles
+                          .where((role) => role.nombre != 'Administrador')
+                          .map((role) {
+                            String displayName = role.nombre;
+                            if (displayName == 'Administrador del sistema') {
+                              displayName = 'Administrador del sistema SAIM';
+                            }
+                            return DropdownMenuItem(
+                              value: role.idRol,
+                              child: Text(displayName),
+                            );
                         }).toList(),
                         onChanged: (val) {
                           setState(() {
@@ -158,8 +165,20 @@ class _PermissionRow extends ConsumerWidget {
           trailing: Switch(
             value: isGranted,
             activeColor: AppColors.blue,
-            onChanged: (val) {
-              ref.read(usersAdminProvider).toggleRolePermission(roleId, permission.id!, val);
+            onChanged: (val) async {
+              final supabase = ref.read(supabaseClientProvider);
+              if (val) {
+                await supabase.from('rol_permiso').insert({
+                  'id_rol': roleId,
+                  'id_permiso': permission.id,
+                });
+              } else {
+                await supabase
+                    .from('rol_permiso')
+                    .delete()
+                    .match({'id_rol': roleId, 'id_permiso': permission.id!});
+              }
+              ref.invalidate(rolePermissionsProvider(roleId));
             },
           ),
         );

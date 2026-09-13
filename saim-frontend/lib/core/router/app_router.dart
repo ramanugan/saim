@@ -18,8 +18,10 @@ import '../../features/auth/login_screen.dart';
 import '../../features/security/screens/usuarios_screen.dart';
 import '../../features/security/screens/roles_screen.dart';
 import '../../features/security/screens/organizacion_proveedora_screen.dart';
+import '../../features/security/screens/role_permissions_screen.dart';
 import '../../shared/widgets/role_guard.dart';
 import '../providers/auth_provider.dart';
+import '../../features/security/models/usuario.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -48,7 +50,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         }
 
         // Aquí ya estamos seguros de que cargó y tenemos un valor real
-        final isTecnico = userProfileAsync.value?.role?.name == 'Técnico';
+        final isTecnico = userProfileAsync.value?.roles
+                .any((r) => r.activo && r.rol?.nombre == 'Técnico') ?? false;
         
         if (isLoggingIn || isLoading) {
           return isTecnico ? '/orden-campo' : '/';
@@ -143,6 +146,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => RoleGuard(
           allowedRoles: ['Administrador'],
           child: OrganizacionProveedoraScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/admin/permisos',
+        builder: (context, state) => RoleGuard(
+          allowedRoles: ['Administrador'],
+          child: RolePermissionsScreen(),
         ),
       ),
     ],

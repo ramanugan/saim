@@ -146,7 +146,7 @@ class AppDrawer extends ConsumerWidget {
                             if (isModal) Navigator.pop(context);
                           },
                         ),
-                        if (ref.watch(currentUserProfileProvider).value?.role?.name == 'Administrador')
+                        if (ref.watch(currentUserProfileProvider).value?.roles.any((r) => r.activo && r.rol?.nombre == 'Administrador') ?? false)
                           _buildNestedExpandableNavItem(
                             context: context,
                             label: 'Básicos',
@@ -738,7 +738,7 @@ class AppDrawer extends ConsumerWidget {
                       isActive: GoRouterState.of(context).uri.toString().contains('/cobranza'),
                     ),
                   ),
-                  if (ref.watch(currentUserProfileProvider).value?.role?.name == 'Administrador') ...[
+                  if (ref.watch(currentUserProfileProvider).value?.roles.any((r) => r.activo && r.rol?.nombre == 'Administrador') ?? false) ...[
                     Padding(
                       padding: EdgeInsets.only(top: 15, bottom: 5, left: 12),
                       child: Text(
@@ -787,6 +787,16 @@ class AppDrawer extends ConsumerWidget {
                             if (isModal) Navigator.pop(context);
                           },
                         ),
+                        _buildSubNavItem(
+                          context: context,
+                          label: 'Permisos de Rol',
+                          isActive: GoRouterState.of(context).uri.toString() == '/admin/permisos',
+                          paddingLeft: 40,
+                          onTap: () {
+                            context.go('/admin/permisos');
+                            if (isModal) Navigator.pop(context);
+                          },
+                        ),
                       ],
                     ),
                   ],
@@ -799,9 +809,16 @@ class AppDrawer extends ConsumerWidget {
               child: Consumer(
                 builder: (context, ref, child) {
                   final profile = ref.watch(currentUserProfileProvider).value;
-                  final initials = profile?.initials ?? 'U';
-                  final fullName = profile?.fullName ?? 'Cargando...';
-                  final roleName = profile?.role?.name ?? 'Rol no asignado';
+                  final initials = (profile != null && profile.nombreUsuario.isNotEmpty) 
+                      ? profile.nombreUsuario.substring(0, 1).toUpperCase() 
+                      : 'U';
+                  final fullName = profile?.nombreUsuario ?? 'Cargando...';
+                  
+                  final activeRoleNames = profile?.roles
+                          .where((r) => r.activo && r.rol != null)
+                          .map((r) => r.rol!.nombre)
+                          .toList() ?? [];
+                  final roleName = activeRoleNames.isEmpty ? 'Rol no asignado' : activeRoleNames.join(', ');
 
                   return Row(
                     children: [

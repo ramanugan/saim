@@ -203,16 +203,16 @@ class _UsuarioFormState extends ConsumerState<UsuarioForm> {
                     runSpacing: 8,
                     children: _availableRoles.map((r) {
                       final isSelected = _selectedRoleIds.contains(r.idRol);
-                      return FilterChip(
+                      return ChoiceChip(
                         label: Text(r.nombre),
                         selected: isSelected,
                         onSelected: widget.usuario != null ? null : (selected) {
                           // TODO: Implementar actualización de roles para usuarios existentes en el backend
                           setState(() {
                             if (selected) {
-                              _selectedRoleIds.add(r.idRol!);
+                              _selectedRoleIds = {r.idRol!};
                             } else {
-                              _selectedRoleIds.remove(r.idRol);
+                              _selectedRoleIds.clear();
                             }
                           });
                         },

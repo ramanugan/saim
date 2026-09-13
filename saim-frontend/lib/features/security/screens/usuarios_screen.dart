@@ -110,10 +110,13 @@ class _UsuariosScreenState extends ConsumerState<UsuariosScreen> {
                       ),
                       side: BorderSide(color: context.surfaceColor.withOpacity(0.2)),
                     ),
-                    child: SingleChildScrollView(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                            child: DataTable(
                           headingRowColor: WidgetStateProperty.all(context.backgroundColor),
                           columns: const [
                             DataColumn(label: Text('ID')),
@@ -208,12 +211,14 @@ class _UsuariosScreenState extends ConsumerState<UsuariosScreen> {
                           }).toList(),
                         ),
                       ),
-                    ),
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => Center(child: Text('Error: $err')),
-              ),
+                    );
+                  },
+                ),
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, stack) => Center(child: Text('Error: $err')),
+          ),
             ),
           const SizedBox(height: 32),
         ],

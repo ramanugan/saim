@@ -1,13 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../features/users_admin/models/user_profile.dart';
+import '../../features/security/models/usuario.dart';
 import '../models/permission.dart';
 
 final supabaseClientProvider = Provider<SupabaseClient>((ref) {
   return Supabase.instance.client;
 });
 
-final currentUserProfileProvider = FutureProvider<UserProfile?>((ref) async {
+final currentUserProfileProvider = FutureProvider<Usuario?>((ref) async {
   final authState = ref.watch(authStateProvider);
   final session = authState.value?.session;
   
@@ -16,16 +16,16 @@ final currentUserProfileProvider = FutureProvider<UserProfile?>((ref) async {
   final supabase = ref.read(supabaseClientProvider);
   try {
     final response = await supabase
-        .from('user_profiles')
-        .select('*, roles(*)')
-        .eq('id', session.user.id)
+        .from('usuario')
+        .select('*, usuario_rol!fk_usuario_rol_id_usuario(*, rol(*))')
+        .eq('auth_id', session.user.id)
         .maybeSingle();
         
     if (response == null) return null;
     
-    final profile = UserProfile.fromJson(response);
+    final profile = Usuario.fromJson(response);
     
-    if (!profile.isActive) {
+    if (profile.estadoCuenta != 'ACTIVA') {
       // Si está inactivo, forzar el cierre de sesión
       Future.microtask(() => ref.read(authServiceProvider).signOut());
       return null;
@@ -46,15 +46,29 @@ final currentUserProfileProvider = FutureProvider<UserProfile?>((ref) async {
 });
 
 final myPermissionsProvider = FutureProvider<List<Permission>>((ref) async {
-  final authState = ref.watch(authStateProvider);
-  final session = authState.value?.session;
+  final profile = await ref.watch(currentUserProfileProvider.future);
+  if (profile == null) return [];
   
-  if (session == null) return [];
+  final roleIds = profile.roles.where((r) => r.activo && r.rol != null).map((r) => r.idRol).toList();
+  if (roleIds.isEmpty) return [];
   
   final supabase = ref.read(supabaseClientProvider);
   try {
-    final response = await supabase.from('my_permissions').select();
-    return (response as List).map((json) => Permission.fromJson(json)).toList();
+    final response = await supabase
+        .from('rol_permiso')
+        .select('permissions(id, module, action, description)')
+        .inFilter('id_rol', roleIds);
+        
+    final Map<int, Permission> uniquePermissions = {};
+    for (var row in response) {
+      if (row['permissions'] != null) {
+        final perm = Permission.fromJson(row['permissions']);
+        if (perm.id != null) {
+          uniquePermissions[perm.id!] = perm;
+        }
+      }
+    }
+    return uniquePermissions.values.toList();
   } catch (e) {
     return [];
   }
@@ -80,8 +94,8 @@ class AuthService {
   Future<void> signInWithEmail(String email, String password) async {
     final res = await _supabase.auth.signInWithPassword(email: email, password: password);
     if (res.user != null) {
-      final profileRes = await _supabase.from('user_profiles').select('is_active').eq('id', res.user!.id).maybeSingle();
-      if (profileRes != null && profileRes['is_active'] == false) {
+      final profileRes = await _supabase.from('usuario').select('estado_cuenta').eq('auth_id', res.user!.id).maybeSingle();
+      if (profileRes != null && profileRes['estado_cuenta'] != 'ACTIVA') {
         await _supabase.auth.signOut();
         throw Exception('Tu cuenta ha sido deshabilitada por el administrador.');
       }

@@ -17,11 +17,11 @@ final allPermissionsProvider = FutureProvider<List<Permission>>((ref) async {
 final rolePermissionsProvider = FutureProvider.family<List<int>, int>((ref, roleId) async {
   final supabase = ref.watch(supabaseClientProvider);
   
-  // Obtenemos solo los permission_id asociados a este rol
+  // Obtenemos solo los id_permiso asociados a este rol
   final response = await supabase
-      .from('role_permissions')
-      .select('permission_id')
-      .eq('role_id', roleId);
+      .from('rol_permiso')
+      .select('id_permiso')
+      .eq('id_rol', roleId);
       
-  return (response as List).map((json) => json['permission_id'] as int).toList();
+  return (response as List).map((json) => json['id_permiso'] as int).toList();
 });

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/auth_provider.dart';
+import '../../features/security/models/usuario.dart';
 import '../../core/theme/app_colors.dart';
 import 'saim_button.dart';
 import 'package:go_router/go_router.dart';
@@ -21,15 +22,20 @@ class RoleGuard extends ConsumerWidget {
     final userProfileAsync = ref.watch(currentUserProfileProvider);
 
     return userProfileAsync.when(
-      data: (profile) {
+      data: (Usuario? profile) {
         if (profile == null) {
           return Scaffold(
             body: Center(child: Text('Cargando sesión...')),
           );
         }
 
-        final userRole = profile.role?.name;
-        if (userRole != null && allowedRoles.contains(userRole)) {
+        final userRoles = profile.roles
+            .where((r) => r.activo && r.rol != null)
+            .map((r) => r.rol!.nombre)
+            .toList();
+
+        final hasAccess = userRoles.any((r) => allowedRoles.contains(r));
+        if (hasAccess) {
           return child;
         }
 

@@ -34,7 +34,7 @@ class AppLayout extends StatelessWidget {
             Consumer(
               builder: (context, ref, child) {
                 final profile = ref.watch(currentUserProfileProvider).value;
-                final initials = profile?.initials ?? 'U';
+                final initials = (profile != null && profile.nombreUsuario.isNotEmpty) ? profile.nombreUsuario.substring(0, 1).toUpperCase() : 'U';
                 
                 return Padding(
                   padding: EdgeInsets.only(right: 16.0, left: 8.0),

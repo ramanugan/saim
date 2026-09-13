@@ -19,6 +19,13 @@ class RequirePermission extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final permissionsAsync = ref.watch(myPermissionsProvider);
+    final profileAsync = ref.watch(currentUserProfileProvider);
+    
+    final isAdmin = profileAsync.value?.roles.any((r) => r.activo && r.rol?.nombre == 'Administrador') ?? false;
+
+    if (isAdmin) {
+      return child;
+    }
 
     return permissionsAsync.when(
       data: (permissions) {

@@ -15,7 +15,7 @@ class CoverageTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isAdmin = ref.watch(currentUserProfileProvider).value?.role?.name == 'Administrador';
+    final isAdmin = ref.watch(currentUserProfileProvider).value?.roles.any((r) => r.activo && r.rol?.nombre == 'Administrador') ?? false;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
