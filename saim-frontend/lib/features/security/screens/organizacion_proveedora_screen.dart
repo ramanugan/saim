@@ -18,6 +18,7 @@ class OrganizacionProveedoraScreen extends ConsumerStatefulWidget {
 
 class _OrganizacionProveedoraScreenState extends ConsumerState<OrganizacionProveedoraScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _horizontalScroll = ScrollController();
   String _searchQuery = '';
 
   @override
@@ -29,6 +30,7 @@ class _OrganizacionProveedoraScreenState extends ConsumerState<OrganizacionProve
   @override
   void dispose() {
     _searchController.dispose();
+    _horizontalScroll.dispose();
     super.dispose();
   }
 
@@ -110,69 +112,79 @@ class _OrganizacionProveedoraScreenState extends ConsumerState<OrganizacionProve
                       ),
                       side: BorderSide(color: context.surfaceColor.withOpacity(0.2)),
                     ),
-                    child: SingleChildScrollView(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          headingRowColor: WidgetStateProperty.all(context.backgroundColor),
-                          columns: const [
-                            DataColumn(label: Text('ID')),
-                            DataColumn(label: Text('Razón Social')),
-                            DataColumn(label: Text('Nombre Comercial')),
-                            DataColumn(label: Text('RFC')),
-                            DataColumn(label: Text('Acciones')),
-                          ],
-                          rows: filtered.map((org) {
-                            return DataRow(
-                              cells: [
-                                DataCell(Text(org.idOrganizacion.toString())),
-                                DataCell(Text(org.razonSocial)),
-                                DataCell(Text(org.nombreComercial ?? '-')),
-                                DataCell(Text(org.rfc)),
-                                DataCell(
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(Icons.edit, size: 20),
-                                        onPressed: () => _showForm(org),
-                                        tooltip: 'Editar',
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.delete, size: 20, color: Colors.red),
-                                        onPressed: () async {
-                                          final confirm = await showDialog<bool>(
-                                            context: context,
-                                            builder: (ctx) => AlertDialog(
-                                              title: const Text('Eliminar Organización'),
-                                              content: const Text('¿Está seguro de eliminar este registro?'),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () => Navigator.pop(ctx, false),
-                                                  child: const Text('Cancelar'),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () => Navigator.pop(ctx, true),
-                                                  child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
-                                                ),
-                                              ],
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Scrollbar(
+                          controller: _horizontalScroll,
+                          thumbVisibility: true,
+                          child: SingleChildScrollView(
+                            controller: _horizontalScroll,
+                            scrollDirection: Axis.horizontal,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                              child: DataTable(
+                                headingRowColor: WidgetStateProperty.all(context.backgroundColor),
+                                columns: const [
+                                  DataColumn(label: Text('ID')),
+                                  DataColumn(label: Text('Razón Social')),
+                                  DataColumn(label: Text('Nombre Comercial')),
+                                  DataColumn(label: Text('RFC')),
+                                  DataColumn(label: Text('Acciones')),
+                                ],
+                                rows: filtered.map((org) {
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(Text(org.idOrganizacion.toString())),
+                                      DataCell(Text(org.razonSocial)),
+                                      DataCell(Text(org.nombreComercial ?? '-')),
+                                      DataCell(Text(org.rfc)),
+                                      DataCell(
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(Icons.edit, size: 20),
+                                              onPressed: () => _showForm(org),
+                                              tooltip: 'Editar',
                                             ),
-                                          );
-                                          if (confirm == true && context.mounted) {
-                                            ref.read(organizacionProveedoraProvider.notifier)
-                                                .deleteOrganizacion(org.idOrganizacion!);
-                                          }
-                                        },
-                                        tooltip: 'Eliminar',
+                                            IconButton(
+                                              icon: const Icon(Icons.delete, size: 20, color: Colors.red),
+                                              onPressed: () async {
+                                                final confirm = await showDialog<bool>(
+                                                  context: context,
+                                                  builder: (ctx) => AlertDialog(
+                                                    title: const Text('Eliminar Organización'),
+                                                    content: const Text('¿Está seguro de eliminar este registro?'),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () => Navigator.pop(ctx, false),
+                                                        child: const Text('Cancelar'),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () => Navigator.pop(ctx, true),
+                                                        child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                                if (confirm == true && context.mounted) {
+                                                  ref.read(organizacionProveedoraProvider.notifier)
+                                                      .deleteOrganizacion(org.idOrganizacion!);
+                                                }
+                                              },
+                                              tooltip: 'Eliminar',
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
-                                  ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
-                      ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   );
                 },

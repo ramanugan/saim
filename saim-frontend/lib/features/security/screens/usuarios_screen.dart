@@ -19,6 +19,7 @@ class UsuariosScreen extends ConsumerStatefulWidget {
 
 class _UsuariosScreenState extends ConsumerState<UsuariosScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _horizontalScroll = ScrollController();
   String _searchQuery = '';
 
   @override
@@ -30,6 +31,7 @@ class _UsuariosScreenState extends ConsumerState<UsuariosScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _horizontalScroll.dispose();
     super.dispose();
   }
 
@@ -112,113 +114,118 @@ class _UsuariosScreenState extends ConsumerState<UsuariosScreen> {
                     ),
                     child: LayoutBuilder(
                       builder: (context, constraints) {
-                        return SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(minWidth: constraints.maxWidth),
-                            child: DataTable(
-                          headingRowColor: WidgetStateProperty.all(context.backgroundColor),
-                          columns: const [
-                            DataColumn(label: Text('ID')),
-                            DataColumn(label: Text('Nombre de Usuario')),
-                            DataColumn(label: Text('Correo')),
-                            DataColumn(label: Text('Estado')),
-                            DataColumn(label: Text('Roles')),
-                            DataColumn(label: Text('Acciones')),
-                          ],
-                          rows: filtered.map((usuario) {
-                            final roleNames = usuario.roles
-                                .where((r) => r.activo && r.rol != null)
-                                .map((r) => r.rol!.nombre)
-                                .join(', ');
+                        return Scrollbar(
+                          controller: _horizontalScroll,
+                          thumbVisibility: true,
+                          child: SingleChildScrollView(
+                            controller: _horizontalScroll,
+                            scrollDirection: Axis.horizontal,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                              child: DataTable(
+                                headingRowColor: WidgetStateProperty.all(context.backgroundColor),
+                                columns: const [
+                                  DataColumn(label: Text('ID')),
+                                  DataColumn(label: Text('Nombre de Usuario')),
+                                  DataColumn(label: Text('Correo')),
+                                  DataColumn(label: Text('Estado')),
+                                  DataColumn(label: Text('Roles')),
+                                  DataColumn(label: Text('Acciones')),
+                                ],
+                                rows: filtered.map((usuario) {
+                                  final roleNames = usuario.roles
+                                      .where((r) => r.activo && r.rol != null)
+                                      .map((r) => r.rol!.nombre)
+                                      .join(', ');
 
-                            return DataRow(
-                              cells: [
-                                DataCell(Text(usuario.idUsuario.toString())),
-                                DataCell(Text(usuario.nombreUsuario)),
-                                DataCell(Text(usuario.correo)),
-                                DataCell(
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: usuario.estadoCuenta == 'ACTIVA' 
-                                        ? Colors.green.withOpacity(0.1) 
-                                        : Colors.orange.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      usuario.estadoCuenta,
-                                      style: TextStyle(
-                                        color: usuario.estadoCuenta == 'ACTIVA' ? Colors.green : Colors.orange,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                DataCell(Text(roleNames.isEmpty ? 'Sin roles' : roleNames)),
-                                DataCell(
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(Icons.assignment_ind, size: 20),
-                                        onPressed: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (ctx) => UsuarioRolForm(usuario: usuario),
-                                          );
-                                        },
-                                        tooltip: 'Asignar Rol',
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.edit, size: 20),
-                                        onPressed: () => _showForm(usuario),
-                                        tooltip: 'Editar',
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.delete, size: 20, color: Colors.red),
-                                        onPressed: () async {
-                                          final confirm = await showDialog<bool>(
-                                            context: context,
-                                            builder: (ctx) => AlertDialog(
-                                              title: const Text('Eliminar Usuario'),
-                                              content: const Text('¿Está seguro de eliminar este usuario?'),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () => Navigator.pop(ctx, false),
-                                                  child: const Text('Cancelar'),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () => Navigator.pop(ctx, true),
-                                                  child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
-                                                ),
-                                              ],
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(Text(usuario.idUsuario.toString())),
+                                      DataCell(Text(usuario.nombreUsuario)),
+                                      DataCell(Text(usuario.correo)),
+                                      DataCell(
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: usuario.estadoCuenta == 'ACTIVA' 
+                                              ? Colors.green.withOpacity(0.1) 
+                                              : Colors.orange.withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Text(
+                                            usuario.estadoCuenta,
+                                            style: TextStyle(
+                                              color: usuario.estadoCuenta == 'ACTIVA' ? Colors.green : Colors.orange,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
                                             ),
-                                          );
-                                          if (confirm == true && context.mounted) {
-                                            ref.read(seguridadUsuariosProvider.notifier)
-                                                .deleteUsuario(usuario.idUsuario!);
-                                          }
-                                        },
-                                        tooltip: 'Eliminar',
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(Text(roleNames.isEmpty ? 'Sin roles' : roleNames)),
+                                      DataCell(
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(Icons.assignment_ind, size: 20),
+                                              onPressed: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (ctx) => UsuarioRolForm(usuario: usuario),
+                                                );
+                                              },
+                                              tooltip: 'Asignar Rol',
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(Icons.edit, size: 20),
+                                              onPressed: () => _showForm(usuario),
+                                              tooltip: 'Editar',
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(Icons.delete, size: 20, color: Colors.red),
+                                              onPressed: () async {
+                                                final confirm = await showDialog<bool>(
+                                                  context: context,
+                                                  builder: (ctx) => AlertDialog(
+                                                    title: const Text('Eliminar Usuario'),
+                                                    content: const Text('¿Está seguro de eliminar este usuario?'),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () => Navigator.pop(ctx, false),
+                                                        child: const Text('Cancelar'),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () => Navigator.pop(ctx, true),
+                                                        child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                                if (confirm == true && context.mounted) {
+                                                  ref.read(seguridadUsuariosProvider.notifier)
+                                                      .deleteUsuario(usuario.idUsuario!);
+                                                }
+                                              },
+                                              tooltip: 'Eliminar',
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
-                                  ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              );
-            },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => Center(child: Text('Error: $err')),
-          ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, stack) => Center(child: Text('Error: $err')),
+              ),
             ),
           const SizedBox(height: 32),
         ],

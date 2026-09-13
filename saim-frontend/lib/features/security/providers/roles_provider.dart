@@ -67,6 +67,7 @@ class SeguridadRolesNotifier extends SupabaseCrudNotifier<Rol> {
       final userIdInt = await getCurrentUserId();
       final data = item.toJson();
       data['actualizado_por'] = userIdInt;
+      data.remove('id_rol');
 
       final response = await supabase
           .from('rol')

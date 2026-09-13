@@ -11,7 +11,7 @@ class Rol {
 
   Rol({
     this.idRol,
-    required this.codigo,
+    this.codigo = '',
     required this.nombre,
     required this.descripcion,
     this.activo = true,
@@ -24,7 +24,7 @@ class Rol {
   factory Rol.fromJson(Map<String, dynamic> json) {
     return Rol(
       idRol: json['id_rol'],
-      codigo: json['codigo'],
+      codigo: json['codigo'] ?? '',
       nombre: json['nombre'],
       descripcion: json['descripcion'],
       activo: json['activo'] ?? true,
@@ -37,7 +37,6 @@ class Rol {
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{
-      'codigo': codigo,
       'nombre': nombre,
       'descripcion': descripcion,
       'activo': activo,

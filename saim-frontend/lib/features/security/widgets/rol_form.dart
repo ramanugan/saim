@@ -18,7 +18,6 @@ class RolForm extends ConsumerStatefulWidget {
 
 class _RolFormState extends ConsumerState<RolForm> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _codigoController;
   late TextEditingController _nombreController;
   late TextEditingController _descripcionController;
   bool _isLoading = false;
@@ -26,14 +25,12 @@ class _RolFormState extends ConsumerState<RolForm> {
   @override
   void initState() {
     super.initState();
-    _codigoController = TextEditingController(text: widget.rol?.codigo ?? '');
     _nombreController = TextEditingController(text: widget.rol?.nombre ?? '');
     _descripcionController = TextEditingController(text: widget.rol?.descripcion ?? '');
   }
 
   @override
   void dispose() {
-    _codigoController.dispose();
     _nombreController.dispose();
     _descripcionController.dispose();
     super.dispose();
@@ -49,7 +46,6 @@ class _RolFormState extends ConsumerState<RolForm> {
 
       final newRol = Rol(
         idRol: widget.rol?.idRol,
-        codigo: _codigoController.text.trim().toUpperCase(),
         nombre: _nombreController.text.trim(),
         descripcion: _descripcionController.text.trim(),
         activo: widget.rol?.activo ?? true,
@@ -113,13 +109,9 @@ class _RolFormState extends ConsumerState<RolForm> {
               ),
               const SizedBox(height: 24),
               CustomTextField(
-                controller: _codigoController,
-                label: 'Código*',
-                hintText: 'Ej. TECNICO',
-                validator: (val) {
-                  if (val == null || val.trim().isEmpty) return 'El código es requerido';
-                  return null;
-                },
+                controller: TextEditingController(text: widget.rol == null ? 'Autogenerado' : widget.rol!.codigo),
+                label: 'Código',
+                enabled: false,
               ),
               const SizedBox(height: 16),
               CustomTextField(

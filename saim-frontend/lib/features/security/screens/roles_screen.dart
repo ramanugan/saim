@@ -18,6 +18,7 @@ class RolesScreen extends ConsumerStatefulWidget {
 
 class _RolesScreenState extends ConsumerState<RolesScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _horizontalScroll = ScrollController();
   String _searchQuery = '';
 
   @override
@@ -29,6 +30,7 @@ class _RolesScreenState extends ConsumerState<RolesScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _horizontalScroll.dispose();
     super.dispose();
   }
 
@@ -113,14 +115,17 @@ class _RolesScreenState extends ConsumerState<RolesScreen> {
                     child: SingleChildScrollView(
                       child: LayoutBuilder(
                         builder: (context, constraints) {
-                          return SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: ConstrainedBox(
+                          return Scrollbar(
+                            controller: _horizontalScroll,
+                            thumbVisibility: true,
+                            child: SingleChildScrollView(
+                              controller: _horizontalScroll,
+                              scrollDirection: Axis.horizontal,
+                              child: ConstrainedBox(
                               constraints: BoxConstraints(minWidth: constraints.maxWidth),
                               child: DataTable(
                                 headingRowColor: WidgetStateProperty.all(context.backgroundColor),
                           columns: const [
-                            DataColumn(label: Text('ID')),
                             DataColumn(label: Text('Código')),
                             DataColumn(label: Text('Nombre')),
                             DataColumn(label: Text('Descripción')),
@@ -129,7 +134,6 @@ class _RolesScreenState extends ConsumerState<RolesScreen> {
                           rows: filtered.map((rol) {
                             return DataRow(
                               cells: [
-                                DataCell(Text(rol.idRol.toString())),
                                 DataCell(Text(rol.codigo)),
                                 DataCell(Text(rol.nombre)),
                                 DataCell(Text(rol.descripcion)),
@@ -177,9 +181,10 @@ class _RolesScreenState extends ConsumerState<RolesScreen> {
                           }).toList(),
                         ),
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                          );
+                        },
+                      ),
                       ),
                   );
                 },
