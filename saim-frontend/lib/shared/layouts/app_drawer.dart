@@ -39,6 +39,9 @@ import '../../features/catalogs/widgets/modals/crud_contratos_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_tipos_equipo_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_equipos_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_proveedores_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_empleados_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_especialidades_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_empleado_especialidad_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
   final bool isModal;
@@ -595,6 +598,52 @@ class AppDrawer extends ConsumerWidget {
                                   showDialog(
                                     context: context,
                                     builder: (ctx) => const CrudEquiposModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          ),
+                          _buildNestedExpandableNavItem(
+                            context: context,
+                            label: 'Recursos',
+                            isActive: false,
+                            children: [
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Empleado',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudEmpleadosModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Especialidad',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudEspecialidadesModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Empleado Especialidad',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudEmpleadoEspecialidadModal(),
                                   );
                                   if (isModal) Navigator.pop(context);
                                 },
