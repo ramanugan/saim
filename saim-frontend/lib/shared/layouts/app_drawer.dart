@@ -42,6 +42,7 @@ import '../../features/catalogs/widgets/modals/crud_proveedores_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_empleados_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_especialidades_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_empleado_especialidad_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_servicios_mantenimiento_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
   final bool isModal;
@@ -644,6 +645,26 @@ class AppDrawer extends ConsumerWidget {
                                   showDialog(
                                     context: context,
                                     builder: (ctx) => const CrudEmpleadoEspecialidadModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          ),
+                          _buildNestedExpandableNavItem(
+                            context: context,
+                            label: 'Servicios',
+                            isActive: false,
+                            children: [
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Servicio mantenimiento',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudServiciosMantenimientoModal(),
                                   );
                                   if (isModal) Navigator.pop(context);
                                 },
