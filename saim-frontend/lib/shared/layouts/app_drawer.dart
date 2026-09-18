@@ -43,6 +43,14 @@ import '../../features/catalogs/widgets/modals/crud_empleados_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_especialidades_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_empleado_especialidad_modal.dart';
 import '../../features/catalogs/widgets/modals/crud_servicios_mantenimiento_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_cuadrillas_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_cuadrilla_miembros_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_jornadas_servicio_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_jornadas_tecnico_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_asignacion_servicios_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_asignacion_tecnicos_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_motivos_desviacion_modal.dart';
+import '../../features/catalogs/widgets/modals/crud_desviacion_servicios_modal.dart';
 
 class AppDrawer extends ConsumerWidget {
   final bool isModal;
@@ -665,6 +673,117 @@ class AppDrawer extends ConsumerWidget {
                                   showDialog(
                                     context: context,
                                     builder: (ctx) => const CrudServiciosMantenimientoModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          ),
+                          _buildNestedExpandableNavItem(
+                            context: context,
+                            label: 'Cuadrillas',
+                            isActive: false,
+                            children: [
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Cuadrilla',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudCuadrillasModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Cuadrilla miembro',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudCuadrillaMiembrosModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Jornada Servicio',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudJornadasServicioModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Jornada Técnico',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudJornadasTecnicoModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Asignación de Servicio',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudAsignacionServiciosModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Asignación de Técnico',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudAsignacionTecnicosModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Motivos de Desviación',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudMotivosDesviacionModal(),
+                                  );
+                                  if (isModal) Navigator.pop(context);
+                                },
+                              ),
+                              _buildSubNavItem(
+                                context: context,
+                                label: 'Desviaciones de Servicio',
+                                isActive: false,
+                                paddingLeft: 60,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => const CrudDesviacionServiciosModal(),
                                   );
                                   if (isModal) Navigator.pop(context);
                                 },
